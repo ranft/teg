@@ -33,7 +33,16 @@ Makefile
 *.i*86
 *.x86_64
 *.hex
+client/tegclient
+robot/tegrobot
+server/tegserver
 
 # Debug files
 *.dSYM/
 
+# Other files
+docs/gnome-help/C/omf_timestamp
+docs/gnome-help/pl/omf_timestamp
+intltool-update
+libtool
+po/Makefile.in

@@ -11,7 +11,7 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 ***********************************************************************/
-/* Funciones sacadas del freeciv con algunas modificaciones */
+/* Functions taken from Freecev with some changes */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

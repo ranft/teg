@@ -27,6 +27,6 @@
 
 #include "client.h"
 
-extern JUEGO g_game;
+extern GAME g_game;
 
 #endif /* __TEGC_MAIN_H */

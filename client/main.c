@@ -43,7 +43,7 @@ int main( int argc, char **argv)
 
 	dont_run_as_root();
 
-	i = 1;
+	//i = 1;
 
 	main_init();
 
