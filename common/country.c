@@ -120,12 +120,12 @@ int countries_cantlimitrofes( int p )
 /* Initializes country p */
 void countries_initcountry( PCOUNTRY p )
 {
-	p->numjug=-1;
+	p->player_number=-1;
 	p->ejercitos=0;
 	InitializeListHead( &p->next );
 	InitializeListHead( &p->tarjeta.next );
 	tarjeta_inittarj( &p->tarjeta );
-	p->tarjeta.numjug = -1;
+	p->tarjeta.player_number = -1;
 	p->tarjeta.usada = FALSE;
 	p->selected = COUNTRY_SELECT_NONE;
 }
@@ -142,7 +142,7 @@ void countries_init()
 /* says if a country is free or not */
 BOOLEAN country_libre( int i )
 {
-	return( g_countries[i].numjug == -1 );
+	return( g_countries[i].player_number == -1 );
 }
 
 /* returns the name of a country */

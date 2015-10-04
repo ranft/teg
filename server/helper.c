@@ -143,7 +143,7 @@ do_real:
 			cant = atoi( p.value );		
 
 			if( country<0 || country >= COUNTRIES_CANT || cant<0 ||
-				cant+fichas > maximo || g_countries[country].numjug != j->numjug ) {
+				cant+fichas > maximo || g_countries[country].player_number != j->player_number ) {
 				goto error;
 			}
 
@@ -257,12 +257,12 @@ TEG_STATUS aux_token_stasta(char *strout, size_t len )
 						,j->name
 						,color
 						,j->player_stats.score
-						,j->numjug
+						,j->player_number
 						,j->estado
 						,(! g_game.fog_of_war) ? j->tot_countries : -1
 						,(! g_game.fog_of_war) ? j->tot_armies : -1
 						,j->tot_cards
-						,(g_game.empieza_turno && (g_game.empieza_turno->numjug==j->numjug))
+						,(g_game.empieza_turno && (g_game.empieza_turno->player_number==j->player_number))
 						,j->human
 						,j->addr );
 				n=1;
@@ -271,12 +271,12 @@ TEG_STATUS aux_token_stasta(char *strout, size_t len )
 						,j->name
 						,color
 						,j->player_stats.score
-						,j->numjug
+						,j->player_number
 						,j->estado
 						,(! g_game.fog_of_war) ? j->tot_countries : -1
 						,(! g_game.fog_of_war) ? j->tot_armies : -1
 						,j->tot_cards
-						,(g_game.empieza_turno && (g_game.empieza_turno->numjug==j->numjug))
+						,(g_game.empieza_turno && (g_game.empieza_turno->player_number==j->player_number))
 						,j->human
 						,j->addr );
 
@@ -363,7 +363,7 @@ TEG_STATUS aux_token_fichasc( PSPLAYER pJ )
 		x_canje = cuantos_x_canje( pJ->tot_exchanges );
 
 	pJ->estado = PLAYER_STATUS_FICHASC;
-	netall_printf( TOKEN_FICHASC"=%d,%d,%d\n",pJ->numjug,conts,armies + x_canje );
+	netall_printf( TOKEN_FICHASC"=%d,%d,%d\n",pJ->player_number,conts,armies + x_canje );
 
 	return TEG_STATUS_SUCCESS;
 }
@@ -376,12 +376,12 @@ TEG_STATUS fichas_next( void )
 	if(  turno_is_round_complete() ) {
 		/* ya di la vuelta */
 		g_game.turno->estado = PLAYER_STATUS_FICHAS2;
-		netall_printf( TOKEN_FICHAS2"=%d,%d\n",g_game.turno->numjug,g_game.fichas2);
+		netall_printf( TOKEN_FICHAS2"=%d,%d\n",g_game.turno->player_number,g_game.fichas2);
 
 	} else {
 		/* paso el estado fichas al siguiente */
 		g_game.turno->estado = PLAYER_STATUS_FICHAS;
-		netall_printf( TOKEN_FICHAS"=%d,%d\n",g_game.turno->numjug,g_game.fichas);
+		netall_printf( TOKEN_FICHAS"=%d,%d\n",g_game.turno->player_number,g_game.fichas);
 	}
 	return TEG_STATUS_SUCCESS;
 }
@@ -393,12 +393,12 @@ TEG_STATUS fichas2_next( void )
 	if(  turno_is_round_complete() ) {
 		/* ya di la vuelta, enconces a empezar a jugar  */
 		g_game.turno->estado = PLAYER_STATUS_ATAQUE;
-		netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->numjug);
+		netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->player_number);
 
 	} else {
 		/* paso el estado fichas2 al siguiente */
 		g_game.turno->estado = PLAYER_STATUS_FICHAS2;
-		netall_printf( TOKEN_FICHAS2"=%d,%d\n",g_game.turno->numjug,g_game.fichas2);
+		netall_printf( TOKEN_FICHAS2"=%d,%d\n",g_game.turno->player_number,g_game.fichas2);
 	}
 	return TEG_STATUS_SUCCESS;
 }
@@ -411,7 +411,7 @@ TEG_STATUS fichasc_next( void )
 	if(  turno_is_round_complete() ) {
 		/* ya di la vuelta */
 		g_game.turno->estado = PLAYER_STATUS_ATAQUE;
-		netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->numjug);
+		netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->player_number);
 
 	} else {
 		aux_token_fichasc( g_game.turno );
@@ -499,7 +499,7 @@ TEG_STATUS aux_token_countries( PSPLAYER pJ, char *buf, int buflen )
 	memset(buf,0,buflen);
 
 	/* special case where I want to send all countries that he CAN'T see */
-	if( g_game.fog_of_war && pJ->numjug == -1 ) {
+	if( g_game.fog_of_war && pJ->player_number == -1 ) {
 		for(i=0;i<COUNTRIES_CANT;i++)
 		{
 			if( ! fow_can_player_see_country( g_game.player_fow, &g_countries[i] ) ) {

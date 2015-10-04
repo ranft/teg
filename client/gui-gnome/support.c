@@ -245,7 +245,7 @@ void dialog_close( GtkWidget *button, gpointer data )
 }
 
 
-GtkWidget * teg_dialog_gameover( int numjug, int mission )
+GtkWidget * teg_dialog_gameover( int player_number, int mission )
 {
 	GtkWidget *dialog;
 	PCPLAYER pJ;
@@ -253,10 +253,10 @@ GtkWidget * teg_dialog_gameover( int numjug, int mission )
 	GtkWidget *frame;
 	char buf[512];
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		dialog = teg_dialog_new(_("Game Over"),_("A player won the game"));
 
-	} else  if( numjug == WHOAMI() ) {
+	} else  if( player_number == WHOAMI() ) {
 		dialog = teg_dialog_new(_("Game Over"),_("You are the winner"));
 
 	} else {

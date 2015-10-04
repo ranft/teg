@@ -73,15 +73,15 @@ TEG_STATUS fow_fill_with_boundaries( int country, char *buffer, int buf_len )
 
 	for( i=0; i < COUNTRIES_CANT; i++ )
 	{
-		if( i != country && g_countries[i].numjug != g_game.player_fow->numjug && countries_eslimitrofe( country, i ) )
+		if( i != country && g_countries[i].player_number != g_game.player_fow->player_number && countries_eslimitrofe( country, i ) )
 		{
 			char buf[1024];
 
 			if( first_time ) {
-				snprintf( buf, sizeof(buf)-1,"%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
+				snprintf( buf, sizeof(buf)-1,"%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].player_number, g_countries[i].ejercitos );
 				first_time = 0;
 			} else
-				snprintf( buf, sizeof(buf)-1,";%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
+				snprintf( buf, sizeof(buf)-1,";%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].player_number, g_countries[i].ejercitos );
 
 			strncat( buffer, buf, buf_len );
 		}

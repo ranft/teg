@@ -30,7 +30,7 @@
 /* server player */
 typedef struct _player{
 	LIST_ENTRY next;
-	int numjug;				/**< player number */
+	int player_number;				/**< player number */
 	char name[PLAYERNAME_MAX_LEN];		/**< name */
 	char addr[PLAYERADDR_MAX_LEN];		/**< internet address */
 	int color;				/**< color */
@@ -75,8 +75,8 @@ PSPLAYER player_ins( PSPLAYER j, BOOLEAN esplayer );
 TEG_STATUS player_del_hard(PSPLAYER j);
 TEG_STATUS player_del_soft( PSPLAYER pJ );
 TEG_STATUS player_flush();
-TEG_STATUS player_asignarcountry( int numjug, PCOUNTRY p);
-TEG_STATUS player_whois( int numjug, PSPLAYER *j);
+TEG_STATUS player_asignarcountry( int player_number, PCOUNTRY p);
+TEG_STATUS player_whois( int player_number, PSPLAYER *j);
 TEG_STATUS player_whoisfd( int fd, PSPLAYER *j);
 BOOLEAN player_esta_xxx( int fd, int condicion, int strict );
 BOOLEAN player_esta_xxx_plus( int fd, int condicion, int strict, PSPLAYER *j );

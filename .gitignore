@@ -40,6 +40,9 @@ server/tegserver
 # Debug files
 *.dSYM/
 
+# Translation
+po/teg.pot
+
 # Other files
 docs/gnome-help/C/omf_timestamp
 docs/gnome-help/pl/omf_timestamp

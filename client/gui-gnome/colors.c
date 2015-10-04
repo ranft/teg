@@ -263,7 +263,7 @@ GdkColor* colors_get_player_ink_from_color(int color )
 
 GdkColor* colors_get_player_virtual( int n )
 {
-	if( n == g_game.numjug )
+	if( n == g_game.player_number )
 		return &colors_players[COLORS_P_BLUE];
 	return &colors_players[COLORS_P_RED];
 }

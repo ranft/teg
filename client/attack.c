@@ -94,7 +94,7 @@ TEG_STATUS attack_click( PCOUNTRY p )
 	}
 
 	if( country_origen == -1 ) {
-		if(p->numjug == WHOAMI()) {
+		if(p->player_number == WHOAMI()) {
 			if( p->ejercitos >1 ) {
 				p->selected &= ~COUNTRY_SELECT_ATTACK_ENTER;
 				p->selected |= COUNTRY_SELECT_ATTACK;
@@ -116,7 +116,7 @@ TEG_STATUS attack_click( PCOUNTRY p )
 			return TEG_STATUS_SUCCESS;
 		}
 
-		if(p->numjug != WHOAMI() ) {
+		if(p->player_number != WHOAMI() ) {
 			if( countries_eslimitrofe(country_origen, p->id) ) {
 				p->selected &= ~COUNTRY_SELECT_ATTACK_ENTER;
 				p->selected |= COUNTRY_SELECT_ATTACK;
@@ -201,7 +201,7 @@ TEG_STATUS attack_enter( PCOUNTRY p )
 	}
 
 	if( country_origen == -1 ) {
-		if(p->numjug == WHOAMI()) {
+		if(p->player_number == WHOAMI()) {
 			if( p->ejercitos >1 ) {
 				if( !(p->selected & COUNTRY_SELECT_ATTACK_ENTER)) {
 					p->selected |= COUNTRY_SELECT_ATTACK_ENTER;
@@ -210,7 +210,7 @@ TEG_STATUS attack_enter( PCOUNTRY p )
 			}
 		}
 	} else if( country_destino == -1 ) {
-		if(p->numjug != WHOAMI() ) {
+		if(p->player_number != WHOAMI() ) {
 			if( countries_eslimitrofe(country_origen, p->id) ) {
 				if( !(p->selected & COUNTRY_SELECT_ATTACK_ENTER)) {
 					p->selected |= COUNTRY_SELECT_ATTACK_ENTER;

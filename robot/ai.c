@@ -110,7 +110,7 @@ int ai_many_country_enemigo( int p )
 	int c=0;
 
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug != WHOAMI() && countries_eslimitrofe(p,i))
+		if( g_countries[i].player_number != WHOAMI() && countries_eslimitrofe(p,i))
 			c++;
 	}
 
@@ -142,7 +142,7 @@ BOOLEAN ai_own_continent( int c )
 	int t=0;
 
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && g_countries[i].continente == c )
+		if( g_countries[i].player_number == WHOAMI() && g_countries[i].continente == c )
 			t++;
 	}
 
@@ -179,7 +179,7 @@ BOOLEAN ai_is_country_peligroso( int src, int dst )
 		if( pJ->empezo_turno )
 			aparecio_empezo = TRUE;
 
-		if( pJ->numjug == g_countries[dst].numjug ) {
+		if( pJ->player_number == g_countries[dst].player_number ) {
 			if( aparecio_empezo )
 				dst_jugo = TRUE;
 			else
@@ -211,7 +211,7 @@ int ai_puntaje_atacar_warning( int src )
 
 	for(i=0;i<COUNTRIES_CANT;i++) {
 		if( countries_eslimitrofe(src,i) &&
-			g_countries[src].numjug != g_countries[i].numjug &&
+			g_countries[src].player_number != g_countries[i].player_number &&
 			ai_is_country_peligroso(src,i)) {
 
 			p += (g_countries[i].ejercitos - g_countries[src].ejercitos);
@@ -261,7 +261,7 @@ TEG_STATUS ai_puntaje_atacar( int country )
 	int dst=-1;
 
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( countries_eslimitrofe(country,i) && g_countries[i].numjug !=WHOAMI() ) {
+		if( countries_eslimitrofe(country,i) && g_countries[i].player_number !=WHOAMI() ) {
 			p_tmp = ai_puntaje_atacar_country( country, i );
 
 			/* son negativos estos valores, por eso sumo */
@@ -294,7 +294,7 @@ TEG_STATUS ai_turno()
 
 	ai_puntaje_clean();
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && g_countries[i].ejercitos > 1)
+		if( g_countries[i].player_number == WHOAMI() && g_countries[i].ejercitos > 1)
 			ai_puntaje_atacar(i);
 	}
 	ai_puntaje_sort_for_attack();
@@ -321,7 +321,7 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 
 		/* try to defend, undefended frontiers */
 		for(i=0;i<COUNTRIES_CANT;i++) {
-			if( g_countries[i].numjug != WHOAMI() &&
+			if( g_countries[i].player_number != WHOAMI() &&
 					countries_eslimitrofe(i,p) &&
 					g_countries[i].ejercitos > g_countries[p].ejercitos) {
 
@@ -335,7 +335,7 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 			new_cant -= 2;
 
 		for(i=0;i<COUNTRIES_CANT && (new_cant>0);i++) {
-			if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
+			if( g_countries[i].player_number == WHOAMI() && countries_eslimitrofe(p,i) &&
 					g_countries[i].continente != g_countries[p].continente ) {
 
 				reagrupe_out( p, i, new_cant );
@@ -346,7 +346,7 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 
 	/*... si falla, los muevo a una frontera */
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
+		if( g_countries[i].player_number == WHOAMI() && countries_eslimitrofe(p,i) &&
 				g_countries[i].continente == g_countries[p].continente ) {
 
 			if( ai_is_country_border(i) ) {
@@ -358,7 +358,7 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 
 	/*... y si no hay frontera lo mando al 1ro que tenga a mano */
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
+		if( g_countries[i].player_number == WHOAMI() && countries_eslimitrofe(p,i) &&
 				g_countries[i].continente == g_countries[p].continente ) {
 
 			reagrupe_out( p, i, cant );
@@ -378,7 +378,7 @@ TEG_STATUS ai_reagrupe()
 	reagrupe_init();
 
 	for(i=0;i < COUNTRIES_CANT ; i++ ) { 
-		if( g_countries[i].numjug == WHOAMI() ) {
+		if( g_countries[i].player_number == WHOAMI() ) {
 			if( ai_many_country_enemigo(i) == 0 ) {
 				p = g_countries[i].ejercitos - g_countries[i].ejer_reagrupe;
 

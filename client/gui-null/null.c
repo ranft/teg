@@ -33,7 +33,7 @@ TEG_STATUS gui_disconnect(void);
 {
 	return TEG_STATUS_SUCCESS;
 }
-TEG_STATUS gui_habilitado(int numjug);
+TEG_STATUS gui_habilitado(int player_number);
 {
 	return TEG_STATUS_SUCCESS;
 }
@@ -93,15 +93,15 @@ TEG_STATUS gui_canje();
 {
 	return TEG_STATUS_SUCCESS;
 }
-TEG_STATUS gui_lost(int numjug);
+TEG_STATUS gui_lost(int player_number);
 {
 	return TEG_STATUS_SUCCESS;
 }
-TEG_STATUS gui_surrender(int numjug);
+TEG_STATUS gui_surrender(int player_number);
 {
 	return TEG_STATUS_SUCCESS;
 }
-TEG_STATUS gui_winner(int numjug, int objetivo);
+TEG_STATUS gui_winner(int player_number, int objetivo);
 {
 	return TEG_STATUS_SUCCESS;
 }

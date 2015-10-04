@@ -74,7 +74,7 @@ extern TEG_STATUS gui_main(void);
 extern TEG_STATUS gui_exit(char *str);
 extern TEG_STATUS gui_textmsg(char *aString );
 extern TEG_STATUS gui_disconnect(void);
-extern TEG_STATUS gui_habilitado(int numjug);
+extern TEG_STATUS gui_habilitado(int player_number);
 extern TEG_STATUS gui_connected( char *c);
 extern TEG_STATUS gui_reconnected();
 extern TEG_STATUS gui_status(void);
@@ -91,9 +91,9 @@ extern TEG_STATUS gui_sensi();
 extern TEG_STATUS gui_canje();
 extern TEG_STATUS gui_attack( int src, int dst );
 extern TEG_STATUS gui_canje();
-extern TEG_STATUS gui_lost(int numjug);
-extern TEG_STATUS gui_surrender(int numjug);
-extern TEG_STATUS gui_winner(int numjug, int mission);
+extern TEG_STATUS gui_lost(int player_number);
+extern TEG_STATUS gui_surrender(int player_number);
+extern TEG_STATUS gui_winner(int player_number, int mission);
 extern TEG_STATUS gui_mission();
 extern TEG_STATUS gui_textplayermsg(char *n,int nj, char *m );
 extern TEG_STATUS gui_scores(void);
@@ -101,7 +101,7 @@ extern TEG_STATUS gui_scores(void);
 typedef struct _cgame {
 	int fd;				/**< mi fd */
 	PLAYER_STATUS estado;		/**< estado del game */
-	int numjug;			/**< numero de player (yo) */
+	int player_number;			/**< numero de player (yo) */
 	int human;			/**< Am I a human ? */
 	int observer;			/**< si soy observer o player */
 	int playeres;			/**< cantidad de playeres */

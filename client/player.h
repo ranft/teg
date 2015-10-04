@@ -31,7 +31,7 @@ typedef struct _player {
 	char addr[PLAYERADDR_MAX_LEN];
 	int color;
 	int score;
-	int numjug;
+	int player_number;
 	PLAYER_STATUS estado;
 	int tot_countries;
 	int tot_armies;
@@ -44,7 +44,7 @@ typedef struct _player {
 /* funciones exportadas */
 extern LIST_ENTRY g_list_player;
 
-TEG_STATUS player_whois( int numjug, PCPLAYER *j);
+TEG_STATUS player_whois( int player_number, PCPLAYER *j);
 TEG_STATUS player_update( PCPLAYER j );
 PCPLAYER player_ins( PCPLAYER j);
 TEG_STATUS player_del( PCPLAYER j );

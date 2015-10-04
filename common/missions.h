@@ -26,7 +26,7 @@
 #define __TEG_MISSIONS_H
 
 typedef struct _missions {
-	int	numjug;				/**< a quien se asigno el mission */
+	int	player_number;				/**< a quien se asigno el mission */
 	char	*name;			/**< name del mission */
 	int	continentes[CONTINENTE_LAST];	/**< continentes a conquistar */
 	int	jugadores[TEG_MAX_PLAYERS];	/**< jugadores a eliminar */

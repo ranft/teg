@@ -48,7 +48,7 @@ char *ai_fetch_a_name()
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		if( (i++) == n ) {
 			pJ = (PCPLAYER) l;
-			if( pJ->numjug == WHOAMI() )
+			if( pJ->player_number == WHOAMI() )
 				n++;
 			else
 				return pJ->name;

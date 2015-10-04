@@ -64,12 +64,12 @@ TEG_STATUS mission_chequear( PSPLAYER pJ )
 		int j,k,i_tmp;
 		int salir=0;
 		for(j=0;j<COUNTRIES_CANT && salir==0;j++) {
-			if( g_countries[j].numjug != pJ->numjug )
+			if( g_countries[j].player_number != pJ->player_number )
 				continue;
 			i_tmp=0;
 
 			for(k=0;k<COUNTRIES_CANT;k++) {
-				if( g_countries[k].numjug != pJ->numjug )
+				if( g_countries[k].player_number != pJ->player_number )
 					continue;
 				if( countries_eslimitrofe(j,k) ) {
 					if( ++i_tmp >= i ) {
@@ -115,15 +115,15 @@ TEG_STATUS mission_asignar( PSPLAYER pJ )
 	i = obj;
 
 	for( ; i < missions_cant() ; i++) {
-		if( g_missions[i].numjug == -1 ) {
-			g_missions[i].numjug = pJ->numjug;
+		if( g_missions[i].player_number == -1 ) {
+			g_missions[i].player_number = pJ->player_number;
 			pJ->mission = i;
 			return TEG_STATUS_SUCCESS;
 		}
 	}
 	for( i=0; i < obj ; i++ ) {
-		if( g_missions[i].numjug == -1 ) {
-			g_missions[i].numjug = pJ->numjug;
+		if( g_missions[i].player_number == -1 ) {
+			g_missions[i].player_number = pJ->player_number;
 			pJ->mission = i;
 			return TEG_STATUS_SUCCESS;
 		}
@@ -138,10 +138,10 @@ TEG_STATUS mission_init()
 	int i;
 
 	for(i=0;i<missions_cant();i++) {
-		g_missions[i].numjug = -1;
+		g_missions[i].player_number = -1;
 	}
-	g_missions[MISSION_CONQWORLD].numjug = 0;
-	g_missions[MISSION_COMMON].numjug = 0;
+	g_missions[MISSION_CONQWORLD].player_number = 0;
+	g_missions[MISSION_COMMON].player_number = 0;
 
 	return TEG_STATUS_SUCCESS;
 }

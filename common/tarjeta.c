@@ -26,10 +26,10 @@
 #include "all.h"
 
 /**
- * @fn BOOLEAN tarjeta_puedocanje( int numjug, int t1, int t2, int t3 )
+ * @fn BOOLEAN tarjeta_puedocanje( int player_number, int t1, int t2, int t3 )
  * Dice si es correcto el canje con las tarjetas t1,t2 y t3
  */
-BOOLEAN tarjeta_puedocanje( int numjug, int t1, int t2, int t3 )
+BOOLEAN tarjeta_puedocanje( int player_number, int t1, int t2, int t3 )
 {
 	int result;
 
@@ -40,9 +40,9 @@ BOOLEAN tarjeta_puedocanje( int numjug, int t1, int t2, int t3 )
 		return FALSE;
 
 	/* chequear que las tarjetas sean del jugador */
-	if(!( g_countries[t1].tarjeta.numjug == numjug &&
-		g_countries[t2].tarjeta.numjug == numjug &&
-		g_countries[t3].tarjeta.numjug == numjug ))
+	if(!( g_countries[t1].tarjeta.player_number == player_number &&
+		g_countries[t2].tarjeta.player_number == player_number &&
+		g_countries[t3].tarjeta.player_number == player_number ))
 		return FALSE;
 
 	result = g_countries[t1].tarjeta.tarjeta + g_countries[t2].tarjeta.tarjeta + g_countries[t3].tarjeta.tarjeta ;
@@ -80,7 +80,7 @@ void tarjeta_desusar( PTARJETA pT )
 void tarjeta_inittarj( PTARJETA t )
 {
 	t->usada = FALSE;
-	t->numjug = -1;
+	t->player_number = -1;
 }
 
 /**
@@ -92,11 +92,11 @@ void tarjeta_poner( PTARJETA t )
 }
 
 /**
- * @fn void tarjeta_sacar( PTARJETA t, int numjug )
+ * @fn void tarjeta_sacar( PTARJETA t, int player_number )
  */
-void tarjeta_sacar( PTARJETA t, int numjug )
+void tarjeta_sacar( PTARJETA t, int player_number )
 {
-	t->numjug = numjug;
+	t->player_number = player_number;
 }
 
 /**
@@ -107,7 +107,7 @@ void tarjeta_sacar( PTARJETA t, int numjug )
  */
 int tarjeta_es_libre( int i )
 {
-	return( g_countries[i].tarjeta.numjug == -1 );
+	return( g_countries[i].tarjeta.player_number == -1 );
 }
 
 /**

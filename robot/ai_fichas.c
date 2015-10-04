@@ -56,7 +56,7 @@ TEG_STATUS ai_fichas_calc_puntaje_conquer( int country )
 
 	for(i=0;i<COUNTRIES_CANT;i++) {
 		if( g_countries[country].continente == g_countries[i].continente ) {
-			if( g_countries[i].numjug == WHOAMI() ) {
+			if( g_countries[i].player_number == WHOAMI() ) {
 				pm++;
 				em += g_countries[i].ejercitos;
 			} else {
@@ -133,7 +133,7 @@ TEG_STATUS ai_fichas_calc_puntaje_defense( int country )
 
 	for(i=0;i< COUNTRIES_CANT;i++) {
 		if( countries_eslimitrofe(country,i) && g_countries[i].continente != c ) {
-			if (g_countries[i].numjug != WHOAMI() ) {
+			if (g_countries[i].player_number != WHOAMI() ) {
 
 				suma += 5;
 
@@ -177,7 +177,7 @@ TEG_STATUS ai_fichas_calc_puntaje_fichas( int country )
 
 	/* suma las fichas de los countries limitrofes enemigos */
 	for(i=0;i< COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug != WHOAMI() && countries_eslimitrofe( country, i )) {
+		if( g_countries[i].player_number != WHOAMI() && countries_eslimitrofe( country, i )) {
 
 			/* si es un enemigo ya tiene punto */
 			suma += 3;
@@ -242,7 +242,7 @@ TEG_STATUS __ai_fichas( int cant )
 	ai_puntaje_clean();
 
 	for(i=0;i< COUNTRIES_CANT;i++ ) {
-		if( g_countries[i].numjug == WHOAMI() ) {
+		if( g_countries[i].player_number == WHOAMI() ) {
 			ai_puntaje[i]=0;	
 			ai_fichas_calc_puntaje(i);
 		}

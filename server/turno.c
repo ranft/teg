@@ -133,7 +133,7 @@ TEG_STATUS turno_next( void )
 
 		} else {
 			g_game.turno->estado = PLAYER_STATUS_ATAQUE;
-			netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->numjug);
+			netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->player_number);
 		}
 		return TEG_STATUS_SUCCESS;
 	}
@@ -239,6 +239,6 @@ void turno_initialize_new_round( void )
 		}
 	}
 	
-	netall_printf( TOKEN_NEW_ROUND"=%d,%d\n",g_game.turno->numjug, g_game.round_number );
+	netall_printf( TOKEN_NEW_ROUND"=%d,%d\n",g_game.turno->player_number, g_game.round_number );
 
 }

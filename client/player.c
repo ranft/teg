@@ -27,15 +27,15 @@
 
 LIST_ENTRY g_list_player;
 
-/* given a player_number (numjug), it returns a pointer to the PLAYER */
-TEG_STATUS player_whois( int numjug, PCPLAYER *j)
+/* given a player_number (player_number), it returns a pointer to the PLAYER */
+TEG_STATUS player_whois( int player_number, PCPLAYER *j)
 {
 	PLIST_ENTRY l = g_list_player.Flink;
 	PCPLAYER pJ;
 
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		pJ = (PCPLAYER) l;
-		if( pJ->numjug == numjug) {
+		if( pJ->player_number == player_number) {
 			*j = pJ;
 			return TEG_STATUS_SUCCESS;
 		}
@@ -49,9 +49,9 @@ TEG_STATUS player_update( PCPLAYER j )
 {
 	PCPLAYER i;
 
-/*	textmsg(M_DBG,"jugdor_upt(%d):%s",j->numjug,j->name); */
+/*	textmsg(M_DBG,"jugdor_upt(%d):%s",j->player_number,j->name); */
 
-	if( player_whois( j->numjug, &i ) != TEG_STATUS_SUCCESS )
+	if( player_whois( j->player_number, &i ) != TEG_STATUS_SUCCESS )
 		goto error; 
 
 	memcpy(	&j->next, &i->next, sizeof(LIST_ENTRY));
@@ -69,7 +69,7 @@ PCPLAYER player_ins( PCPLAYER j)
 	if( new==NULL)
 		return NULL;
 
-/*	textmsg(M_DBG,"jugdor_ins(%d):%s",j->numjug,j->name); */
+/*	textmsg(M_DBG,"jugdor_ins(%d):%s",j->player_number,j->name); */
 
 	memmove( new, j, sizeof(CPLAYER));
 	InitializeListHead( &new->next );

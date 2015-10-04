@@ -33,7 +33,7 @@ static int last_country = -1;
  */
 TEG_STATUS ejer2_out( int country )
 {
-	if( g_countries[ country ].numjug == WHOAMI() ) {
+	if( g_countries[ country ].player_number == WHOAMI() ) {
 		if( ESTADO_ES( PLAYER_STATUS_TARJETA ) ) {
 			if( !tarjeta_es_usada( &g_countries[ country ].tarjeta )) {
 				tarjeta_usar( &g_countries[ country ].tarjeta );

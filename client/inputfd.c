@@ -151,13 +151,13 @@ TEG_STATUS clitok_kick( char *name )
 /* Informs that a player has surrender */
 TEG_STATUS clitok_surrender( char *str )
 {
-	int numjug;
+	int player_number;
 	PCPLAYER pJ;
 
-	numjug = atoi( str );
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	player_number = atoi( str );
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		/* no lo tengo en la base */
-		textmsg( M_IMP,_("Player %d abandoned the game"), numjug );
+		textmsg( M_IMP,_("Player %d abandoned the game"), player_number );
 		return TEG_STATUS_SUCCESS;
 	}
 
@@ -166,14 +166,14 @@ TEG_STATUS clitok_surrender( char *str )
 				_(g_colores[pJ->color])
 				);
 
-	if( pJ->numjug == WHOAMI() ) {
+	if( pJ->player_number == WHOAMI() ) {
 		ESTADO_SET(PLAYER_STATUS_GAMEOVER);
 		gui_sensi();
 	}
 
 	out_countries();
 
-	gui_surrender(numjug);
+	gui_surrender(player_number);
 
 	return TEG_STATUS_SUCCESS;
 }
@@ -181,13 +181,13 @@ TEG_STATUS clitok_surrender( char *str )
 /* a players lost the connection of just quit the game */
 TEG_STATUS clitok_exit( char *str )
 {
-	int numjug;
+	int player_number;
 	PCPLAYER pJ;
 
-	numjug = atoi( str );
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	player_number = atoi( str );
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		/* no lo tengo en la base */
-		textmsg( M_IMP,_("Player %d exit the game"), numjug );
+		textmsg( M_IMP,_("Player %d exit the game"), player_number );
 		return TEG_STATUS_SUCCESS;
 	}
 
@@ -199,7 +199,7 @@ TEG_STATUS clitok_exit( char *str )
 	/* dont delete the player, I need the status */
 	/* player_del( pJ ); */
 
-	if( WHOAMI() == numjug ) {
+	if( WHOAMI() == player_number ) {
 		/* por alguna razon el server quiere que abandone el game */
 		teg_disconnect();
 	}
@@ -213,7 +213,7 @@ TEG_STATUS clitok_winner( char *str )
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
 	DELIM separador={ ',', ',', ',' };
-	int numjug;
+	int player_number;
 	int mission;
 	PCPLAYER pJ;
 
@@ -225,7 +225,7 @@ TEG_STATUS clitok_winner( char *str )
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
@@ -233,7 +233,7 @@ TEG_STATUS clitok_winner( char *str )
 	} else goto error;
 
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS)
 		goto error;
 
 	if( mission == -1 ) mission = 0;
@@ -246,7 +246,7 @@ TEG_STATUS clitok_winner( char *str )
 				_(g_colores[pJ->color])
 				);
 
-	gui_winner( pJ->numjug, mission );
+	gui_winner( pJ->player_number, mission );
 
 	ESTADO_SET( PLAYER_STATUS_HABILITADO );
 	gui_sensi();
@@ -261,11 +261,11 @@ error:
 /* a player lost the game */
 TEG_STATUS clitok_lost( char *str )
 {
-	int numjug;
+	int player_number;
 	PCPLAYER pJ;
 
-	numjug = atoi( str );
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS)
+	player_number = atoi( str );
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS)
 		goto error;
 
 	textmsg( M_IMP,_("Player %s(%s) lost the game\n"),
@@ -273,10 +273,10 @@ TEG_STATUS clitok_lost( char *str )
 				_(g_colores[pJ->color])
 				);
 
-	if( pJ->numjug == WHOAMI() )
+	if( pJ->player_number == WHOAMI() )
 		ESTADO_SET(PLAYER_STATUS_GAMEOVER);
 
-	gui_lost( pJ->numjug );
+	gui_lost( pJ->player_number );
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -394,7 +394,7 @@ TEG_STATUS clitok_country( char *str)
 		ejer = atoi( p.token );
 	} else goto error;
 
-	g_countries[country].numjug = jug;
+	g_countries[country].player_number = jug;
 	g_countries[country].ejercitos = ejer;
 
 	gui_country( country );
@@ -505,13 +505,13 @@ TEG_STATUS clitok_attack( char *str)
 
 	pJsrc = NULL;
 	if( src >=0 )
-		player_whois( g_countries[src].numjug, &pJsrc );
+		player_whois( g_countries[src].player_number, &pJsrc );
 
 	pJdst = NULL;
 	if( dst >=0 )
-		player_whois( g_countries[dst].numjug, &pJdst );
+		player_whois( g_countries[dst].player_number, &pJdst );
 
-	if( src >= 0 && g_countries[src].numjug == WHOAMI() ) {
+	if( src >= 0 && g_countries[src].player_number == WHOAMI() ) {
 		attack_reset();
 	} else {
 		attack_show( src, dst );
@@ -532,7 +532,7 @@ error:
 /* it's someone turn */
 TEG_STATUS clitok_turno( char *str)
 {
-	int numjug;
+	int player_number;
 	PCPLAYER pJ;
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
@@ -546,18 +546,18 @@ TEG_STATUS clitok_turno( char *str)
 		goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS)
 		goto error;
 
-	g_game.whos_turn = numjug;
+	g_game.whos_turn = player_number;
 
 	attack_unshow();
 	out_countries();
 
-	if( numjug == g_game.numjug ) {
+	if( player_number == g_game.player_number ) {
 		ESTADO_SET(PLAYER_STATUS_ATAQUE);
 		/* cosas a hacer cuando yo comienzo un nuevo turno */
 		reagrupe_bigreset();
@@ -581,7 +581,7 @@ error:
 /* someone is placing the initial armies */
 TEG_STATUS clitok_fichas( char *str)
 {
-	int numjug;
+	int player_number;
 	int cant;
 	PCPLAYER j;
 	PARSER p;
@@ -596,23 +596,23 @@ TEG_STATUS clitok_fichas( char *str)
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
 		cant = atoi( p.token );
 	} else goto error;
 
-	if( player_whois( numjug, &j) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &j) != TEG_STATUS_SUCCESS)
 		goto error;
 
 	out_countries();
 
-	g_game.whos_turn = numjug;
+	g_game.whos_turn = player_number;
 
 	gui_sensi();
 
-	if( numjug == g_game.numjug ) {
+	if( player_number == g_game.player_number ) {
 		ESTADO_SET(PLAYER_STATUS_FICHAS);
 		fichas_init( cant, 0 );
 		gui_fichas(cant,0);
@@ -632,7 +632,7 @@ error:
 /* someone is placing the initial armies (2nd time) */
 TEG_STATUS clitok_fichas2( char *str)
 {
-	int numjug;
+	int player_number;
 	int cant;
 	PCPLAYER j;
 	PARSER p;
@@ -647,22 +647,22 @@ TEG_STATUS clitok_fichas2( char *str)
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
 		cant = atoi( p.token );
 	} else goto error;
 
-	if( player_whois( numjug, &j) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &j) != TEG_STATUS_SUCCESS)
 		goto error;
 
 	out_countries();
 
-	g_game.whos_turn = numjug;
+	g_game.whos_turn = player_number;
 	gui_sensi();
 
-	if( numjug == g_game.numjug ) {
+	if( player_number == g_game.player_number ) {
 		ESTADO_SET(PLAYER_STATUS_FICHAS2);
 		fichas_init( cant, 0 );
 		gui_fichas(cant,0);
@@ -682,7 +682,7 @@ error:
 /* someone is placing the continents armies */
 TEG_STATUS clitok_fichasc( char *str)
 {
-	int numjug;
+	int player_number;
 	int cant,tot_cant;
 	unsigned long conts;
 	PCPLAYER j;
@@ -698,7 +698,7 @@ TEG_STATUS clitok_fichasc( char *str)
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
@@ -709,19 +709,19 @@ TEG_STATUS clitok_fichasc( char *str)
 		cant = atoi( p.token );
 	} else goto error;
 
-	if( player_whois( numjug, &j) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &j) != TEG_STATUS_SUCCESS)
 		goto error;
 
 	attack_unshow();
 
-	g_game.whos_turn = numjug;
+	g_game.whos_turn = player_number;
 	gui_sensi();
 
 	tot_cant = cont_tot( conts ) + cant;
 
 	out_countries();
 
-	if( numjug == g_game.numjug ) {
+	if( player_number == g_game.player_number ) {
 		ESTADO_SET(PLAYER_STATUS_FICHASC);
 		fichas_init( tot_cant, conts );
 		gui_fichas(cant,conts);
@@ -742,7 +742,7 @@ error:
 /* all the countries that a players has */
 TEG_STATUS clitok_countries( char *str)
 {
-	int numjug;
+	int player_number;
 	PCPLAYER j;
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
@@ -757,13 +757,13 @@ TEG_STATUS clitok_countries( char *str)
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro )
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	else 
 		goto error;
 
-	/* XXX: numjug == -1 in fog of war. Need to check if in FOW */
-	if( numjug == -1 || player_whois( numjug, &j) == TEG_STATUS_SUCCESS)
-		return aux_countries( numjug, p.data );
+	/* XXX: player_number == -1 in fog of war. Need to check if in FOW */
+	if( player_number == -1 || player_whois( player_number, &j) == TEG_STATUS_SUCCESS)
+		return aux_countries( player_number, p.data );
 error:
 	textmsg(M_ERR,"Error in clitok_countries()");
 	return TEG_STATUS_ERROR;
@@ -791,7 +791,7 @@ TEG_STATUS clitok_playerid( char *str)
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		g_game.numjug = atoi( p.token );
+		g_game.player_number = atoi( p.token );
 	} else goto error;
 
 	for(i=0;i<TEG_MAX_PLAYERS-1;i++ ) {
@@ -814,7 +814,7 @@ TEG_STATUS clitok_playerid( char *str)
 
 	gui_connected( c );
 
-	textmsg( M_IMP,_("I'm player number:%d"),g_game.numjug );
+	textmsg( M_IMP,_("I'm player number:%d"),g_game.player_number );
 	return TEG_STATUS_SUCCESS;
 error:
 	textmsg(M_ERR,"Error in clitok_playerid()");
@@ -842,7 +842,7 @@ TEG_STATUS clitok_reconnect( char *str)
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		g_game.numjug = atoi( p.token );
+		g_game.player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
@@ -852,17 +852,17 @@ TEG_STATUS clitok_reconnect( char *str)
 
 	ESTADO_SET(PLAYER_STATUS_IDLE);
 
-	textmsg( M_IMP,_("Successful reconnection. I'm player number:%d"),g_game.numjug );
+	textmsg( M_IMP,_("Successful reconnection. I'm player number:%d"),g_game.player_number );
 
 	{
 		/* insert myself in the list of players */
 		CPLAYER j;
 		PCPLAYER pJ;
 
-		if( player_whois( g_game.numjug, &pJ ) != TEG_STATUS_SUCCESS ) {
+		if( player_whois( g_game.player_number, &pJ ) != TEG_STATUS_SUCCESS ) {
 			memset(&j,0,sizeof(j));
 			j.color = g_game.mycolor;
-			j.numjug = g_game.numjug;
+			j.player_number = g_game.player_number;
 			strncpy(j.name,g_game.myname,sizeof(j.name)-1);
 			j.name[sizeof(j.name)-1]=0;
 			player_ins(&j);
@@ -887,7 +887,7 @@ error:
 TEG_STATUS clitok_newplayer( char *str)
 {
 	char name[PLAYERNAME_MAX_LEN];
-	int color,numjug;
+	int color,player_number;
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
 	DELIM separador={ ',', ',', ',' };
@@ -907,31 +907,31 @@ TEG_STATUS clitok_newplayer( char *str)
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );		
+		player_number = atoi( p.token );		
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
 		color = atoi( p.token );
 	} else goto error;
 
-	if( player_whois( numjug, &pJ ) != TEG_STATUS_SUCCESS ) {
+	if( player_whois( player_number, &pJ ) != TEG_STATUS_SUCCESS ) {
 		memset(&j,0,sizeof(j));
 		j.color = color;
-		j.numjug = numjug;
+		j.player_number = player_number;
 		strncpy(j.name,name,sizeof(j.name)-1);
 		j.name[sizeof(j.name)-1]=0;
 		player_ins(&j);
 	} else
 		pJ->color =  color;
 
-	if( numjug == WHOAMI() ) {
+	if( player_number == WHOAMI() ) {
 		g_game.mycolor = color;
 		ESTADO_SET( PLAYER_STATUS_HABILITADO );
 		textmsg( M_IMP,_("My color is: %s"),_(g_colores[color]) );
 	} else {
-		textmsg(M_IMP,_("Player[%d] '%s' is connected with color %s"),numjug,name,_(g_colores[color]));
+		textmsg(M_IMP,_("Player[%d] '%s' is connected with color %s"),player_number,name,_(g_colores[color]));
 	}
-	gui_habilitado( numjug );
+	gui_habilitado( player_number );
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -943,7 +943,7 @@ error:
 TEG_STATUS clitok_message( char *str)
 {
 	char name[PLAYERNAME_MAX_LEN];
-	int numjug;
+	int player_number;
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
 	DELIM separador={ ',', ',', ',' };
@@ -961,13 +961,13 @@ TEG_STATUS clitok_message( char *str)
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );		
+		player_number = atoi( p.token );		
 	} else goto error;
 
 	/* I dont care if there is one more or not */
 
 	if( g_game.msg_show & M_MSG ) {
-		gui_textplayermsg(name,numjug,p.data);
+		gui_textplayermsg(name,player_number,p.data);
 	}
 	return TEG_STATUS_SUCCESS;
 error:
@@ -1008,7 +1008,7 @@ TEG_STATUS clitok_status( char *str)
 			if( aux_status( &j, p.token ) != TEG_STATUS_SUCCESS )
 				goto error;
 
-			if( player_whois( j.numjug, &j_tmp ) == TEG_STATUS_SUCCESS )
+			if( player_whois( j.player_number, &j_tmp ) == TEG_STATUS_SUCCESS )
 				player_update( &j );
 			else
 				player_ins( &j );
@@ -1138,7 +1138,7 @@ TEG_STATUS clitok_enum_cards( char *str )
 		g_game.tarjetas_cant++;
 
 		if( used ) tarjeta_usar( &g_countries[ country ].tarjeta );
-		g_countries[ country ].tarjeta.numjug = WHOAMI();
+		g_countries[ country ].tarjeta.player_number = WHOAMI();
 
 	} while ( p.hay_otro );
 
@@ -1156,7 +1156,7 @@ TEG_STATUS clitok_exchange(char *str)
 	DELIM igualador={ ':', ':', ':' };
 	DELIM separador={ ',', ',', ',' };
 	int p1,p2,p3;
-	int numjug,cant;
+	int player_number,cant;
 	PCPLAYER pJ;
 
 	if( strlen(str)==0 )
@@ -1167,7 +1167,7 @@ TEG_STATUS clitok_exchange(char *str)
 	p.data = str;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
@@ -1186,10 +1186,10 @@ TEG_STATUS clitok_exchange(char *str)
 		p3 = atoi( p.token );		
 	} else goto error;
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS)
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS)
 		goto error;
 
-	if( numjug == WHOAMI() ) {
+	if( player_number == WHOAMI() ) {
 		PLIST_ENTRY pL = g_game.tarjetas_list.Flink;
 
 		while( !IsListEmpty( &g_game.tarjetas_list ) && (pL != &g_game.tarjetas_list )) {
@@ -1200,7 +1200,7 @@ TEG_STATUS clitok_exchange(char *str)
 			if( pP->id == p1 || pP->id == p2 || pP->id == p3 ) {
 				PLIST_ENTRY l;
 
-				g_countries[ pP->id ].tarjeta.numjug = -1;
+				g_countries[ pP->id ].tarjeta.player_number = -1;
 				l = RemoveHeadList( pL->Blink );
 				g_game.tarjetas_cant--;
 
@@ -1334,7 +1334,7 @@ TEG_STATUS clitok_tarjeta(char *str)
 
 	if( used )
 		tarjeta_usar( &g_countries[ country ].tarjeta );
-	g_countries[ country ].tarjeta.numjug = WHOAMI();
+	g_countries[ country ].tarjeta.player_number = WHOAMI();
 
 	if( used ) {
 		textmsg(M_IMP,_("You received card: '%s' and 2 armies where placed there"), countries_get_name( country ) );
@@ -1404,7 +1404,7 @@ TEG_STATUS clitok_new_round( char *str )
 	PARSER p;
 	DELIM igualador={ ':', ':', ':' };
 	DELIM separador={ ',', ',', ',' };
-	int numjug, round_number;
+	int player_number, round_number;
 	PCPLAYER pJ;
 
 	p.igualador = &igualador;
@@ -1415,21 +1415,21 @@ TEG_STATUS clitok_new_round( char *str )
 		goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		numjug = atoi( p.token );
+		player_number = atoi( p.token );
 	} else goto error;
 
 	if( parser_call( &p ) && !p.hay_otro ) {
 		round_number = atoi( p.token );
 	} else goto error;
 
-	if( round_number >=0 && numjug >= 0 ) {
+	if( round_number >=0 && player_number >= 0 ) {
 		g_game.round_number = round_number;
-		g_game.who_started_round = numjug;
+		g_game.who_started_round = player_number;
 	} else goto error;
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		/* no lo tengo en la base */
-		textmsg( M_IMP,_("Player %d started round number: %d"), numjug, round_number );
+		textmsg( M_IMP,_("Player %d started round number: %d"), player_number, round_number );
 	} else {
 		textmsg( M_IMP,_("Player %s(%s) started round number: %d"),
 				pJ->name,

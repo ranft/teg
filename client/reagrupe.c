@@ -52,7 +52,7 @@ TEG_STATUS reagrupe_click( PCOUNTRY p )
 	}
 
 	if( country_origen == -1 ) {
-		if(p->numjug == WHOAMI() ) {
+		if(p->player_number == WHOAMI() ) {
 			if( p->ejercitos - p->ejer_reagrupe > 1 ) {
 				p->selected &= ~COUNTRY_SELECT_REGROUP_ENTER;
 				p->selected |= COUNTRY_SELECT_REGROUP;
@@ -74,7 +74,7 @@ TEG_STATUS reagrupe_click( PCOUNTRY p )
 			return TEG_STATUS_SUCCESS;
 		}
 
-		if(p->numjug == WHOAMI()  ) {
+		if(p->player_number == WHOAMI()  ) {
 			if( countries_eslimitrofe( country_origen, p->id ) ) {
 				p->selected &= ~COUNTRY_SELECT_REGROUP_ENTER;
 				p->selected |= COUNTRY_SELECT_REGROUP;
@@ -204,14 +204,14 @@ TEG_STATUS reagrupe_enter( PCOUNTRY p )
 	}
 
 	if( country_origen == -1 ) {
-		if(p->numjug == WHOAMI() ) {
+		if(p->player_number == WHOAMI() ) {
 			if( p->ejercitos - p->ejer_reagrupe > 1 ) {
 				p->selected |= COUNTRY_SELECT_REGROUP_ENTER;
 				gui_country_select(p->id);
 			}
 		}
 	} else if( country_destino == -1 ) {
-		if(p->numjug == WHOAMI()  ) {
+		if(p->player_number == WHOAMI()  ) {
 			if( countries_eslimitrofe( country_origen, p->id ) ) {
 				p->selected |= COUNTRY_SELECT_REGROUP_ENTER;
 				gui_country_select(p->id);

@@ -40,7 +40,7 @@ TEG_STATUS dirs_create();
 #define ESTADO_MENOR_IGUAL(a) (g_game.estado<=(a))
 #define ESTADO_MAYOR_IGUAL(a) (g_game.estado>=(a))
 
-#define WHOAMI() g_game.numjug
+#define WHOAMI() g_game.player_number
 #define ESTADO_GET() g_game.estado
 #define ESTADO_SET(a) (g_game.estado=(a))
 

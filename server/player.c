@@ -35,14 +35,14 @@ LIST_ENTRY g_list_player;		/**< list of players */
 
 
 /* given a players' number it returns a pointer the player */
-TEG_STATUS player_whois( int numjug, PSPLAYER *pJ)
+TEG_STATUS player_whois( int player_number, PSPLAYER *pJ)
 {
 	PLIST_ENTRY l = g_list_player.Flink;
 	PSPLAYER pJ_new;
 
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		pJ_new = (PSPLAYER) l;
-		if( pJ_new->numjug == numjug) {
+		if( pJ_new->player_number == player_number) {
 			*pJ = pJ_new;
 			return TEG_STATUS_SUCCESS;
 		}
@@ -127,8 +127,8 @@ TEG_STATUS player_numjug_libre( int *libre)
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		pJ = (PSPLAYER) l;
 		if( pJ->is_player ) {
-			if( pJ->numjug >= 0 && pJ->numjug < TEG_MAX_PLAYERS ) {
-				jugs[pJ->numjug] = 1;
+			if( pJ->player_number >= 0 && pJ->player_number < TEG_MAX_PLAYERS ) {
+				jugs[pJ->player_number] = 1;
 			}
 		}
 
@@ -149,19 +149,19 @@ TEG_STATUS player_numjug_libre( int *libre)
 /* creates a player and initialize it */
 PSPLAYER player_ins( PSPLAYER pJ, BOOLEAN esplayer )
 {
-	int numjug;
+	int player_number;
 	PSPLAYER newJ;
 
 	assert( pJ );
 
-	if( esplayer && player_numjug_libre( &numjug) != TEG_STATUS_SUCCESS )
+	if( esplayer && player_numjug_libre( &player_number) != TEG_STATUS_SUCCESS )
 		return NULL;
 
 	newJ = (PSPLAYER) malloc( sizeof(SPLAYER) );
 	if( newJ==NULL)
 		return NULL;
 
-	pJ->numjug = -1;
+	pJ->player_number = -1;
 	pJ->color = -1;
 	memmove( newJ, pJ, sizeof(SPLAYER));
 	player_initplayer( newJ );
@@ -171,7 +171,7 @@ PSPLAYER player_ins( PSPLAYER pJ, BOOLEAN esplayer )
 	newJ->estado = PLAYER_STATUS_CONNECTED;
 
 	if( esplayer ) {
-		newJ->numjug = numjug;
+		newJ->player_number = player_number;
 		g_game.players++;
 	}
 
@@ -222,7 +222,7 @@ TEG_STATUS player_give_turn_away( PSPLAYER pJ )
 	pJ->estado = PLAYER_STATUS_GAMEOVER;
 
 	/* si el player tenia el turno, lo tiene que pasar al sig*/
-	if( g_game.turno &&  g_game.turno->numjug == pJ->numjug ) {
+	if( g_game.turno &&  g_game.turno->player_number == pJ->player_number ) {
 		if( status <= PLAYER_STATUS_POSTFICHAS ) {
 			fichas_next();
 		} else if( status <= PLAYER_STATUS_POSTFICHAS2 ) {
@@ -238,7 +238,7 @@ TEG_STATUS player_give_turn_away( PSPLAYER pJ )
 	/* XXX: Dont do this, the last player may skip his turn */
 
 	/* si el player empezo el turno, digo que lo empezo el anterior */
-	if( g_game.empieza_turno && g_game.empieza_turno->numjug == pJ->numjug ) {
+	if( g_game.empieza_turno && g_game.empieza_turno->player_number == pJ->player_number ) {
 		turno_2prevplayer( &g_game.empieza_turno );
 	}
 #endif
@@ -271,8 +271,8 @@ TEG_STATUS player_del_soft( PSPLAYER pJ )
 
 		while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 			pJ2 = (PSPLAYER) l;
-			if( pJ2->numjug!=pJ->numjug && player_is_playing(pJ2) ) {
-				con_text_out(M_INF,_("Game with one player. Player %s(%d) is the winner\n"),pJ2->name,pJ2->numjug);
+			if( pJ2->player_number!=pJ->player_number && player_is_playing(pJ2) ) {
+				con_text_out(M_INF,_("Game with one player. Player %s(%d) is the winner\n"),pJ2->name,pJ2->player_number);
 				pJ2->estado = PLAYER_STATUS_GAMEOVER;
 				break;
 			}
@@ -310,8 +310,8 @@ TEG_STATUS player_del_hard( PSPLAYER pJ )
 
 	if( pJ->is_player ) {
 
-		con_text_out(M_INF,_("Player %s(%d) quit the game\n"),pJ->name,pJ->numjug);
-		netall_printf( TOKEN_EXIT"=%d\n",pJ->numjug );
+		con_text_out(M_INF,_("Player %s(%d) quit the game\n"),pJ->name,pJ->player_number);
+		netall_printf( TOKEN_EXIT"=%d\n",pJ->player_number );
 
 		if( player_is_playing ( pJ ) ) {
 
@@ -335,7 +335,7 @@ TEG_STATUS player_del_hard( PSPLAYER pJ )
 		g_game.players--;
 
 	} else {
-		con_text_out(M_INF,_("Observer %s(%d) quit the game\n"),pJ->name,pJ->numjug);
+		con_text_out(M_INF,_("Observer %s(%d) quit the game\n"),pJ->name,pJ->player_number);
 	}
 
 	/* free the player */
@@ -345,7 +345,7 @@ TEG_STATUS player_del_hard( PSPLAYER pJ )
 	return TEG_STATUS_SUCCESS;
 }
 
-/* given an index of player [0..MAX_PLAYERS] return the numjug of it */
+/* given an index of player [0..MAX_PLAYERS] return the player_number of it */
 TEG_STATUS player_from_indice( int j, int *real_j )
 {
 	PLIST_ENTRY l = g_list_player.Flink;
@@ -356,7 +356,7 @@ TEG_STATUS player_from_indice( int j, int *real_j )
 		pJ = (PSPLAYER) l;
 		if( pJ->is_player && pJ->estado>=PLAYER_STATUS_HABILITADO ) {
 			if( j == i ) {
-				*real_j = pJ->numjug;
+				*real_j = pJ->player_number;
 				return TEG_STATUS_SUCCESS;
 			}
 			i++;
@@ -367,15 +367,15 @@ TEG_STATUS player_from_indice( int j, int *real_j )
 }
 
 /* assigns a country to a player */
-TEG_STATUS player_asignarcountry( int numjug, PCOUNTRY p)
+TEG_STATUS player_asignarcountry( int player_number, PCOUNTRY p)
 {
 	PSPLAYER pJ;
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS )
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS )
 		return TEG_STATUS_PLAYERNOTFOUND;
 
 	InsertTailList( &pJ->countries, (PLIST_ENTRY) p );
-	p->numjug = numjug;
+	p->player_number = player_number;
 	pJ->tot_countries++;
 	pJ->tot_armies++;		/* cada country viene con un ejercito */
 	return TEG_STATUS_SUCCESS;
@@ -490,7 +490,7 @@ TEG_STATUS player_clear_turn( PSPLAYER pJ )
 
 	/* clean all the regroups the player could have done */
 	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == pJ->numjug )
+		if( g_countries[i].player_number == pJ->player_number )
 			g_countries[i].ejer_reagrupe = 0;
 	}
 
@@ -576,7 +576,7 @@ TEG_STATUS player_poner_perdio( PSPLAYER pJ )
 	pJ->estado = PLAYER_STATUS_GAMEOVER;
 
 #if 0
-	if( g_game.empieza_turno && g_game.empieza_turno->numjug == pJ->numjug ) {
+	if( g_game.empieza_turno && g_game.empieza_turno->player_number == pJ->player_number ) {
 		turno_2prevplayer( &g_game.empieza_turno );
 	}
 #endif

@@ -94,7 +94,7 @@ void game_end( PSPLAYER winner )
 
 	/* send who is the winner */
 	if( winner )
-		netall_printf( TOKEN_WINNER"=%d,%d\n",winner->numjug,winner->mission );
+		netall_printf( TOKEN_WINNER"=%d,%d\n",winner->player_number,winner->mission );
 
 	game_new();
 }

@@ -34,7 +34,7 @@ typedef struct _country {
 	LIST_ENTRY next;
 	int id;					/**< numero de country */
 	char *name;				/**< name del country*/
-	int numjug;				/**< numjug */
+	int player_number;				/**< player_number */
 	int ejercitos;				/**< cant de ejercitos */
 	int ejer_reagrupe;			/**< cant de ejercitos pasados en reagru */
 	CONTINENTE continente;			/**< continente al que pertenece */

@@ -105,7 +105,7 @@ STATIC TEG_STATUS con_stats_show( PSPLAYER pJ )
 {
 	stats_score( &pJ->player_stats );
 	printf(" %i   %-4i  [ %-3u   %-3u ] - [ %-3u  %-3u ]  %-15s %s\n",
-			pJ->numjug,
+			pJ->player_number,
 			pJ->player_stats.score,
 			pJ->player_stats.countries_won,
 			0,
@@ -215,7 +215,7 @@ STATIC TEG_STATUS con_status(int fd, char*unused)
 		if( pJ->is_player ) {
 			net_printf(fd,"%-3d %d  %-3u  %-3u  %d  %d  %-15s  %s  %s  %s  %s\n",
 				pJ->fd,
-				pJ->numjug,
+				pJ->player_number,
 				pJ->tot_countries,
 				pJ->tot_armies,
 				pJ->tot_cards,

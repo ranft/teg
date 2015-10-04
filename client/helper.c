@@ -59,7 +59,7 @@ TEG_STATUS aux_status( PCPLAYER pj, char *str )
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
-		pj->numjug = atoi( p.token);
+		pj->player_number = atoi( p.token);
 	} else goto error;
 
 	if( parser_call( &p ) && p.hay_otro ) {
@@ -140,10 +140,10 @@ error:
 
 
 /**
- * @fn TEG_STATUS aux_countries( int numjug, char *str )
+ * @fn TEG_STATUS aux_countries( int player_number, char *str )
  * parsea los ejercitos en countries de un player
  */
-TEG_STATUS aux_countries( int numjug, char *str )
+TEG_STATUS aux_countries( int player_number, char *str )
 {
 	int i,country,cant;
 	PARSER p;
@@ -162,8 +162,8 @@ TEG_STATUS aux_countries( int numjug, char *str )
 		if((i = parser_call( &p ))) {
 			country = atoi(p.token);
 			cant = atoi(p.value);
-			if( g_countries[country].numjug != numjug || g_countries[country].ejercitos != cant ) {
-				g_countries[country].numjug = numjug;
+			if( g_countries[country].player_number != player_number || g_countries[country].ejercitos != cant ) {
+				g_countries[country].player_number = player_number;
 				g_countries[country].ejercitos = cant;
 				gui_country(g_countries[country].id);
 			}
@@ -184,11 +184,11 @@ void aux_draw_all_countries()
 		gui_country(i);
 }
 
-TEG_STATUS aux_player_init( PCPLAYER pJ, int numjug, char *name, int color )
+TEG_STATUS aux_player_init( PCPLAYER pJ, int player_number, char *name, int color )
 {
 	memset(pJ,0,sizeof(*pJ));
 
-	pJ->numjug = numjug;
+	pJ->player_number = player_number;
 	strncpy( pJ->name, name, sizeof(pJ->name)-1);
 	pJ->name[sizeof(pJ->name)-1]=0;
 	pJ->color = color;

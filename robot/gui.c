@@ -78,11 +78,11 @@ TEG_STATUS gui_textplayermsg(char *n, int num, char *msg)
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_habilitado( int numjug )
+TEG_STATUS gui_habilitado( int player_number )
 {
 	PCPLAYER pJ;
-	if( numjug != WHOAMI() ) {
-		if( player_whois( numjug, &pJ ) == TEG_STATUS_SUCCESS )
+	if( player_number != WHOAMI() ) {
+		if( player_whois( player_number, &pJ ) == TEG_STATUS_SUCCESS )
 			ai_msg(AI_MSG_HI, pJ->name );
 	} else {
 		out_status();
@@ -90,27 +90,27 @@ TEG_STATUS gui_habilitado( int numjug )
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_winner(int numjug, int mission )
+TEG_STATUS gui_winner(int player_number, int mission )
 {
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_lost(int numjug)
+TEG_STATUS gui_lost(int player_number)
 {
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_surrender(int numjug)
+TEG_STATUS gui_surrender(int player_number)
 {
 	return TEG_STATUS_SUCCESS;
 }
 
 TEG_STATUS gui_exit( char * str)
 {
-	int numjug;
+	int player_number;
 
-	numjug = atoi( str );
-	if( numjug == g_game.numjug )
+	player_number = atoi( str );
+	if( player_number == g_game.player_number )
 		return TEG_STATUS_CONNCLOSED;
 
 	return TEG_STATUS_SUCCESS;
@@ -271,7 +271,7 @@ TEG_STATUS gui_fichas(int cant, int conts)
 
 TEG_STATUS gui_turn( PCPLAYER pJ)
 {
-	if( pJ->numjug == WHOAMI() )
+	if( pJ->player_number == WHOAMI() )
 	{
 		robot_timeout = 1;
 
@@ -314,7 +314,7 @@ TEG_STATUS gui_tarjeta( int country )
 		pT = (PTARJETA) l;
 		pP = (PCOUNTRY) COUNTRY_FROM_TARJETA( pT );
 
-		if( !pT->usada && g_countries[pP->id].numjug==WHOAMI() )
+		if( !pT->usada && g_countries[pP->id].player_number==WHOAMI() )
 			ejer2_out( pP->id );
 
 		l = LIST_NEXT( l );

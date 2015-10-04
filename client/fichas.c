@@ -62,7 +62,7 @@ TEG_STATUS fichas_add( PCOUNTRY p )
 		return TEG_STATUS_UNEXPECTED;
 	}
 
-	if(p->numjug == WHOAMI() ) {
+	if(p->player_number == WHOAMI() ) {
 		if( fichas_tot < wanted_tot ) {
 			fichas_tot++;
 			p->ejercitos++;
@@ -92,7 +92,7 @@ TEG_STATUS fichas_sub( PCOUNTRY p )
 		return TEG_STATUS_UNEXPECTED;
 	}
 
-	if(p->numjug == WHOAMI() ) {
+	if(p->player_number == WHOAMI() ) {
 		if( aFichas[p->id] ) {
 			fichas_tot--;
 			p->ejercitos--;
@@ -278,7 +278,7 @@ TEG_STATUS fichas_enter( PCOUNTRY p )
 		return TEG_STATUS_ERROR;
 	}
 
-	if( p->numjug == WHOAMI() ) {
+	if( p->player_number == WHOAMI() ) {
 		if( fichas_tot >= wanted_tot )  {
 			if(!( p->selected & COUNTRY_SELECT_FICHAS_OUT )) {
 				p->selected &= ~COUNTRY_SELECT_FICHAS_IN;
@@ -302,7 +302,7 @@ TEG_STATUS fichas_leave( PCOUNTRY p )
 		return TEG_STATUS_ERROR;
 	}
 
-	if( p->numjug == WHOAMI() ) {
+	if( p->player_number == WHOAMI() ) {
 		p->selected &= ~COUNTRY_SELECT_FICHAS_IN;
 		p->selected &= ~COUNTRY_SELECT_FICHAS_OUT;
 		gui_country_select( p->id );

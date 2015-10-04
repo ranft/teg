@@ -77,7 +77,7 @@ TEG_STATUS canje_puedo(int *p1, int *p2, int *p3)
 	for(i=0;i<g_game.tarjetas_cant;i++) {
 		for(j=i+1;j<g_game.tarjetas_cant;j++) {
 			for(k=j+1;k<g_game.tarjetas_cant;k++) {
-				if( tarjeta_puedocanje(g_game.numjug,a[i],a[j],a[k])) {
+				if( tarjeta_puedocanje(g_game.player_number,a[i],a[j],a[k])) {
 					if(p1) *p1 = a[i];
 					if(p2) *p2 = a[j];
 					if(p3) *p3 = a[k];

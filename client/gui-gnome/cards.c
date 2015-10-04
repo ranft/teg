@@ -454,7 +454,7 @@ void cards_update( void )
 		if( tarjs_sensi[i].country != NULL ) {
 			if( !ESTADO_ES(PLAYER_STATUS_TARJETA)
 					|| tarjeta_es_usada( &tarjs_sensi[i].country->tarjeta)
-					|| tarjs_sensi[i].country->numjug != WHOAMI())
+					|| tarjs_sensi[i].country->player_number != WHOAMI())
 				gtk_widget_set_sensitive (tarjs_sensi[i].button_armies, FALSE);
 			else
 				gtk_widget_set_sensitive (tarjs_sensi[i].button_armies, TRUE);

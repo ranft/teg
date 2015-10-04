@@ -397,7 +397,7 @@ void G_country_draw_ejer(int country)
 	char size_string[10];
 
 	color = 6;
-	if( player_whois( g_countries[country].numjug, &j) == TEG_STATUS_SUCCESS) {
+	if( player_whois( g_countries[country].player_number, &j) == TEG_STATUS_SUCCESS) {
 		if( j->color >=0 && j->color < TEG_MAX_PLAYERS )
 			color = j->color;
 	} else

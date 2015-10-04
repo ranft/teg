@@ -87,7 +87,7 @@ TEG_STATUS game_init()
 {
 	static int firsttime=1;
 	g_game.fd = -1;
-	g_game.numjug = -1;
+	g_game.player_number = -1;
 	g_game.observer = 0;
 
 	/* variables seteadas por command line y que pueden cambiar estos defaults */

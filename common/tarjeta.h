@@ -43,7 +43,7 @@ typedef enum {
 typedef struct _tarjeta {
 	LIST_ENTRY next;		/**< siguiente */
 	TARJTIPO tarjeta;		/**< tipo de tarjeta */
-	int	numjug;			/**< si la tiene algun jugador y que jugador */
+	int	player_number;			/**< si la tiene algun jugador y que jugador */
 	BOOLEAN usada;			/**< si se pusieron las 2 fichas del country */
 } TARJETA, *PTARJETA;
 
@@ -52,11 +52,11 @@ typedef struct _tarjeta {
 /* 
  * Funciones y varialbes exportadas
  */
-BOOLEAN tarjeta_puedocanje( int numjug, int t1, int t2, int t3 );
+BOOLEAN tarjeta_puedocanje( int player_number, int t1, int t2, int t3 );
 void tarjeta_init( void );
 void tarjeta_inittarj( PTARJETA t );
 void tarjeta_poner( PTARJETA t );
-void tarjeta_sacar( PTARJETA t, int numjug );
+void tarjeta_sacar( PTARJETA t, int player_number );
 void tarjeta_usar( PTARJETA pT );
 void tarjeta_desusar( PTARJETA pT );
 int tarjeta_es_libre( int i );

@@ -71,9 +71,9 @@ TEG_STATUS gui_mission()
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_habilitado( int numjug )
+TEG_STATUS gui_habilitado( int player_number )
 {
-	if( numjug == WHOAMI() ) {
+	if( player_number == WHOAMI() ) {
 		set_sensitive_tb();
 		ministatus_update();
 	}
@@ -83,16 +83,16 @@ TEG_STATUS gui_habilitado( int numjug )
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_winner( int numjug, int mission )
+TEG_STATUS gui_winner( int player_number, int mission )
 {
 	armies_unview();
 
-	teg_dialog_gameover( numjug, mission );
+	teg_dialog_gameover( player_number, mission );
 
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_lost(int numjug)
+TEG_STATUS gui_lost(int player_number)
 {
 	char buf[400];
 	PCPLAYER pJ;
@@ -100,10 +100,10 @@ TEG_STATUS gui_lost(int numjug)
 	memset(buf,0,sizeof(buf));
 	armies_unview();
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		/* */
 
-	} else if( numjug == WHOAMI() ) {
+	} else if( player_number == WHOAMI() ) {
 		snprintf(buf,sizeof(buf)-1,_("You lost the game :("));
 		teg_dialog(_("You lost"),_("Game Over"),buf);
 
@@ -114,7 +114,7 @@ TEG_STATUS gui_lost(int numjug)
 	return TEG_STATUS_SUCCESS;
 }
 
-TEG_STATUS gui_surrender(int numjug)
+TEG_STATUS gui_surrender(int player_number)
 {
 	char buf[400];
 	PCPLAYER pJ;
@@ -122,10 +122,10 @@ TEG_STATUS gui_surrender(int numjug)
 	memset(buf,0,sizeof(buf));
 	armies_unview();
 
-	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
+	if( player_whois( player_number, &pJ) != TEG_STATUS_SUCCESS) {
 		/* */
 
-	} else if( numjug == WHOAMI() ) {
+	} else if( player_number == WHOAMI() ) {
 		/* */
 
 	} else {
@@ -395,7 +395,7 @@ TEG_STATUS gui_fichas(int cant, int conts)
 /* someone has the turn */
 TEG_STATUS gui_turn( PCPLAYER pJ )
 {
-	if( pJ->numjug == WHOAMI() )
+	if( pJ->player_number == WHOAMI() )
 	{
 		set_sensitive_tb();
 

@@ -237,7 +237,7 @@ TEG_STATUS status_turn_color(PCPLAYER pJ, GdkPixmap **pixmap)
 
 
 	if( pJ->empezo_turno )
-		i = pJ->numjug;
+		i = pJ->player_number;
 	else
 		i = -1;
 
@@ -279,7 +279,7 @@ static TEG_STATUS status_update_model( GtkTreeModel *model)
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter,
 				STATUS_COLUMN_COLOR, _(g_colores[pJ->color]),
-				STATUS_COLUMN_NUMBER, pJ->numjug,
+				STATUS_COLUMN_NUMBER, pJ->player_number,
 				STATUS_COLUMN_NAME, name,
 				STATUS_COLUMN_SCORE, pJ->score,
 				STATUS_COLUMN_ADDR, pJ->addr,
@@ -412,7 +412,7 @@ static gint ministatus_expose_cb(GtkWidget *area, GdkEventExpose *event, gpointe
 	if( ESTADO_GET() == PLAYER_STATUS_DESCONECTADO || g_game.observer )
 		i = -1;
 	else
-		i = g_game.numjug;
+		i = g_game.player_number;
 
 	gdk_gc_set_foreground(ms_gc, colors_get_player(i));
 	gdk_draw_arc( area->window, ms_gc, TRUE, 0, 3, 10, 10, 0, 360 * 64);
@@ -627,10 +627,10 @@ TEG_STATUS mainstatus_update_colors()
 	{
 		pJ = (PCPLAYER) l;
 
-		if( pJ->color >= 0 && pJ->numjug >= 0 ) {
+		if( pJ->color >= 0 && pJ->player_number >= 0 ) {
 			gnome_canvas_item_show( players_color[i] );
 
-			if( g_game.whos_turn == pJ->numjug )
+			if( g_game.whos_turn == pJ->player_number )
 			{
 				gnome_canvas_item_set(
 					players_color_over,
