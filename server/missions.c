@@ -33,8 +33,9 @@ TEG_STATUS mission_chequear( PSPLAYER pJ )
 	assert( pJ );
 
 	if( pJ->mission == -1 ) {
-		if( mission_asignar( pJ ) != TEG_STATUS_SUCCESS )
+		if( mission_asignar( pJ ) != TEG_STATUS_SUCCESS ) {
 			return TEG_STATUS_ERROR;
+		}
 	}
 
 
@@ -51,26 +52,29 @@ TEG_STATUS mission_chequear( PSPLAYER pJ )
 	};
 
 	/* 2da parte. Chequear countries por contienente */
-	for(i=0;i<CONT_CANT;i++) {
-		if( countries[i] < g_missions[pJ->mission].continents[i] )
+	for(i=0; i<CONT_CANT; i++) {
+		if( countries[i] < g_missions[pJ->mission].continents[i] ) {
 			goto no_gano;
+		}
 	}
 
 	/* TODO: 3ra parte. Chequear si vencio a los otros playeres */
 
 	/* TODO: 4ta parte. Chequear si tiene los countries limitrofes que se piden */
 	if( (i=g_missions[pJ->mission].frontiering_countries) ) {
-		int j,k,i_tmp;
+		int j, k, i_tmp;
 		int salir=0;
-		for(j=0;j<COUNTRIES_CANT && salir==0;j++) {
-			if( g_countries[j].numjug != pJ->numjug )
+		for(j=0; j<COUNTRIES_CANT && salir==0; j++) {
+			if( g_countries[j].numjug != pJ->numjug ) {
 				continue;
+			}
 			i_tmp=0;
 
-			for(k=0;k<COUNTRIES_CANT;k++) {
-				if( g_countries[k].numjug != pJ->numjug )
+			for(k=0; k<COUNTRIES_CANT; k++) {
+				if( g_countries[k].numjug != pJ->numjug ) {
 					continue;
-				if( countries_eslimitrofe(j,k) ) {
+				}
+				if( countries_eslimitrofe(j, k) ) {
 					if( ++i_tmp >= i ) {
 						/* mission cumplido, salir */
 						salir=1;
@@ -80,8 +84,9 @@ TEG_STATUS mission_chequear( PSPLAYER pJ )
 
 			}
 		}
-		if( j>=COUNTRIES_CANT)
+		if( j>=COUNTRIES_CANT) {
 			goto no_gano;
+		}
 	}
 
 	/* tiene todo, entonces gano! */
@@ -94,13 +99,14 @@ no_gano:
 
 TEG_STATUS mission_asignar( PSPLAYER pJ )
 {
-	int i,obj;
+	int i, obj;
 
 	assert( pJ );
 
 	/* tiene ya un mission asignado ? */
-	if( pJ->mission != -1 )
+	if( pJ->mission != -1 ) {
 		return TEG_STATUS_SUCCESS;
+	}
 
 	/* Si se juega sin missions, es a conquistar el mundo */
 	if( g_game.mission == FALSE ) {
@@ -108,7 +114,7 @@ TEG_STATUS mission_asignar( PSPLAYER pJ )
 		return TEG_STATUS_SUCCESS;
 	}
 
-	obj = RANDOM_MAX(0,missions_cant()-1);
+	obj = RANDOM_MAX(0, missions_cant()-1);
 
 	i = obj;
 
@@ -134,7 +140,7 @@ void mission_init()
 {
 	int i;
 
-	for(i=0;i<missions_cant();i++) {
+	for(i=0; i<missions_cant(); i++) {
 		g_missions[i].player_number = -1;
 	}
 	g_missions[MISSION_CONQWORLD].player_number = 0;
@@ -143,20 +149,26 @@ void mission_init()
 
 TEG_STATUS mission_set(bool a)
 {
-	if( JUEGO_EMPEZADO )
+	if( JUEGO_EMPEZADO ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( a!=0) a=1;
+	if( a!=0) {
+		a=1;
+	}
 	g_game.mission = a;
 	return TEG_STATUS_SUCCESS;
 }
 
 TEG_STATUS mission_common_mission(bool a)
 {
-	if( JUEGO_EMPEZADO )
+	if( JUEGO_EMPEZADO ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( a!=0) a=1;
+	if( a!=0) {
+		a=1;
+	}
 	g_game.cmission= a;
 	return TEG_STATUS_SUCCESS;
 }

@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-ssize_t net_readline(int sock, void *gs,size_t maxlen );
+ssize_t net_readline(int sock, void *gs, size_t maxlen );
 int net_printf(int sock, char *format, ...);
 int net_print(int sock, char *msg);
 int net_listen(const char *host, int port );

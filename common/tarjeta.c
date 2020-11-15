@@ -40,10 +40,10 @@ bool can_trade_cards(TARJTIPO a, TARJTIPO b, TARJTIPO c)
 	TARJTIPO result = a | b | c;
 
 	return (result & TARJ_COMODIN) // at least one joker
-	        || (result == TARJ_GALEON)
-	        || (result == TARJ_CANION)
-	        || (result == TARJ_GLOBO)
-	        || (result == (TARJ_GALEON | TARJ_CANION | TARJ_GLOBO));
+	       || (result == TARJ_GALEON)
+	       || (result == TARJ_CANION)
+	       || (result == TARJ_GLOBO)
+	       || (result == (TARJ_GALEON | TARJ_CANION | TARJ_GLOBO));
 }
 
 /**
@@ -54,9 +54,10 @@ BOOLEAN tarjeta_puedocanje( int numjug, int t1, int t2, int t3 )
 {
 	/* chequear que las tarjetas sean del jugador */
 	if(!(card_belongs_to_player(numjug, t1)&&
-	     card_belongs_to_player(numjug, t2) &&
-	     card_belongs_to_player(numjug, t3) ))
+	        card_belongs_to_player(numjug, t2) &&
+	        card_belongs_to_player(numjug, t3) )) {
 		return FALSE;
+	}
 
 	return can_trade_cards(g_countries[t1].tarjeta.tarjeta,
 	                       g_countries[t2].tarjeta.tarjeta,

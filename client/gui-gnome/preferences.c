@@ -78,13 +78,13 @@ static GtkWidget	*conf_cb_robotserver=NULL;
 
 static void free_pixmap( GtkWidget *widget, void *data )
 {
-	if( theme_widget )
+	if( theme_widget ) {
 		gtk_widget_destroy( theme_widget );
+	}
 	theme_widget = NULL;
 }
 
-static void
-load_preview( char *theme )
+static void load_preview( char *theme )
 {
 	char *filename;
 
@@ -93,26 +93,29 @@ load_preview( char *theme )
 		theme_widget = NULL;
 	}
 
-	if ( !GTK_IS_FRAME (theme_frame_prev) )
-	        return;
+	if ( !GTK_IS_FRAME (theme_frame_prev) ) {
+		return;
+	}
 
-	filename = theme_load_fake_file("mini_shot.png",theme);
+	filename = theme_load_fake_file("mini_shot.png", theme);
 	theme_widget = gtk_image_new_from_file(filename);
 	if( theme_widget ) {
 		gtk_container_add( GTK_CONTAINER(theme_frame_prev), theme_widget );
 		gtk_widget_show(theme_widget);
 		g_signal_connect (G_OBJECT(theme_widget), "destroy",
-	                          G_CALLBACK (free_pixmap), NULL);
-	} else
-		g_warning (_("Could not find the %s file"),"mini_shot.png");
+		                  G_CALLBACK (free_pixmap), NULL);
+	} else {
+		g_warning (_("Could not find the %s file"), "mini_shot.png");
+	}
 }
 
 static void theme_activated_callback (GtkComboBox *combo, gpointer data)
 {
 	gchar *sel;
 
-	if ( !pref_dialog )
-	        return;
+	if ( !pref_dialog ) {
+		return;
+	}
 
 	sel = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (combo));
 	theme_activated = g_strdup (sel);
@@ -120,29 +123,26 @@ static void theme_activated_callback (GtkComboBox *combo, gpointer data)
 	g_free(sel);
 }
 
-static void
-toolbar_style_cb (GtkComboBox *combo, gpointer data)
+static void toolbar_style_cb (GtkComboBox *combo, gpointer data)
 {
-        gint sel;
+	gint sel;
 
-        sel = gtk_combo_box_get_active (combo);
-        g_settings_set_enum (settings, "toolbar-style", sel);
+	sel = gtk_combo_box_get_active (combo);
+	g_settings_set_enum (settings, "toolbar-style", sel);
 }
 
-static void
-show_toolbar_cb (GtkToggleButton *button, gpointer data)
+static void show_toolbar_cb (GtkToggleButton *button, gpointer data)
 {
-        if (gtk_toggle_button_get_active (button)) {
-                g_settings_set_boolean (settings, "toolbar-visibility", TRUE);
-                gtk_widget_show (toolbar_main);
-        } else {
-                g_settings_set_boolean (settings, "toolbar-visibility", FALSE);
-                gtk_widget_hide (toolbar_main);
-        }
+	if (gtk_toggle_button_get_active (button)) {
+		g_settings_set_boolean (settings, "toolbar-visibility", TRUE);
+		gtk_widget_show (toolbar_main);
+	} else {
+		g_settings_set_boolean (settings, "toolbar-visibility", FALSE);
+		gtk_widget_hide (toolbar_main);
+	}
 }
 
-static void
-free_str (GtkWidget *widget, void *data)
+static void free_str (GtkWidget *widget, void *data)
 {
 	free (data);
 }
@@ -151,122 +151,142 @@ free_str (GtkWidget *widget, void *data)
 
 static void apply_cb (GtkDialog *widget, gint id, gpointer data)
 {
-	if (id != GTK_RESPONSE_ACCEPT)
-	        return;
- 
+	if (id != GTK_RESPONSE_ACCEPT) {
+		return;
+	}
+
 	/** dialogs **/
 
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  (conf_cb_showattackturn)))
+	                                  (conf_cb_showattackturn))) {
 		gui_private.dialog_show |= (1 << DIALOG_ATTACK_TURN);
-	else
+	} else {
 		gui_private.dialog_show &= ~(1 << DIALOG_ATTACK_TURN);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  (conf_cb_showplacearmies)))
+	                                  (conf_cb_showplacearmies))) {
 		gui_private.dialog_show |= (1 << DIALOG_PLACE_ARMIES);
-	else
+	} else {
 		gui_private.dialog_show &= ~(1 << DIALOG_PLACE_ARMIES);
-	
+	}
+
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  (conf_cb_showregrouparmies)))
+	                                  (conf_cb_showregrouparmies))) {
 		gui_private.dialog_show |= (1 << DIALOG_REGROUP_ARMIES);
-	else
+	} else {
 		gui_private.dialog_show &= ~(1 << DIALOG_REGROUP_ARMIES);
-	
+	}
+
 
 	/** messages **/
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showerr )))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showerr ))) {
 		g_game.msg_show |= M_ERR;
-	else
+	} else {
 		g_game.msg_show &= ~M_ERR;
+	}
 
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showimp )))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showimp ))) {
 		g_game.msg_show |= M_IMP;
-	else
+	} else {
 		g_game.msg_show &= ~M_IMP;
+	}
 
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showmsg )))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showmsg ))) {
 		g_game.msg_show |= M_MSG;
-	else
+	} else {
 		g_game.msg_show &= ~M_MSG;
+	}
 
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_showmsgcolor )))
+	                                  ( conf_cb_showmsgcolor ))) {
 		gui_private.msg_show_colors = 1;
-	else
+	} else {
 		gui_private.msg_show_colors = 0;
+	}
 
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showinf )))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_showinf ))) {
 		g_game.msg_show |= M_INF;
-	else
+	} else {
 		g_game.msg_show &= ~M_INF;
+	}
 
 	/** status **/
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stscolor)))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stscolor))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_COLOR);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_COLOR);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_stsnumber)))
+	                                  ( conf_cb_stsnumber))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_NUMBER);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_NUMBER);
+	}
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stsname)))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stsname))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_NAME);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_NAME);
+	}
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stsscore)))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stsscore))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_SCORE);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_SCORE);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_stsaddress )))
+	                                  ( conf_cb_stsaddress ))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_ADDR);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_ADDR);
+	}
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stshuman)))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stshuman))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_HUMAN);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_HUMAN);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_stscountries )))
+	                                  ( conf_cb_stscountries ))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_COUNTRIES);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_COUNTRIES);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_stsarmies )))
+	                                  ( conf_cb_stsarmies ))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_ARMIES);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_ARMIES);
+	}
 
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (conf_cb_stscards)))
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (conf_cb_stscards))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_CARDS);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_CARDS);
+	}
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON
-	                                  ( conf_cb_stsstatus )))
+	                                  ( conf_cb_stsstatus ))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_STATUS);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_STATUS);
+	}
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stswho)))
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON( conf_cb_stswho))) {
 		gui_private.status_show |= (1 << STATUS_COLUMN_WHO);
-	else
+	} else {
 		gui_private.status_show &= ~(1 << STATUS_COLUMN_WHO);
+	}
 
 	status_update_visibility_of_columns();
 
@@ -274,7 +294,7 @@ static void apply_cb (GtkDialog *widget, gint id, gpointer data)
 	/* robot */
 	g_game.robot_in_server = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(conf_cb_robotserver) );
 
-	
+
 	/* save new configurations */
 	g_settings_delay( settings );
 	g_settings_set_int( settings, "msgshow", g_game.msg_show );
@@ -285,20 +305,20 @@ static void apply_cb (GtkDialog *widget, gint id, gpointer data)
 	g_settings_set_boolean( settings, "robot-in-server",
 	                        g_game.robot_in_server );
 
-	if( theme_activated ){
+	if( theme_activated ) {
 		g_settings_set_string( settings, "theme", theme_activated);
-		if( strcmp(theme_activated,g_game.theme) ) {
-	          GtkWidget *dlg;
+		if( strcmp(theme_activated, g_game.theme) ) {
+			GtkWidget *dlg;
 
-	          dlg = gtk_message_dialog_new (GTK_WINDOW (main_window),
-	                                        GTK_DIALOG_DESTROY_WITH_PARENT,
-	                                        GTK_MESSAGE_INFO,
-	                                        GTK_BUTTONS_CLOSE,
-	                                        _("You have to restart TEG to"
-	                                          " use the new theme."));
-	          gtk_dialog_run (GTK_DIALOG (dlg));
-	          gtk_widget_destroy (dlg);
-	        }
+			dlg = gtk_message_dialog_new (GTK_WINDOW (main_window),
+			                              GTK_DIALOG_DESTROY_WITH_PARENT,
+			                              GTK_MESSAGE_INFO,
+			                              GTK_BUTTONS_CLOSE,
+			                              _("You have to restart TEG to"
+			                                " use the new theme."));
+			gtk_dialog_run (GTK_DIALOG (dlg));
+			gtk_widget_destroy (dlg);
+		}
 	}
 
 	/* Apply all settings atomically.  */
@@ -307,8 +327,7 @@ static void apply_cb (GtkDialog *widget, gint id, gpointer data)
 
 
 
-static void
-fill_menu (GtkWidget *menu)
+static void fill_menu (GtkWidget *menu)
 {
 	TInfo Info;
 	pTInfo pI;
@@ -316,21 +335,22 @@ fill_menu (GtkWidget *menu)
 	int i=0;
 
 	if( theme_enum_themes(&Info) != TEG_STATUS_SUCCESS ) {
-		textmsg(M_ERR,_("Error while loading information about themes!"));
+		textmsg(M_ERR, _("Error while loading information about themes!"));
 		return;
 	}
 
 	for( pI=&Info; pI != NULL; pI = pI->next ) {
 		s = strdup (pI->name);
-	        gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (menu), s);
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (menu), s);
 		g_signal_connect (G_OBJECT(menu), "changed",
-			    G_CALLBACK (theme_activated_callback), NULL);
+		                  G_CALLBACK (theme_activated_callback), NULL);
 
 		g_signal_connect (G_OBJECT(menu), "destroy",
-                                  G_CALLBACK (free_str), s);
+		                  G_CALLBACK (free_str), s);
 
-		if( !strcmp(pI->name, g_game.theme ))
+		if( !strcmp(pI->name, g_game.theme )) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(menu), i);
+		}
 		i++;
 	}
 }
@@ -355,7 +375,7 @@ void preferences_activate(void)
 
 	/* Theme options */
 	theme_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	
+
 	theme_frame_sel = gtk_frame_new (_("Select theme"));
 	gtk_container_set_border_width (GTK_CONTAINER (theme_frame_sel),
 	                                GNOME_PAD);
@@ -508,13 +528,13 @@ void preferences_activate(void)
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), GNOME_PAD);
 
-	conf_cb_robotserver = gtk_radio_button_new_with_label ( NULL, 
-			_("Starts the robots in the server (faster)"));
+	conf_cb_robotserver = gtk_radio_button_new_with_label ( NULL,
+	                      _("Starts the robots in the server (faster)"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (conf_cb_robotserver), g_game.robot_in_server );
 	gtk_box_pack_start( GTK_BOX(vbox), conf_cb_robotserver, FALSE, FALSE, 0);
 
 	conf_cb_robotclient = gtk_radio_button_new_with_label_from_widget( GTK_RADIO_BUTTON(conf_cb_robotserver),
-			_("Starts the robots in the client (preserves localization)"));
+	                      _("Starts the robots in the client (preserves localization)"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (conf_cb_robotclient), ! g_game.robot_in_server );
 	gtk_box_pack_start( GTK_BOX(vbox), conf_cb_robotclient, FALSE, FALSE, 0);
 
@@ -551,14 +571,14 @@ void preferences_activate(void)
 
 	toolbar_frame = gtk_frame_new (_("Toolbar Visibility & Style"));
 	gtk_container_set_border_width (GTK_CONTAINER (toolbar_frame),
-                                        GNOME_PAD);
+	                                GNOME_PAD);
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), GNOME_PAD);
 	conf_cb_showtoolbar
-	  = gtk_check_button_new_with_label (_("Show toolbar"));
+	    = gtk_check_button_new_with_label (_("Show toolbar"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (conf_cb_showtoolbar),
 	                              g_settings_get_boolean (settings,
-	                                                      "toolbar-visibility"));
+	                                      "toolbar-visibility"));
 	g_signal_connect (conf_cb_showtoolbar, "toggled",
 	                  G_CALLBACK (show_toolbar_cb), NULL);
 	gtk_box_pack_start (GTK_BOX (hbox), conf_cb_showtoolbar,
@@ -576,7 +596,7 @@ void preferences_activate(void)
 	gtk_combo_box_text_append_text (combo, _("Text Only"));
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo),
 	                          g_settings_get_enum (settings,
-	                                               "toolbar-style"));
+	                                  "toolbar-style"));
 	g_signal_connect (combo, "changed",
 	                  G_CALLBACK (toolbar_style_cb), NULL);
 	gtk_box_pack_start (GTK_BOX (hbox), conf_cb_toolbarstyle,
@@ -588,13 +608,13 @@ void preferences_activate(void)
 	/** end **/
 
 	pref_dialog = gtk_dialog_new_with_buttons (_("TEG Preferences"),
-	                                           GTK_WINDOW (main_window),
-	                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-	                                           _("_OK"),
-	                                           GTK_RESPONSE_ACCEPT,
-	                                           _("_Cancel"),
-	                                           GTK_RESPONSE_REJECT,
-	                                           NULL);
+	              GTK_WINDOW (main_window),
+	              GTK_DIALOG_DESTROY_WITH_PARENT,
+	              _("_OK"),
+	              GTK_RESPONSE_ACCEPT,
+	              _("_Cancel"),
+	              GTK_RESPONSE_REJECT,
+	              NULL);
 
 	nb = gtk_notebook_new ();
 	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area
@@ -602,28 +622,28 @@ void preferences_activate(void)
 
 	label = gtk_label_new (_("Themes"));
 	gtk_notebook_append_page (GTK_NOTEBOOK (nb),
-			theme_vbox, label);
+	                          theme_vbox, label);
 
 	label = gtk_label_new (_("Console Messages"));
 	gtk_notebook_append_page (GTK_NOTEBOOK (nb),
-			msg_frame, label);
+	                          msg_frame, label);
 
 	label = gtk_label_new (_("Status Of Players"));
 	gtk_notebook_append_page (GTK_NOTEBOOK (nb),
-			sts_frame, label);
+	                          sts_frame, label);
 
 	label = gtk_label_new (_("Robot"));
 	gtk_notebook_append_page (GTK_NOTEBOOK (nb),
-			robot_frame, label);
+	                          robot_frame, label);
 
 	label = gtk_label_new (_("Dialogs & Toolbar"));
 	gtk_notebook_append_page (GTK_NOTEBOOK (nb),
-			toolbar_vbox, label);
+	                          toolbar_vbox, label);
 
 
 
 	g_signal_connect (G_OBJECT (pref_dialog), "response", G_CALLBACK
-			(apply_cb), NULL);
+	                  (apply_cb), NULL);
 
 	gtk_widget_show_all (pref_dialog);
 	gtk_dialog_run (GTK_DIALOG (pref_dialog));

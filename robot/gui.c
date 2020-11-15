@@ -52,10 +52,13 @@ void tolowerstr(char const *n, char *converted)
 {
 	int i;
 
-	if( n==NULL || converted==NULL) return;
+	if( n==NULL || converted==NULL) {
+		return;
+	}
 
-	for(i=0; n[i] != '\0' ; i++ )
+	for(i=0; n[i] != '\0' ; i++ ) {
 		converted[i] = n[i] | 0x20;
+	}
 }
 
 TEG_STATUS gui_mission()
@@ -68,7 +71,7 @@ TEG_STATUS gui_textplayermsg(char const *n, int num, char const *msg)
 	char converted[sizeof(g_game.myname)+1];
 	char msg_lower[strlen(msg)+1];
 
-	memset( converted,0,sizeof(converted));
+	memset( converted, 0, sizeof(converted));
 
 	tolowerstr(msg, msg_lower);
 	tolowerstr(_(g_game.myname), converted);
@@ -84,8 +87,9 @@ TEG_STATUS gui_habilitado( int numjug )
 {
 	PCPLAYER pJ;
 	if( numjug != WHOAMI() ) {
-		if( player_whois( numjug, &pJ ) == TEG_STATUS_SUCCESS )
+		if( player_whois( numjug, &pJ ) == TEG_STATUS_SUCCESS ) {
 			ai_msg(AI_MSG_HI, pJ->name );
+		}
 	} else {
 		out_status();
 	}
@@ -115,15 +119,18 @@ TEG_STATUS gui_init( int argc, char **argv)
 	robot_seed = get_int_from_dev_random();
 	srand( robot_seed );
 
-	if( !g_game.serport )
+	if( !g_game.serport ) {
 		g_game.serport = 2000;
+	}
 
-	if( !strlen(g_game.sername))
+	if( !strlen(g_game.sername)) {
 		strcpy( g_game.sername, "localhost");
+	}
 
-	if( !strlen(g_game.myname))
+	if( !strlen(g_game.myname)) {
 		strncpy( g_game.myname, ai_name(), PLAYERNAME_MAX_LEN);
-	textmsg(M_IMP,_("Robot name: %s"),g_game.myname);
+	}
+	textmsg(M_IMP, _("Robot name: %s"), g_game.myname);
 
 	robot_timeout = 1;
 
@@ -138,7 +145,7 @@ TEG_STATUS gui_main(void)
 	int r;
 
 	if( teg_connect() != TEG_STATUS_SUCCESS ) {
-		textmsg(M_ERR,_("Robot: Error while trying to connect to server"));
+		textmsg(M_ERR, _("Robot: Error while trying to connect to server"));
 		return TEG_STATUS_ERROR;
 	}
 
@@ -148,13 +155,14 @@ TEG_STATUS gui_main(void)
 		tout.tv_sec =  robot_timeout;
 		tout.tv_usec = 0;
 		FD_ZERO( &readfds );
-		FD_SET( g_game.fd ,&readfds );
-		r = select(g_game.fd+1,&readfds,NULL,NULL,&tout);
+		FD_SET( g_game.fd, &readfds );
+		r = select(g_game.fd+1, &readfds, NULL, NULL, &tout);
 
 		/* fd input */
 		if( r > 0 ) {
-			if (client_recv( g_game.fd ) == TEG_STATUS_CONNCLOSED )
+			if (client_recv( g_game.fd ) == TEG_STATUS_CONNCLOSED ) {
 				return TEG_STATUS_CONNCLOSED;
+			}
 		}
 
 		/* timeout */
@@ -179,7 +187,7 @@ TEG_STATUS gui_disconnect(void)
 
 TEG_STATUS gui_connected( char *c)
 {
-	int s = RANDOM_MAX(0,TEG_MAX_PLAYERS-1);
+	int s = RANDOM_MAX(0, TEG_MAX_PLAYERS-1);
 	out_color(s);
 	return TEG_STATUS_SUCCESS;
 }
@@ -210,7 +218,7 @@ TEG_STATUS gui_fichas(int cant, int conts)
 		static int hubo_loque = 0;
 
 		/* averiguo el status para saber quien empezo */
-		out_status();	
+		out_status();
 
 		if( !hubo_loque ) {
 			out_loque();
@@ -224,30 +232,31 @@ TEG_STATUS gui_fichas(int cant, int conts)
 		}
 
 		if( e == PLAYER_STATUS_FICHASC ) {
-			int p1,p2,p3;
-			if( ai_puedocanje(&p1,&p2,&p3) == TEG_STATUS_SUCCESS) {
-				if( canje_out(p1,p2,p3) == TEG_STATUS_SUCCESS )
+			int p1, p2, p3;
+			if( ai_puedocanje(&p1, &p2, &p3) == TEG_STATUS_SUCCESS) {
+				if( canje_out(p1, p2, p3) == TEG_STATUS_SUCCESS ) {
 					return TEG_STATUS_SUCCESS;
-				else
-					textmsg(M_ERR,"Robot: Unexpected error in canje_out()");
+				} else {
+					textmsg(M_ERR, "Robot: Unexpected error in canje_out()");
+				}
 				/* else, fall through, y no hago canje */
 			}
 			if( ai_fichasc( cant, conts) != TEG_STATUS_SUCCESS ) {
 				out_countries();
-				printf("Error in ai_fichasc(%d,%d)\n",cant,conts);
-				textmsg(M_ERR,"Robot: Abnormal error in ai_fichasc()");
+				printf("Error in ai_fichasc(%d,%d)\n", cant, conts);
+				textmsg(M_ERR, "Robot: Abnormal error in ai_fichasc()");
 				return TEG_STATUS_ERROR;
 			}
 		} else if( ai_fichas( cant ) != TEG_STATUS_SUCCESS ) {
 			out_countries();
-			textmsg(M_ERR,"Robot: Abnormal error in ai_fichas()");
+			textmsg(M_ERR, "Robot: Abnormal error in ai_fichas()");
 			return TEG_STATUS_ERROR;
 		}
 		hubo_loque = 0;
 		break;
 	}
 	default:
-		textmsg(M_ERR,"Robot: Error in gui_fichas()");
+		textmsg(M_ERR, "Robot: Error in gui_fichas()");
 		return TEG_STATUS_ERROR;
 	}
 
@@ -256,8 +265,7 @@ TEG_STATUS gui_fichas(int cant, int conts)
 
 TEG_STATUS gui_turn( PCPLAYER pJ)
 {
-	if( pJ->numjug == WHOAMI() )
-	{
+	if( pJ->numjug == WHOAMI() ) {
 		robot_timeout = 1;
 
 		if( ai_turno() != TEG_STATUS_SUCCESS ) {
@@ -298,8 +306,9 @@ TEG_STATUS gui_tarjeta( int country )
 		pT = (PTARJETA) l;
 		pP = (PCOUNTRY) COUNTRY_FROM_TARJETA( pT );
 
-		if( !pT->usada && g_countries[pP->id].numjug==WHOAMI() )
+		if( !pT->usada && g_countries[pP->id].numjug==WHOAMI() ) {
 			ejer2_out( pP->id );
+		}
 
 		l = LIST_NEXT( l );
 	}
@@ -329,7 +338,7 @@ TEG_STATUS gui_attack( int src, int dst )
 
 TEG_STATUS gui_textmsg(char *astring)
 {
-	printf("%s\n",astring);
+	printf("%s\n", astring);
 	return TEG_STATUS_SUCCESS;
 }
 

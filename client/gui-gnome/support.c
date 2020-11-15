@@ -56,7 +56,9 @@ void generic_window_set_parent (GtkWidget * dialog, GtkWindow   * parent)
 
 
 
-	if ( ! gtk_widget_get_visible(GTK_WIDGET(parent))) return; /* Can't get its
+	if ( ! gtk_widget_get_visible(GTK_WIDGET(parent))) {
+		return;
+	} /* Can't get its
 						  size/pos */
 
 	gtk_window_set_position(GTK_WINDOW(dialog),
@@ -75,10 +77,11 @@ char * load_pixmap_file( char *name )
 	char *f = NULL;
 
 	f = g_strconcat( "teg_pix/", name, NULL );
-	if( f == NULL )
+	if( f == NULL ) {
 		return NULL;
+	}
 
-	filename = g_strconcat( PIXMAPDIR,f,NULL );
+	filename = g_strconcat( PIXMAPDIR, f, NULL );
 	g_free( f );
 	return filename;
 }
@@ -107,46 +110,46 @@ void teg_dialog( char* title, char* bigtitle, char* data )
 	                       TEG_DIALOG_Y);
 
 	goo_canvas_rect_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		0.0,
-		0.0,
-		(double) TEG_DIALOG_X,
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    0.0,
+	    0.0,
+	    (double) TEG_DIALOG_X,
 	    TEG_DIALOG_Y_NEW,
-		"fill-color","black",
-		"stroke-color","black",
-		NULL);
+	    "fill-color", "black",
+	    "stroke-color", "black",
+	    NULL);
 
 	goo_canvas_rect_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		0.0,
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    0.0,
 	    TEG_DIALOG_Y_NEW,
-		(double) TEG_DIALOG_X,
-		(double) TEG_DIALOG_Y,
-		"fill-color","light green",
-		"stroke-color","light green",
-		NULL);
+	    (double) TEG_DIALOG_X,
+	    (double) TEG_DIALOG_Y,
+	    "fill-color", "light green",
+	    "stroke-color", "light green",
+	    NULL);
 
 	goo_canvas_text_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		bigtitle,
-		(double) (TEG_DIALOG_X/2),
-		(double) 10,
-		-1,
-		GOO_CANVAS_ANCHOR_NORTH,
-		"font", HELVETICA_20_BFONT,
-		"fill-color", "white",
-		NULL);
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    bigtitle,
+	    (double) (TEG_DIALOG_X/2),
+	    (double) 10,
+	    -1,
+	    GOO_CANVAS_ANCHOR_NORTH,
+	    "font", HELVETICA_20_BFONT,
+	    "fill-color", "white",
+	    NULL);
 
 	goo_canvas_text_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		data,
-		(double) 4,
-		(double) 60,
-		-1,
-		GOO_CANVAS_ANCHOR_NORTH_WEST,
-		"font", HELVETICA_12_FONT,
-		"fill-color", "black",
-		NULL);
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    data,
+	    (double) 4,
+	    (double) 60,
+	    -1,
+	    GOO_CANVAS_ANCHOR_NORTH_WEST,
+	    "font", HELVETICA_12_FONT,
+	    "fill-color", "black",
+	    NULL);
 
 	gtk_box_pack_start( GTK_BOX(gtk_dialog_get_content_area
 	                            (GTK_DIALOG(dialog))), GTK_WIDGET(canvas),
@@ -182,25 +185,25 @@ GtkWidget* teg_dialog_new( char* title, char* bigtitle )
 	                       TEG_DIALOG_Y_NEW);
 
 	goo_canvas_rect_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		0.0,
-		0.0,
-		(double) TEG_DIALOG_X,
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    0.0,
+	    0.0,
+	    (double) TEG_DIALOG_X,
 	    TEG_DIALOG_Y_NEW,
 	    "fill-color", "black",
 	    "stroke-color", "black",
-		NULL);
+	    NULL);
 
 	goo_canvas_text_new(
-		goo_canvas_get_root_item(GOO_CANVAS(canvas)),
-		bigtitle,
-		(double) (TEG_DIALOG_X/2),
-		(double) 10,
-		-1,
-		GOO_CANVAS_ANCHOR_NORTH,
-		"font", HELVETICA_20_BFONT,
-		"fill-color", "white",
-		NULL);
+	    goo_canvas_get_root_item(GOO_CANVAS(canvas)),
+	    bigtitle,
+	    (double) (TEG_DIALOG_X/2),
+	    (double) 10,
+	    -1,
+	    GOO_CANVAS_ANCHOR_NORTH,
+	    "font", HELVETICA_20_BFONT,
+	    "fill-color", "white",
+	    NULL);
 
 
 	gtk_box_pack_start( GTK_BOX(gtk_dialog_get_content_area
@@ -221,15 +224,15 @@ void teg_dialog_gameover( int numjug, int mission )
 	char buf[512];
 
 	if( player_whois( numjug, &pJ) != TEG_STATUS_SUCCESS) {
-		dialog = teg_dialog_new(_("Game Over"),_("A player won the game"));
+		dialog = teg_dialog_new(_("Game Over"), _("A player won the game"));
 
 	} else  if( numjug == WHOAMI() ) {
-		dialog = teg_dialog_new(_("Game Over"),_("You are the winner"));
+		dialog = teg_dialog_new(_("Game Over"), _("You are the winner"));
 
 	} else {
-		snprintf(buf,sizeof(buf)-1,_("%s is the winner"),pJ->name );
+		snprintf(buf, sizeof(buf)-1, _("%s is the winner"), pJ->name );
 		buf[ sizeof(buf) -1 ] = 0;
-		dialog = teg_dialog_new(_("Game Over"),buf);
+		dialog = teg_dialog_new(_("Game Over"), buf);
 	}
 
 	hbox = gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 3 );
@@ -252,7 +255,7 @@ void teg_dialog_gameover( int numjug, int mission )
 	gtk_container_add( GTK_CONTAINER(hbox), frame );
 
 	gui_scores_embed( frame );
-	
+
 	gtk_dialog_add_button(GTK_DIALOG(dialog), _("_OK"), GTK_RESPONSE_OK);
 
 	gtk_widget_show_all (dialog);
@@ -266,28 +269,31 @@ gchar *translate_to_utf8(const gchar *string )
 	size_t	input_length, output_length;
 	gchar	*input_string, *input_string_pointer;
 	gchar	*output_string, *output_string_pointer;
-	
-	if(!string)
-		return NULL;
 
-	if( g_utf8_validate( string, -1, NULL ) )
+	if(!string) {
+		return NULL;
+	}
+
+	if( g_utf8_validate( string, -1, NULL ) ) {
 		return g_strdup( string );
-	
+	}
+
 	iconv_base = iconv_open("UTF-8", "iso-8859-1");
 
-	if(iconv_base==(iconv_t) -1)
+	if(iconv_base==(iconv_t) -1) {
 		return g_strdup(string);
+	}
 
 	input_string = input_string_pointer = g_strdup(string);
 	input_length = (strlen(input_string) + 1);
-	
+
 	output_length = (input_length << 1);
 	output_string = output_string_pointer = g_malloc(output_length);
 
 	iconv(iconv_base, &input_string, &input_length, &output_string, &output_length);
 
 	free( input_string_pointer );
-	
+
 	iconv_close(iconv_base);
 
 	return output_string_pointer;

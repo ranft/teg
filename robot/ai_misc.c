@@ -39,10 +39,11 @@ char *ai_fetch_a_name()
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		if( (i++) == n ) {
 			pJ = (PCPLAYER) l;
-			if( pJ->numjug == WHOAMI() )
+			if( pJ->numjug == WHOAMI() ) {
 				n++;
-			else
+			} else {
 				return pJ->name;
+			}
 		}
 		l = LIST_NEXT(l);
 	}

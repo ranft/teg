@@ -29,11 +29,13 @@
 
 TEG_STATUS fow_set_mode( BOOLEAN b )
 {
-	if( JUEGO_EMPEZADO )
+	if( JUEGO_EMPEZADO ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( b!=0)
+	if( b!=0) {
 		b=1;
+	}
 	g_game.fog_of_war = b;
 	return TEG_STATUS_SUCCESS;
 }
@@ -43,18 +45,21 @@ BOOLEAN fow_can_player_see_country( PSPLAYER pJ, PCOUNTRY pP )
 	PLIST_ENTRY pL;
 	PCOUNTRY pcountry;
 
-	if( ! pJ  || ! pP )
+	if( ! pJ  || ! pP ) {
 		return FALSE;
+	}
 
 	pL = pJ->countries.Flink;
 	while( !IsListEmpty( &pJ->countries ) && (pL != &pJ->countries) ) {
 		pcountry = (PCOUNTRY) pL;
 
-		if( countries_eslimitrofe(pP->id, pcountry->id) )
+		if( countries_eslimitrofe(pP->id, pcountry->id) ) {
 			return TRUE;
+		}
 
-		if(  pP->id == pcountry->id )
+		if(  pP->id == pcountry->id ) {
 			return TRUE;
+		}
 
 		pL = LIST_NEXT(pL);
 	}
@@ -67,20 +72,20 @@ TEG_STATUS fow_fill_with_boundaries( int country, char *buffer, int buf_len )
 	int i;
 	int first_time=1;
 
-	if( ! g_game.player_fow )
+	if( ! g_game.player_fow ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	for( i=0; i < COUNTRIES_CANT; i++ )
-	{
-		if( i != country && g_countries[i].numjug != g_game.player_fow->numjug && countries_eslimitrofe( country, i ) )
-		{
+	for( i=0; i < COUNTRIES_CANT; i++ ) {
+		if( i != country && g_countries[i].numjug != g_game.player_fow->numjug && countries_eslimitrofe( country, i ) ) {
 			char buf[1024];
 
 			if( first_time ) {
-				snprintf( buf, sizeof(buf)-1,"%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
+				snprintf( buf, sizeof(buf)-1, "%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
 				first_time = 0;
-			} else
-				snprintf( buf, sizeof(buf)-1,";%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
+			} else {
+				snprintf( buf, sizeof(buf)-1, ";%s=%d,%d,%d", TOKEN_COUNTRY, i, g_countries[i].numjug, g_countries[i].ejercitos );
+			}
 
 			strncat( buffer, buf, buf_len );
 		}
@@ -88,23 +93,25 @@ TEG_STATUS fow_fill_with_boundaries( int country, char *buffer, int buf_len )
 
 
 	/* dont send, since I didnt modify the buffer */
-	if( first_time )
+	if( first_time ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	return TEG_STATUS_SUCCESS;
 }
 
 int fow_netall_printf( int country, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 	PLIST_ENTRY pLplayer = g_list_player.Flink;
 	PLIST_ENTRY pLcountry;
 	PSPLAYER pJ;
 	PCOUNTRY pP;
 
-	if( country < 0 || country >= COUNTRIES_CANT )
+	if( country < 0 || country >= COUNTRIES_CANT ) {
 		return -1;
+	}
 
 	va_start(args, format);
 	vsnprintf(buf, sizeof(buf) -1, format, args);
@@ -114,15 +121,13 @@ int fow_netall_printf( int country, char *format, ...)
 
 	while( !IsListEmpty( &g_list_player ) && (pLplayer != &g_list_player) ) {
 		pJ = (PSPLAYER) pLplayer;
-		if( pJ->fd > 0 && pJ->is_player )
-		{
+		if( pJ->fd > 0 && pJ->is_player ) {
 			pLcountry = pJ->countries.Flink;
 			/* check if he has a boundry country wih 'country' */
 			while( !IsListEmpty( &pJ->countries ) && (pLcountry != &pJ->countries) ) {
 				pP = (PCOUNTRY) pLcountry;
 
-				if( countries_eslimitrofe(pP->id, country) || pP->id == country )
-				{
+				if( countries_eslimitrofe(pP->id, country) || pP->id == country ) {
 					net_print(pJ->fd, buf);
 					break;
 				}
@@ -146,7 +151,7 @@ int fow_netall_printf( int country, char *format, ...)
  */
 int fow_2_netall_printf( int src, int dst, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 	PLIST_ENTRY pLplayer = g_list_player.Flink;
 	PLIST_ENTRY pLcountry;
@@ -155,8 +160,9 @@ int fow_2_netall_printf( int src, int dst, char *format, ...)
 	int src_country;
 	int dst_country;
 
-	if( src<0 || src>=COUNTRIES_CANT || dst<0 || dst>=COUNTRIES_CANT)
+	if( src<0 || src>=COUNTRIES_CANT || dst<0 || dst>=COUNTRIES_CANT) {
 		return -1;
+	}
 
 	va_start(args, format);
 	vsnprintf(buf, sizeof(buf) -1, format, args);
@@ -166,8 +172,7 @@ int fow_2_netall_printf( int src, int dst, char *format, ...)
 
 	while( !IsListEmpty( &g_list_player ) && (pLplayer != &g_list_player) ) {
 		pJ = (PSPLAYER) pLplayer;
-		if( pJ->fd > 0 && pJ->is_player )
-		{
+		if( pJ->fd > 0 && pJ->is_player ) {
 			pLcountry = pJ->countries.Flink;
 			/* check if he has a boundry country wih src && dst */
 
@@ -176,14 +181,17 @@ int fow_2_netall_printf( int src, int dst, char *format, ...)
 			while( !IsListEmpty( &pJ->countries ) && (pLcountry != &pJ->countries) ) {
 				pP = (PCOUNTRY) pLcountry;
 
-				if(countries_eslimitrofe(pP->id, src) || pP->id == src)
+				if(countries_eslimitrofe(pP->id, src) || pP->id == src) {
 					src_country = src;
+				}
 
-				if(countries_eslimitrofe(pP->id, dst) || pP->id == dst)
+				if(countries_eslimitrofe(pP->id, dst) || pP->id == dst) {
 					dst_country = dst;
+				}
 
-				if( dst_country >= 0 && src_country >=0 )
+				if( dst_country >= 0 && src_country >=0 ) {
 					break;
+				}
 
 				pLcountry = LIST_NEXT(pLcountry);
 			}

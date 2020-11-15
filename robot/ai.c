@@ -33,7 +33,7 @@
 #include "ai.h"
 #include "ai_fichas.h"
 
-/** 
+/**
  * Risk of buffer overflow: When cards are traded for armies, there is NO upper
  * limit for how many armies you can place! When set to 50 this was a cause of
  * overflows when games lasted longer. But 500 armies should be enough for everyone.
@@ -44,18 +44,20 @@ static int attack_dst[COUNTRIES_CANT];
 
 TEG_STATUS ai_puntaje_sort(int cant)
 {
-	int i,j;
+	int i, j;
 	int max;
 
 	//check if the buffer is big enough
-	if ( cant > COUNTRIES_CANT * 10 )
+	if ( cant > COUNTRIES_CANT * 10 ) {
 		return TEG_STATUS_ERROR;
-	
-	for(j=0;j<cant;j++) {
+	}
+
+	for(j=0; j<cant; j++) {
 		max = 0;
-		for(i=0;i<COUNTRIES_CANT;i++) {
-			if( ai_puntaje[i] > ai_puntaje[max] )
+		for(i=0; i<COUNTRIES_CANT; i++) {
+			if( ai_puntaje[i] > ai_puntaje[max] ) {
 				max = i;
+			}
 		}
 		ai_sorted[j] = max;
 		ai_puntaje[max] -= 2;
@@ -72,9 +74,10 @@ TEG_STATUS ai_puntaje_sort_for_attack()
 	int i;
 	int max=0;
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( ai_puntaje[i] > ai_puntaje[max] )
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( ai_puntaje[i] > ai_puntaje[max] ) {
 			max = i;
+		}
 	}
 	ai_sorted[0] = max;
 	return TEG_STATUS_SUCCESS;
@@ -83,8 +86,9 @@ TEG_STATUS ai_puntaje_sort_for_attack()
 void ai_puntaje_clean()
 {
 	int i;
-	for(i=0;i<COUNTRIES_CANT;i++)
+	for(i=0; i<COUNTRIES_CANT; i++) {
 		ai_puntaje[i] = -10000;
+	}
 }
 
 /**
@@ -96,9 +100,10 @@ int ai_many_country_enemigo( int p )
 	int i;
 	int c=0;
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug != WHOAMI() && countries_eslimitrofe(p,i))
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( g_countries[i].numjug != WHOAMI() && countries_eslimitrofe(p, i)) {
 			c++;
+		}
 	}
 
 	return c;
@@ -111,9 +116,10 @@ int ai_many_country_enemigo( int p )
 BOOLEAN ai_is_country_border( int p )
 {
 	int i;
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( countries_eslimitrofe(i,p) && g_countries[i].continente != g_countries[p].continente )
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( countries_eslimitrofe(i, p) && g_countries[i].continente != g_countries[p].continente ) {
 			return TRUE;
+		}
 	}
 
 	return FALSE;
@@ -124,9 +130,10 @@ BOOLEAN ai_own_continent(CONTINENTE c )
 	int i;
 	int t=0;
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && g_countries[i].continente == c )
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( g_countries[i].numjug == WHOAMI() && g_countries[i].continente == c ) {
 			t++;
+		}
 	}
 
 	return ( t == g_conts[c].cant_countries );
@@ -155,26 +162,30 @@ BOOLEAN ai_is_country_peligroso( int src, int dst )
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		pJ = (PCPLAYER) l;
 
-		if( pJ->empezo_turno )
+		if( pJ->empezo_turno ) {
 			aparecio_empezo = TRUE;
+		}
 
 		if( pJ->numjug == g_countries[dst].numjug ) {
-			if( aparecio_empezo )
+			if( aparecio_empezo ) {
 				dst_jugo = TRUE;
-			else
+			} else {
 				dst_jugo = FALSE;
+			}
 			break;
 		}
 
 		l = LIST_NEXT(l);
 	}
 
-	if( dst_jugo )
+	if( dst_jugo ) {
 		return FALSE;
+	}
 
 	tmp = (g_countries[src].ejercitos > 3) ? 3: g_countries[src].ejercitos-1;
-	if( g_countries[dst].ejercitos > (g_countries[src].ejercitos-tmp) )
+	if( g_countries[dst].ejercitos > (g_countries[src].ejercitos-tmp) ) {
 		return TRUE;
+	}
 	return FALSE;
 }
 
@@ -188,10 +199,10 @@ int ai_puntaje_atacar_warning( int src )
 	int p=0;
 	int i;
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( countries_eslimitrofe(src,i) &&
-			g_countries[src].numjug != g_countries[i].numjug &&
-			ai_is_country_peligroso(src,i)) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( countries_eslimitrofe(src, i) &&
+		        g_countries[src].numjug != g_countries[i].numjug &&
+		        ai_is_country_peligroso(src, i)) {
 
 			p += (g_countries[i].ejercitos - g_countries[src].ejercitos);
 		}
@@ -211,17 +222,19 @@ int ai_puntaje_atacar_country( int src, int dst )
 
 	if( g_countries[src].ejercitos > g_countries[dst].ejercitos ) {
 
-		if( g_countries[src].continente == g_countries[dst].continente )
+		if( g_countries[src].continente == g_countries[dst].continente ) {
 			p++;
-		
+		}
+
 		p += 10 + g_countries[src].ejercitos - g_countries[dst].ejercitos;
 
 	} else {
 
-		int r = RANDOM_MAX(1,10);
+		int r = RANDOM_MAX(1, 10);
 
-		if((r>7) && ( g_countries[src].ejercitos > 7 ))
+		if((r>7) && ( g_countries[src].ejercitos > 7 )) {
 			p++;
+		}
 	}
 
 	return p;
@@ -239,8 +252,8 @@ TEG_STATUS ai_puntaje_atacar( int country )
 	int p_tmp;
 	int dst=-1;
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( countries_eslimitrofe(country,i) && g_countries[i].numjug !=WHOAMI() ) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( countries_eslimitrofe(country, i) && g_countries[i].numjug !=WHOAMI() ) {
 			p_tmp = ai_puntaje_atacar_country( country, i );
 
 			/* son negativos estos valores, por eso sumo */
@@ -268,16 +281,17 @@ TEG_STATUS ai_turno()
 	int j;
 
 	ai_puntaje_clean();
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && g_countries[i].ejercitos > 1)
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( g_countries[i].numjug == WHOAMI() && g_countries[i].ejercitos > 1) {
 			ai_puntaje_atacar(i);
+		}
 	}
 	ai_puntaje_sort_for_attack();
 
 	i = ai_sorted[0];
 	j = attack_dst[i];
 	if( ai_puntaje[i] > 0 ) {
-		
+
 		attack_init();
 		attack_click( &g_countries[i]);
 		attack_click( &g_countries[j]);
@@ -295,10 +309,10 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 		int new_cant = cant;
 
 		/* try to defend, undefended frontiers */
-		for(i=0;i<COUNTRIES_CANT;i++) {
+		for(i=0; i<COUNTRIES_CANT; i++) {
 			if( g_countries[i].numjug != WHOAMI() &&
-					countries_eslimitrofe(i,p) &&
-					g_countries[i].ejercitos > g_countries[p].ejercitos) {
+			        countries_eslimitrofe(i, p) &&
+			        g_countries[i].ejercitos > g_countries[p].ejercitos) {
 
 				reagrupe_out( p, i, cant );
 				return TEG_STATUS_SUCCESS;
@@ -306,12 +320,13 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 		}
 
 		/* I will leave 3 armies in border country of the continent */
-		if (g_countries[p].ejercitos - g_countries[p].ejer_reagrupe - cant < 3)
+		if (g_countries[p].ejercitos - g_countries[p].ejer_reagrupe - cant < 3) {
 			new_cant -= 2;
+		}
 
-		for(i=0;i<COUNTRIES_CANT && (new_cant>0);i++) {
-			if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
-					g_countries[i].continente != g_countries[p].continente ) {
+		for(i=0; i<COUNTRIES_CANT && (new_cant>0); i++) {
+			if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p, i) &&
+			        g_countries[i].continente != g_countries[p].continente ) {
 
 				reagrupe_out( p, i, new_cant );
 				return TEG_STATUS_SUCCESS;
@@ -320,9 +335,9 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 	}
 
 	/*... si falla, los muevo a una frontera */
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
-				g_countries[i].continente == g_countries[p].continente ) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p, i) &&
+		        g_countries[i].continente == g_countries[p].continente ) {
 
 			if( ai_is_country_border(i) ) {
 				reagrupe_out( p, i, cant );
@@ -332,9 +347,9 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 	}
 
 	/*... y si no hay frontera lo mando al 1ro que tenga a mano */
-	for(i=0;i<COUNTRIES_CANT;i++) {
-		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p,i) &&
-				g_countries[i].continente == g_countries[p].continente ) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
+		if( g_countries[i].numjug == WHOAMI() && countries_eslimitrofe(p, i) &&
+		        g_countries[i].continente == g_countries[p].continente ) {
 
 			reagrupe_out( p, i, cant );
 			return TEG_STATUS_SUCCESS;
@@ -346,18 +361,19 @@ TEG_STATUS __ai_reagrupe( int  p, int cant )
 
 TEG_STATUS ai_reagrupe()
 {
-	int i,p;
+	int i, p;
 	reagrupe_init();
 
-	for(i=0;i < COUNTRIES_CANT ; i++ ) { 
+	for(i=0; i < COUNTRIES_CANT ; i++ ) {
 		if( g_countries[i].numjug == WHOAMI() ) {
 			if( ai_many_country_enemigo(i) == 0 ) {
 				p = g_countries[i].ejercitos - g_countries[i].ejer_reagrupe;
 
-				if( p < 2 )
+				if( p < 2 ) {
 					continue;
+				}
 
-				__ai_reagrupe(i,p-1);
+				__ai_reagrupe(i, p-1);
 			}
 		}
 	}
@@ -373,18 +389,20 @@ TEG_STATUS ai_tropas(int src, int dst, int cant)
 	ai_fichas_calc_puntaje( src );
 	ai_fichas_calc_puntaje( dst );
 
-	for(i=0;i<cant;i++) {
-		if( ai_puntaje[dst] > ai_puntaje[src] + i )
+	for(i=0; i<cant; i++) {
+		if( ai_puntaje[dst] > ai_puntaje[src] + i ) {
 			c++;
+		}
 	}
 
-	if( c > 0 )
+	if( c > 0 ) {
 		out_tropas( src, dst, c );
+	}
 
 	return TEG_STATUS_SUCCESS;
 }
 
 TEG_STATUS ai_puedocanje( int *p1, int *p2, int *p3 )
 {
-	return canje_puedo( p1,p2,p3);
+	return canje_puedo( p1, p2, p3);
 }

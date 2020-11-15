@@ -54,8 +54,9 @@ static TEG_STATUS attack_check()
 	if( e==PLAYER_STATUS_ATAQUE || e==PLAYER_STATUS_TROPAS) {
 		ESTADO_SET(PLAYER_STATUS_ATAQUE);
 		return TEG_STATUS_SUCCESS;
-	} else
+	} else {
 		return TEG_STATUS_ERROR;
+	}
 }
 
 /* reset the status of the attack */
@@ -88,8 +89,9 @@ void attack_backup()
 
 TEG_STATUS attack_init()
 {
-	if( attack_check() != TEG_STATUS_SUCCESS )
+	if( attack_check() != TEG_STATUS_SUCCESS ) {
 		return TEG_STATUS_UNEXPECTED;
+	}
 
 	attack_backup(); /// \todo This looks wrong here.
 	attack_reset();
@@ -100,7 +102,7 @@ TEG_STATUS attack_init()
 TEG_STATUS attack_click( PCOUNTRY p )
 {
 	if( attack_check() != TEG_STATUS_SUCCESS ) {
-		textmsg(M_ERR,_("Error, It's not the time to attack"));
+		textmsg(M_ERR, _("Error, It's not the time to attack"));
 		return TEG_STATUS_UNEXPECTED;
 	}
 
@@ -111,18 +113,18 @@ TEG_STATUS attack_click( PCOUNTRY p )
 				p->selected |= COUNTRY_SELECT_ATTACK;
 				gui_country_select(p->id);
 				country_origen = p->id;
-				textmsg(M_INF,_("Source country: '%s'. Now select the destination country"),countries_get_name(p->id));
+				textmsg(M_INF, _("Source country: '%s'. Now select the destination country"), countries_get_name(p->id));
 			} else {
-				textmsg(M_ERR,_("Error, '%s' must have at least 2 armies"),countries_get_name(p->id));
+				textmsg(M_ERR, _("Error, '%s' must have at least 2 armies"), countries_get_name(p->id));
 				return TEG_STATUS_UNEXPECTED;
 			}
 		} else {
-			textmsg(M_ERR,_("Error, '%s' isnt one of your countries"),countries_get_name(p->id));
+			textmsg(M_ERR, _("Error, '%s' isnt one of your countries"), countries_get_name(p->id));
 			return TEG_STATUS_UNEXPECTED;
 		}
 	} else if( country_destino == -1 ) {
 		if( country_origen == p->id ) {
-			textmsg(M_INF,_("Source country is the same as the destination. Resetting the attack..."));
+			textmsg(M_INF, _("Source country is the same as the destination. Resetting the attack..."));
 			attack_reset();
 			return TEG_STATUS_SUCCESS;
 		}
@@ -133,21 +135,21 @@ TEG_STATUS attack_click( PCOUNTRY p )
 				p->selected |= COUNTRY_SELECT_ATTACK;
 				gui_country_select(p->id);
 				country_destino = p->id;
-				textmsg(M_INF,_("Destination country: '%s'. Attacking..."),countries_get_name(p->id));
+				textmsg(M_INF, _("Destination country: '%s'. Attacking..."), countries_get_name(p->id));
 				attack_out();
 			} else {
-				textmsg(M_ERR,_("Error, '%s' isnt frontier with '%s'"),countries_get_name(p->id),countries_get_name(country_origen));
+				textmsg(M_ERR, _("Error, '%s' isnt frontier with '%s'"), countries_get_name(p->id), countries_get_name(country_origen));
 				attack_reset();
 				return TEG_STATUS_UNEXPECTED;
 			}
 		} else {
-			textmsg(M_ERR,_("Error, you cant attack your own countries ('%s')"),countries_get_name(p->id));
+			textmsg(M_ERR, _("Error, you cant attack your own countries ('%s')"), countries_get_name(p->id));
 			attack_reset();
 			return TEG_STATUS_UNEXPECTED;
 		}
 	} else {
 		attack_reset();
-		textmsg(M_ERR,_("Error, unexpected error in attack_click(). Report this bug!"));
+		textmsg(M_ERR, _("Error, unexpected error in attack_click(). Report this bug!"));
 		return TEG_STATUS_UNEXPECTED;
 	}
 
@@ -156,11 +158,13 @@ TEG_STATUS attack_click( PCOUNTRY p )
 
 TEG_STATUS attack_finish( int *ori, int *dst )
 {
-	if( attack_check() != TEG_STATUS_SUCCESS )
+	if( attack_check() != TEG_STATUS_SUCCESS ) {
 		return TEG_STATUS_UNEXPECTED;
+	}
 
-	if( country_destino == -1 || country_origen == -1 )
+	if( country_destino == -1 || country_origen == -1 ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	*ori = country_origen;
 	*dst = country_destino;
@@ -171,9 +175,9 @@ TEG_STATUS attack_finish( int *ori, int *dst )
 
 TEG_STATUS attack_pre_reset()
 {
-	if( attack_check() != TEG_STATUS_SUCCESS )
+	if( attack_check() != TEG_STATUS_SUCCESS ) {
 		return TEG_STATUS_ERROR;
-	else {
+	} else {
 		attack_reset();
 		return TEG_STATUS_SUCCESS;
 	}
@@ -186,13 +190,13 @@ TEG_STATUS attack_out()
 	int src;
 	int dst;
 
-	if( attack_finish( &src, &dst ) != TEG_STATUS_SUCCESS )  {
-		textmsg( M_ERR,_("Error, make sure to select the countries first."));
+	if( attack_finish( &src, &dst ) != TEG_STATUS_SUCCESS ) {
+		textmsg( M_ERR, _("Error, make sure to select the countries first."));
 		attack_init();
 		return TEG_STATUS_ERROR;
 	}
 
-	net_printf(g_game.fd,TOKEN_ATAQUE"=%d,%d\n",src,dst);
+	net_printf(g_game.fd, TOKEN_ATAQUE"=%d,%d\n", src, dst);
 	attack_backup();
 	return TEG_STATUS_SUCCESS;
 }

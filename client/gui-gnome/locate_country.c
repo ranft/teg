@@ -63,43 +63,43 @@ static gint timeout_cb( gpointer data )
 	int i;
 
 	/* iterate over the country's list */
-	for( i=0; i<MAX_LOCATE_COUNTRIES; i++ )
-	{
-		if( list_locate_countries[i].country == -1 )
+	for( i=0; i<MAX_LOCATE_COUNTRIES; i++ ) {
+		if( list_locate_countries[i].country == -1 ) {
 			continue;
+		}
 
 		if( list_locate_countries[i].is_hidden ) {
 			list_locate_countries[i].is_hidden = FALSE;
-	                g_object_set( G_countries[ list_locate_countries[i].country ].country_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_countries[i].country ].country_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
 
 			if( ++list_locate_countries[i].number_times_refreshed == MAX_REFRESHES_COUNTRY ) {
 				locate_country_init_entry( &list_locate_countries[i] );
 			}
 		} else {
 			list_locate_countries[i].is_hidden = TRUE;
-	                g_object_set( G_countries[ list_locate_countries[i].country ].country_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_countries[i].country ].country_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
 		}
 
 	}
 
 	/* iterate over the army's list */
-	for( i=0; i<MAX_LOCATE_COUNTRIES; i++ )
-	{
-		if( list_locate_armies[i].country == -1 )
+	for( i=0; i<MAX_LOCATE_COUNTRIES; i++ ) {
+		if( list_locate_armies[i].country == -1 ) {
 			continue;
+		}
 
 		if( list_locate_armies[i].is_hidden ) {
 			list_locate_armies[i].is_hidden = FALSE;
-	                g_object_set( G_countries[ list_locate_armies[i].country ].ellip_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
-	                g_object_set( G_countries[ list_locate_armies[i].country ].text_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_armies[i].country ].ellip_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_armies[i].country ].text_item, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL );
 
 			if( ++list_locate_armies[i].number_times_refreshed == MAX_REFRESHES_ARMY ) {
 				locate_country_init_entry( &list_locate_armies[i] );
 			}
 		} else {
 			list_locate_armies[i].is_hidden = TRUE;
-	                g_object_set( G_countries[ list_locate_armies[i].country ].ellip_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
-	                g_object_set( G_countries[ list_locate_armies[i].country ].text_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_armies[i].country ].ellip_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
+			g_object_set( G_countries[ list_locate_armies[i].country ].text_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL );
 		}
 
 	}
@@ -112,8 +112,7 @@ TEG_STATUS locate_country_init()
 	int i;
 	timeout_id = g_timeout_add( 300, timeout_cb, NULL );
 
-	for(i=0;i<MAX_LOCATE_COUNTRIES;i++)
-	{
+	for(i=0; i<MAX_LOCATE_COUNTRIES; i++) {
 		list_locate_countries[i].country = -1;
 		list_locate_armies[i].country = -1;
 	}
@@ -126,8 +125,7 @@ TEG_STATUS locate_country_add_country( PCOUNTRY p )
 {
 	int i;
 
-	for(i=0;i<MAX_LOCATE_COUNTRIES;i++)
-	{
+	for(i=0; i<MAX_LOCATE_COUNTRIES; i++) {
 		if( list_locate_countries[i].country == -1 ) {
 
 			locate_country_init_entry( &list_locate_countries[i] );
@@ -140,9 +138,10 @@ TEG_STATUS locate_country_add_country( PCOUNTRY p )
 			break;
 		}
 	}
-	
-	if( i==MAX_LOCATE_COUNTRIES)
+
+	if( i==MAX_LOCATE_COUNTRIES) {
 		return TEG_STATUS_ERROR;
+	}
 	return TEG_STATUS_SUCCESS;
 }
 
@@ -152,8 +151,7 @@ TEG_STATUS locate_country_add_army( PCOUNTRY p )
 {
 	int i;
 
-	for(i=0;i<MAX_LOCATE_COUNTRIES;i++)
-	{
+	for(i=0; i<MAX_LOCATE_COUNTRIES; i++) {
 		if( list_locate_armies[i].country == -1 ) {
 
 			locate_country_init_entry( &list_locate_armies[i] );
@@ -166,8 +164,9 @@ TEG_STATUS locate_country_add_army( PCOUNTRY p )
 			break;
 		}
 	}
-	
-	if( i==MAX_LOCATE_COUNTRIES)
+
+	if( i==MAX_LOCATE_COUNTRIES) {
 		return TEG_STATUS_ERROR;
+	}
 	return TEG_STATUS_SUCCESS;
 }

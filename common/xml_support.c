@@ -28,8 +28,9 @@ xmlNodePtr xml_get_element_children( xmlNodePtr cur )
 
 	ret = cur->xmlChildrenNode;
 
-	while( ret && ret->type != XML_ELEMENT_NODE )
+	while( ret && ret->type != XML_ELEMENT_NODE ) {
 		ret = ret->next;
+	}
 
 	return ret;
 }
@@ -40,8 +41,9 @@ xmlNodePtr xml_get_element_next( xmlNodePtr cur )
 
 	ret = cur->next;
 
-	while( ret && ret->type != XML_ELEMENT_NODE )
+	while( ret && ret->type != XML_ELEMENT_NODE ) {
 		ret = ret->next;
+	}
 
 	return ret;
 }

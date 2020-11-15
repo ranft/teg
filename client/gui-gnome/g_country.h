@@ -37,7 +37,7 @@ struct _G_countries {
 	GooCanvasItem *country_item;	/**< the figure of the map (png) */
 	GooCanvasItem *ellip_item;	/**< circle of armies of the country */
 	GooCanvasItem *text_item;	/**< the number of armies of the country */
-}; 
+};
 
 extern struct _G_countries G_countries[];
 

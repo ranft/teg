@@ -75,13 +75,13 @@ int get_int_from_dev_random( void )
 
 	int const fd = open(RANDOM_DEVICE, O_RDONLY);
 	if(fd < 0) {
-		fprintf(stderr,"Couldn't open '%s'\n", RANDOM_DEVICE);
+		fprintf(stderr, "Couldn't open '%s'\n", RANDOM_DEVICE);
 		return 0;
 	}
 	int result;
 	const int l = read(fd, &result, sizeof(result));
 	if(l != sizeof(result)) {
-		fprintf(stderr,"Returning a not so random number. Read: %d\n",l);
+		fprintf(stderr, "Returning a not so random number. Read: %d\n", l);
 	}
 
 	close(fd);
@@ -93,16 +93,16 @@ int get_int_from_dev_random( void )
 unsigned cards_for_this_exchange(unsigned exchanges )
 {
 	switch( exchanges ) {
-		case 0:
-			return 0;
-		case 1:
-			return 4;
-		case 2:
-			return 7;
-		case 3:
-			return 10;
-		default:
-	        return (exchanges-1) * 5;
+	case 0:
+		return 0;
+	case 1:
+		return 4;
+	case 2:
+		return 7;
+	case 3:
+		return 10;
+	default:
+		return (exchanges-1) * 5;
 	}
 }
 
@@ -113,9 +113,10 @@ void strip_invalid(char *n )
 
 	assert(n);
 
-	for(i=0;i<l;i++) {
-		if( n[i]=='=' || n[i]==';' || n[i]=='\\' || n[i]==',' || n[i]==':' || n[i]=='/' || n[i]=='%')
+	for(i=0; i<l; i++) {
+		if( n[i]=='=' || n[i]==';' || n[i]=='\\' || n[i]==',' || n[i]==':' || n[i]=='/' || n[i]=='%') {
 			n[i] = '.';
+		}
 	}
 }
 
@@ -126,23 +127,26 @@ void strip_invalid_msg( char *n )
 
 	assert(n);
 
-	for(i=0;i<l;i++) {
-		if( n[i]=='"' )
+	for(i=0; i<l; i++) {
+		if( n[i]=='"' ) {
 			n[i]='\'';
+		}
 	}
 }
 
 int my_atoi(char const *s)
 {
-	if( ! s )
+	if( ! s ) {
 		return -1;
+	}
 	return atoi( s );
 }
 
 void string_copy(char* dest, size_t destlen, char const* source)
 {
-	if(destlen == 0)
+	if(destlen == 0) {
 		return;
+	}
 	strncpy(dest, source, destlen-1);
 	dest[destlen-1] = 0;
 }

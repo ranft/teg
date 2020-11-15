@@ -30,7 +30,7 @@ extern "C" {
 #endif
 
 /// server player data structure
-typedef struct _player{
+typedef struct _player {
 	LIST_ENTRY next;
 	int numjug;				/**< player number */
 	char name[PLAYERNAME_MAX_LEN];		/**< name */

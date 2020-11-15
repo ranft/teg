@@ -57,36 +57,41 @@ static bool parseScore(xmlDocPtr doc, xmlNodePtr cur, PSCORES ret)
 	if (val == NULL) {
 		fprintf(stderr, ("Score has no name\n"));
 		return false;
-	} else
+	} else {
 		strncpy( (char*)ret->name, (char*)val, sizeof(ret->name) -1 );
+	}
 
 	val =  xmlGetProp(cur, (const xmlChar *) "color");
 	if ( val == NULL) {
 		fprintf(stderr, ("Score has no color\n"));
 		return false;
-	} else
+	} else {
 		ret->color = atoi( (char*)val );
+	}
 
 	val = xmlGetProp(cur, (const xmlChar *) "points");
 	if ( val == NULL) {
 		fprintf(stderr, ("Score has no score\n"));
 		return false;
-	} else
+	} else {
 		ret->score = atoi( (char*)val );
+	}
 
 	val = xmlGetProp(cur, (const xmlChar *) "date");
 	if (val == NULL) {
 		fprintf(stderr, ("Score has no date\n"));
 		return false;
-	} else
+	} else {
 		strncpy( ret->date, (char*)val, sizeof(ret->date) -1 );
+	}
 
 	val = xmlGetProp(cur, (const xmlChar *) "human");
 	if (val == NULL) {
 		fprintf(stderr, ("Score has no human\n"));
 		return false;
-	} else
+	} else {
 		ret->human = atoi( (char*)val );
+	}
 
 	return true;
 }
@@ -101,25 +106,26 @@ TEG_STATUS xmlscores_load( void )
 	 * build an XML tree from a the file;
 	 */
 
-	snprintf( filename, sizeof(filename)-1,"%s/%s/server_scores.xml",g_get_home_dir(),TEG_DIRRC);
+	snprintf( filename, sizeof(filename)-1, "%s/%s/server_scores.xml", g_get_home_dir(), TEG_DIRRC);
 	filename[ sizeof(filename)-1 ] = 0;
 
 	doc = xmlParseFile( filename );
 
-	if (doc == NULL)
+	if (doc == NULL) {
 		return TEG_STATUS_ERROR;
+	}
 
 	/*
 	 * Check the document is of the right kind
 	 */
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
-		fprintf(stderr,("Empty document\n"));
+		fprintf(stderr, ("Empty document\n"));
 		goto error;
 	}
 
 	if (xmlStrcmp(cur->name, (const xmlChar *) "teg_scores")) {
-		fprintf(stderr,("Wrong type. root node != teg_scores\n"));
+		fprintf(stderr, ("Wrong type. root node != teg_scores\n"));
 		goto error;
 	}
 
@@ -136,7 +142,7 @@ TEG_STATUS xmlscores_load( void )
 				insert_score(&score);
 			}
 		} else {
-			fprintf(stderr,("Wrong type (%s). score was expected\n"), cur->name);
+			fprintf(stderr, ("Wrong type (%s). score was expected\n"), cur->name);
 			goto error;
 		}
 
@@ -152,7 +158,7 @@ error:
 
 static void xmlscores_add(xmlNodePtr parent, PSCORES pS)
 {
-	xmlNodePtr child = xmlNewTextChild( parent , NULL, (xmlChar*)"score", NULL );
+	xmlNodePtr child = xmlNewTextChild( parent, NULL, (xmlChar*)"score", NULL );
 
 	xmlSetProp( child, (xmlChar*)"name", (xmlChar*)pS->name );
 	add_numeric_attribute(child, "points", pS->score);
@@ -180,10 +186,10 @@ void xmlscores_save(void)
 	xmlDocSetRootElement( doc, child );
 	scores_map(save_single_score, (void*) child);
 
-	snprintf( filename, sizeof(filename)-1,"%s/%s/server_scores.xml",g_get_home_dir(),TEG_DIRRC);
+	snprintf( filename, sizeof(filename)-1, "%s/%s/server_scores.xml", g_get_home_dir(), TEG_DIRRC);
 	filename[ sizeof(filename)-1 ] = 0;
 
-	xmlSaveFile( filename , doc );
+	xmlSaveFile( filename, doc );
 	xmlFreeDoc(doc);
 }
 
@@ -193,7 +199,7 @@ static void new_score_node(PSPLAYER pJ, PSCORES pS)
 	time_t tt;
 	struct tm *t;
 
-	memset( pS,0,sizeof(*pS) );
+	memset( pS, 0, sizeof(*pS) );
 
 	pS->score = pJ->player_stats.score;
 	pS->color = pJ->color;
@@ -204,25 +210,27 @@ static void new_score_node(PSPLAYER pJ, PSCORES pS)
 	t = localtime(&tt);
 
 	snprintf( pS->date, sizeof(pS->date) -1, "%.2d/%.2d/%.2d %.2d:%.2d"
-			,t->tm_mon +1
-			,t->tm_mday
-			,t->tm_year + 1900
-			,t->tm_hour
-			,t->tm_min
-		);
+	          , t->tm_mon +1
+	          , t->tm_mday
+	          , t->tm_year + 1900
+	          , t->tm_hour
+	          , t->tm_min
+	        );
 
 	pS->date[ sizeof(pS->date) -1 ] = '\0';
 }
 
 TEG_STATUS scores_insert_player( PSPLAYER pJ )
 {
-	if( ! pJ->is_player )
+	if( ! pJ->is_player ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	stats_score( &pJ->player_stats, g_conts );
 
-	if( pJ->player_stats.score == 0 && pJ->player_stats.armies_killed == 0 )
+	if( pJ->player_stats.score == 0 && pJ->player_stats.armies_killed == 0 ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	SCORES score;
 	new_score_node(pJ, &score);
@@ -233,8 +241,7 @@ TEG_STATUS scores_insert_player( PSPLAYER pJ )
 	return TEG_STATUS_SUCCESS;
 }
 
-struct AppendString
-{
+struct AppendString {
 	char* dest;
 	size_t storage_remaining;
 	char const* delim;
@@ -244,15 +251,17 @@ struct AppendString
 void appendScoreString(PSCORES pS, void* user)
 {
 	struct AppendString* as = (struct AppendString*) user;
-	if(!as->valid)
+	if(!as->valid) {
 		return;
+	}
 	int printed = snprintf(as->dest, as->storage_remaining,
 	                       "%s%s,%d,%s,%d,%d",
 	                       as->delim,
 	                       pS->name, pS->color, pS->date, pS->score, pS->human);
 	if((printed < 0) // some printf error
-	   || (((unsigned)printed) >= as->storage_remaining)) // string truncation
+	        || (((unsigned)printed) >= as->storage_remaining)) { // string truncation
 		as->valid = false;
+	}
 	as->dest += printed;
 	as->storage_remaining -= printed;
 	as->delim = "\\";

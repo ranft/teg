@@ -120,13 +120,14 @@ void on_enviarfichas_activate (GtkMenuItem *menuitem, gpointer user_data)
 	int i;
 	int cant, conts;
 
-	if( fichas_out() != TEG_STATUS_SUCCESS )  {
+	if( fichas_out() != TEG_STATUS_SUCCESS ) {
 
 		fichas_get_wanted( &cant, &conts );
 		armies_view( cant, conts );
 
-		for(i=0;i<COUNTRIES_CANT;i++)
+		for(i=0; i<COUNTRIES_CANT; i++) {
 			G_country_draw_ejer(i);
+		}
 	} else {
 		armies_unview();
 	}
@@ -145,16 +146,17 @@ void on_enviarreattack_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_enviarattackreset_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
-	if( attack_pre_reset() == TEG_STATUS_SUCCESS )
-		textmsg(M_INF,_("The attack was reset. Please, select the source country to continue your attack"));
+	if( attack_pre_reset() == TEG_STATUS_SUCCESS ) {
+		textmsg(M_INF, _("The attack was reset. Please, select the source country to continue your attack"));
+	}
 }
 
 void on_reagrupe_activate (GtkMenuItem *menuitem, gpointer user_data)
 {
 	if( reagrupe_init() == TEG_STATUS_SUCCESS ) {
 		if (gui_private.dialog_show & (1 <<DIALOG_REGROUP_ARMIES) ) {
-			teg_dialog( _("Regrouping armies"),_("Regrouping armies"),
-	_("Select two countries:\n1st: click on the source country\n2nd: click on the destination country"));
+			teg_dialog( _("Regrouping armies"), _("Regrouping armies"),
+			            _("Select two countries:\n1st: click on the source country\n2nd: click on the destination country"));
 		}
 	}
 }
@@ -173,58 +175,53 @@ void on_endturn_activate (GtkMenuItem *menuitem, gpointer user_data)
 
 void on_surrender_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
-        GtkWidget *dialog;
-        gint response;
+	GtkWidget *dialog;
+	gint response;
 
-        dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
-                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                         GTK_MESSAGE_INFO,
-                                         GTK_BUTTONS_YES_NO,
-                                         _("Really surrender ?"));
+	dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
+	                                 GTK_DIALOG_DESTROY_WITH_PARENT,
+	                                 GTK_MESSAGE_INFO,
+	                                 GTK_BUTTONS_YES_NO,
+	                                 _("Really surrender ?"));
 
-        response = gtk_dialog_run (GTK_DIALOG (dialog));
-        if (response == GTK_RESPONSE_YES)
-                out_surrender();
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (response == GTK_RESPONSE_YES) {
+		out_surrender();
+	}
 
-        gtk_widget_destroy (dialog);
+	gtk_widget_destroy (dialog);
 }
 
 
-void
-on_start_activate(GtkMenuItem  *menuitem, gpointer         user_data)
+void on_start_activate(GtkMenuItem  *menuitem, gpointer         user_data)
 {
 	gametype_view();
 }
 
 
-void
-on_status_activate(GtkMenuItem  *menuitem, gpointer         user_data)
+void on_status_activate(GtkMenuItem  *menuitem, gpointer         user_data)
 {
 	status_view();
 }
 
-void
-on_viewcards_activate(GtkMenuItem  *menuitem, gpointer         user_data)
+void on_viewcards_activate(GtkMenuItem  *menuitem, gpointer         user_data)
 {
 	cards_view(-1);
 }
 
-void
-on_viewdices_activate(GtkMenuItem  *menuitem, gpointer         user_data)
+void on_viewdices_activate(GtkMenuItem  *menuitem, gpointer         user_data)
 {
 	dices_view();
 }
 
-void
-on_viewmission_activate(GtkMenuItem  *menuitem, gpointer         user_data)
+void on_viewmission_activate(GtkMenuItem  *menuitem, gpointer         user_data)
 {
 	mission_view();
 }
 
 
-void
-on_preferences1_activate               (GtkMenuItem     *menuitem,
-                                        gpointer         user_data)
+void on_preferences1_activate               (GtkMenuItem     *menuitem,
+        gpointer         user_data)
 {
 	preferences_activate();
 }
@@ -237,7 +234,7 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
 		"Ricardo Quesada, english",
 		"Arkadiusz Lipiec, polish",
 		NULL
-	};	
+	};
 	const gchar *translator_credits = _("translator_credits");
 	const char *authors[] = {
 		"Ricardo Quesada, main coder",
@@ -247,44 +244,43 @@ void on_about_activate(GtkMenuItem *menuitem, gpointer user_data)
 		"    Raymond Ostertag",
 		"",
 		"Detailed info in the PEOPLE file or in the homepage",
-                "",
+		"",
 		NULL
 	};
-        const char *artists[] = {
+	const char *artists[] = {
 		"Wolfgang Morawetz, main artist",
-                NULL
-        };
+		NULL
+	};
 
 	{
-     		gchar* logo_filename = NULL;
+		gchar* logo_filename = NULL;
 		logo_filename = g_strdup(PIXMAPDIR"/teg_icono.png");
 
-		if (logo_filename != NULL)
-		{
+		if (logo_filename != NULL) {
 			pixbuf = gdk_pixbuf_new_from_file(logo_filename, NULL);
 			g_free (logo_filename);
 		}
 	}
 
-        gtk_show_about_dialog (GTK_WINDOW (main_window),
-                               "program-name", _("Tenes Empanadas Graciela"),
-                               "version", VERSION,
-                               "copyright",
-                               _("Copyright (C) 2000, 2002 Ricardo Quesada"),
-                               "comments",
-                               _("A clone of T.E.G. (a Risk clone)."),
-                               "authors", authors,
-                               "documenters", documenters,
-                               "artists", artists,
-                               "translator-credits", translator_credits,
-                               "website", "http://teg.sourceforge.net",
-                               "website-label", _("TEG Home Page"),
-                               "logo", pixbuf,
-                               NULL);
+	gtk_show_about_dialog (GTK_WINDOW (main_window),
+	                       "program-name", _("Tenes Empanadas Graciela"),
+	                       "version", VERSION,
+	                       "copyright",
+	                       _("Copyright (C) 2000, 2002 Ricardo Quesada"),
+	                       "comments",
+	                       _("A clone of T.E.G. (a Risk clone)."),
+	                       "authors", authors,
+	                       "documenters", documenters,
+	                       "artists", artists,
+	                       "translator-credits", translator_credits,
+	                       "website", "http://teg.sourceforge.net",
+	                       "website-label", _("TEG Home Page"),
+	                       "logo", pixbuf,
+	                       NULL);
 }
 
 void on_help_activate(GtkMenuItem *item, gpointer user_data)
 {
-        gtk_show_uri_on_window (GTK_WINDOW (main_window), "ghelp:teg",
-                                GDK_CURRENT_TIME, NULL);
+	gtk_show_uri_on_window (GTK_WINDOW (main_window), "ghelp:teg",
+	                        GDK_CURRENT_TIME, NULL);
 }

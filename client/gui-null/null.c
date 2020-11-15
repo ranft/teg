@@ -102,7 +102,7 @@ TEG_STATUS gui_objetivo()
 {
 	return TEG_STATUS_SUCCESS;
 }
-TEG_STATUS gui_textplayermsg(char *n,int nj, char *m )
+TEG_STATUS gui_textplayermsg(char *n, int nj, char *m )
 {
 	return TEG_STATUS_SUCCESS;
 }

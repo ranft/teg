@@ -51,20 +51,19 @@
 static pTheme g_theme = NULL;	/**< Current theme */
 static pTInfo g_tinfo = NULL;	/**< info of all current themes */
 
-static pCountry
-parseCountry(xmlDocPtr doc, xmlNodePtr cur)
+static pCountry parseCountry(xmlDocPtr doc, xmlNodePtr cur)
 {
 	pCountry ret = NULL;
 
 	ret = (pCountry) malloc(sizeof(Country));
 
 	if (ret == NULL) {
-		fprintf(stderr,"Out of memory\n");
+		fprintf(stderr, "Out of memory\n");
 		return(NULL);
 	}
-	
+
 	memset(ret, 0, sizeof(*ret));
-	
+
 	ret->name = xmlGetProp(cur, (const xmlChar *) "name");
 	if (ret->name == NULL) {
 		fprintf(stderr, "XML: 'country' has no 'name'\n");
@@ -104,7 +103,7 @@ parseCountry(xmlDocPtr doc, xmlNodePtr cur)
 	cur = xml_get_element_children( cur );
 
 	if ( cur != NULL ) {
-		fprintf(stderr,"Wrong type (%s). Nothing was expected\n", cur->name);
+		fprintf(stderr, "Wrong type (%s). Nothing was expected\n", cur->name);
 		free(ret);
 		return(NULL);
 	}
@@ -116,8 +115,7 @@ error:
 	return NULL;
 }
 
-static pContinent
-parseContinent(xmlDocPtr doc, xmlNodePtr cur)
+static pContinent parseContinent(xmlDocPtr doc, xmlNodePtr cur)
 {
 	pContinent ret = NULL;
 	pCountry curcountry = NULL;
@@ -125,12 +123,12 @@ parseContinent(xmlDocPtr doc, xmlNodePtr cur)
 	ret = (pContinent) malloc(sizeof(Continent));
 
 	if (ret == NULL) {
-		fprintf(stderr,"Out of memory\n");
+		fprintf(stderr, "Out of memory\n");
 		return(NULL);
 	}
-	
+
 	memset(ret, 0, sizeof(*ret));
-	
+
 	ret->name = xmlGetProp(cur, (const xmlChar *) "name");
 	if (ret->name == NULL) {
 		fprintf(stderr, "XML: 'continent' has no 'name'\n");
@@ -156,14 +154,15 @@ parseContinent(xmlDocPtr doc, xmlNodePtr cur)
 			curcountry = parseCountry( doc, cur );
 			if (curcountry != NULL) {
 				ret->countries[ret->i_country++] = curcountry;
-				if (ret->i_country >= THEME_COUNTRY_MAX)
+				if (ret->i_country >= THEME_COUNTRY_MAX) {
 					break;
+				}
 			}
 		}
 
 		/* else */
 		else {
-			fprintf(stderr,"Wrong type (%s). country was expected\n", cur->name);
+			fprintf(stderr, "Wrong type (%s). country was expected\n", cur->name);
 			free(ret);
 			return(NULL);
 		}
@@ -177,47 +176,47 @@ error:
 	return NULL;
 }
 
-static pCards
-parseCards(xmlDocPtr doc, xmlNodePtr cur)
+static pCards parseCards(xmlDocPtr doc, xmlNodePtr cur)
 {
 	pCards ret = NULL;
 
 	ret = (pCards) malloc(sizeof(Cards));
 
 	if (ret == NULL) {
-		fprintf(stderr,"Out of memory\n");
+		fprintf(stderr, "Out of memory\n");
 		return(NULL);
 	}
-	
+
 	memset(ret, 0, sizeof(*ret));
-	
+
 	cur = xml_get_element_children( cur );
 	while( cur != NULL ) {
 		/* card */
 		if ( !xmlStrcmp(cur->name, (const xmlChar *) "card") ) {
 
 			xmlChar * type = xmlGetProp(cur, (const xmlChar *) "type");
-			if (type == NULL)
+			if (type == NULL) {
 				fprintf(stderr, "Card has no type\n");
-
-			if( strcmp( (char*)type, "jocker" ) == 0 )
-				ret->jocker = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			else if( strcmp( (char*)type, "balloon" ) == 0 )
-				ret->balloon= xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			else if( strcmp( (char*)type, "cannon" ) == 0 )
-				ret->cannon = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			else if( strcmp( (char*)type, "ship" ) == 0 )
-				ret->ship = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			else {
-				fprintf(stderr, "Unsupported type (%s) in cards\n",(char*)type);
 			}
-		}
-		else if ( !xmlStrcmp(cur->name, (const xmlChar *) "pos_y") )
+
+			if( strcmp( (char*)type, "jocker" ) == 0 ) {
+				ret->jocker = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			} else if( strcmp( (char*)type, "balloon" ) == 0 ) {
+				ret->balloon= xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			} else if( strcmp( (char*)type, "cannon" ) == 0 ) {
+				ret->cannon = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			} else if( strcmp( (char*)type, "ship" ) == 0 ) {
+				ret->ship = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			} else {
+				fprintf(stderr, "Unsupported type (%s) in cards\n", (char*)type);
+			}
+		} else if ( !xmlStrcmp(cur->name, (const xmlChar *) "pos_y") ) {
 			ret->pos_y = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+		}
 
 		/* else */
 		else {
-			fprintf(stderr,"Wrong name(%s). card was expected\n", cur->name);
+			fprintf(stderr, "Wrong name(%s). card was expected\n", cur->name);
 		}
 
 		cur = xml_get_element_next( cur );
@@ -239,20 +238,22 @@ static pTheme parseTheme(char *filename)
 	 * build an XML tree from a the file;
 	 */
 	doc = xmlParseFile(filename);
-	if (doc == NULL) return(NULL);
+	if (doc == NULL) {
+		return(NULL);
+	}
 
 	/*
 	 * Check the document is of the right kind
 	 */
-	
+
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
-		fprintf(stderr,"Empty document\n");
+		fprintf(stderr, "Empty document\n");
 		goto error;
 	}
 
 	if (xmlStrcmp(cur->name, (const xmlChar *) "teg_theme")) {
-		fprintf(stderr,"Wrong type. root node != teg_theme\n");
+		fprintf(stderr, "Wrong type. root node != teg_theme\n");
 		goto error;
 	}
 
@@ -272,18 +273,18 @@ static pTheme parseTheme(char *filename)
 		if( ret ) {
 			ver_minor = atoi( ret+1);
 			*ret = 0;
-		} else
+		} else {
 			ver_minor = 0;
+		}
 
 		ver_major = atoi( (char*)theme_version );
 
-		if( ver_major != TEG_THEME_VER_MAJOR || ver_minor > TEG_THEME_VER_MINOR)
-		{
+		if( ver_major != TEG_THEME_VER_MAJOR || ver_minor > TEG_THEME_VER_MINOR) {
 			fprintf(stderr, "XML: The version of the XML is incompatible.\n . Supported theme version are %d.x where x is <= %d\n . Current theme version is:%d.%d\n"
-					,TEG_THEME_VER_MAJOR
-					,TEG_THEME_VER_MINOR
-					,ver_major
-					,ver_minor );
+			        , TEG_THEME_VER_MAJOR
+			        , TEG_THEME_VER_MINOR
+			        , ver_major
+			        , ver_minor );
 			goto error;
 		}
 	}
@@ -294,7 +295,7 @@ static pTheme parseTheme(char *filename)
 	 */
 	ret = (pTheme) malloc(sizeof(Theme));
 	if (ret == NULL) {
-		fprintf(stderr,"Out of memory\n");
+		fprintf(stderr, "Out of memory\n");
 		goto error;
 	}
 	memset(ret, 0, sizeof(*ret));
@@ -303,8 +304,9 @@ static pTheme parseTheme(char *filename)
 	 * Now, walk the tree.
 	 */
 	cur = xml_get_element_children( cur );
-	if ( cur == 0 )
+	if ( cur == 0 ) {
 		goto error;
+	}
 
 	while (cur != NULL) {
 
@@ -320,7 +322,7 @@ static pTheme parseTheme(char *filename)
 		/* email */
 		else if (!xmlStrcmp(cur->name, (const xmlChar *) "email") ) {
 			ret->email = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if (ret->email== NULL){
+			if (ret->email== NULL) {
 				fprintf(stderr, "Theme:Email is empty\n");
 				goto error;
 			}
@@ -342,16 +344,18 @@ static pTheme parseTheme(char *filename)
 			curcontinent = parseContinent( doc, cur );
 			if (curcontinent != NULL) {
 				ret->continents[ret->i_continent++] = curcontinent;
-				if (ret->i_continent>= THEME_CONTINENT_MAX)
+				if (ret->i_continent>= THEME_CONTINENT_MAX) {
 					break;
+				}
 			}
 		}
 
 		/* cards */
 		else if (!xmlStrcmp(cur->name, (const xmlChar *) "cards") ) {
 			curcards = parseCards( doc, cur );
-			if (curcards != NULL)
+			if (curcards != NULL) {
 				ret->cards = curcards;
+			}
 		}
 
 		/* board */
@@ -411,12 +415,12 @@ static pTheme parseTheme(char *filename)
 			}
 
 			/* extended dices support for text. It is optional in dices_text */
-			for(i=0;i<2;i++) {
+			for(i=0; i<2; i++) {
 				/* x */
-				sprintf(buf,"x%d",i+1);
+				sprintf(buf, "x%d", i+1);
 				ret->dices_ext_text_x[i] = xmlGetProp(cur, (const xmlChar *) buf);
 				/* y */
-				sprintf(buf,"y%d",i+1);
+				sprintf(buf, "y%d", i+1);
 				ret->dices_ext_text_y[i] = xmlGetProp(cur, (const xmlChar *) buf);
 			}
 		}
@@ -429,20 +433,20 @@ static pTheme parseTheme(char *filename)
 #ifdef _DEBUG
 			fprintf( stderr, "Found extended dices support\n");
 #endif
-			for(i=0;i<6;i++) {
+			for(i=0; i<6; i++) {
 				/* x */
-				sprintf(buf,"x%d",i+1);
+				sprintf(buf, "x%d", i+1);
 				ret->dices_ext_x[i] = xmlGetProp(cur, (const xmlChar *) buf);
 				if( ret->dices_ext_x[i] == NULL ) {
-					fprintf(stderr, "XML: 'dices_ext_pos' has no '%s'\n",buf);
+					fprintf(stderr, "XML: 'dices_ext_pos' has no '%s'\n", buf);
 					goto error;
 				}
 
 				/* y */
-				sprintf(buf,"y%d",i+1);
+				sprintf(buf, "y%d", i+1);
 				ret->dices_ext_y[i] = xmlGetProp(cur, (const xmlChar *) buf);
 				if( ret->dices_ext_y[i] == NULL ) {
-					fprintf(stderr, "XML: 'dices_ext_pos' has no '%s'\n",buf);
+					fprintf(stderr, "XML: 'dices_ext_pos' has no '%s'\n", buf);
 					goto error;
 				}
 			}
@@ -511,15 +515,14 @@ static pTheme parseTheme(char *filename)
 			}
 			ret->board_x = xmlGetProp(cur, (const xmlChar *) "offset_x");
 			if (ret->board_x == NULL) {
-			  ret->board_x = (xmlChar*)"0";
+				ret->board_x = (xmlChar*)"0";
 			}
 			ret->board_y = xmlGetProp(cur, (const xmlChar *) "offset_y");
 			if (ret->board_y == NULL) {
-			  ret->board_y = (xmlChar*)"0";
+				ret->board_y = (xmlChar*)"0";
 			}
-		}
-		else {
-			fprintf(stderr,"Wrong type (%s). 'continent', 'board' or 'map', 'screen' and 'dices' were expected\n", cur->name);
+		} else {
+			fprintf(stderr, "Wrong type (%s). 'continent', 'board' or 'map', 'screen' and 'dices' were expected\n", cur->name);
 			free(ret);
 			goto error;
 		}
@@ -531,23 +534,26 @@ static pTheme parseTheme(char *filename)
 	return(ret);
 
 error:
-	if( doc )
+	if( doc ) {
 		xmlFreeDoc(doc);
-	if( ret )
+	}
+	if( ret ) {
 		free(ret);
+	}
 	return(NULL);
 }
 
 static TEG_STATUS theme_fill_country_name()
 {
-	int j,k,l;
+	int j, k, l;
 
-	if( !g_theme )
+	if( !g_theme ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	l=0;
-	for(j=0;j<g_theme->i_continent;j++) {
-		for(k=0;k<g_theme->continents[j]->i_country;k++) {
+	for(j=0; j<g_theme->i_continent; j++) {
+		for(k=0; k<g_theme->continents[j]->i_country; k++) {
 			g_countries[l++].name = (char*)g_theme->continents[j]->countries[k]->name;
 		}
 	}
@@ -559,10 +565,11 @@ static TEG_STATUS theme_fill_continent_name()
 {
 	int i;
 
-	if( !g_theme )
+	if( !g_theme ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	for(i=0;i<g_theme->i_continent;i++) {
+	for(i=0; i<g_theme->i_continent; i++) {
 		g_conts[i].name = (char*)g_theme->continents[i]->name;
 	}
 
@@ -575,26 +582,26 @@ TEG_STATUS theme_load(char *name)
 	char filename[512];
 
 	/* themes/%s/teg_theme.xml */
-	memset(filename,0,sizeof(filename));
-	snprintf(filename,sizeof(filename)-1,"themes/%s/teg_theme.xml",name);
+	memset(filename, 0, sizeof(filename));
+	snprintf(filename, sizeof(filename)-1, "themes/%s/teg_theme.xml", name);
 	g_theme = parseTheme( filename );
 
 	/* ~/.teg/themes/%s/teg_theme.xml */
 	if( g_theme == NULL ) {
-		memset(filename,0,sizeof(filename));
-		snprintf(filename,sizeof(filename)-1,"%s/%s/themes/%s/teg_theme.xml",g_get_home_dir(),TEG_DIRRC,name);
+		memset(filename, 0, sizeof(filename));
+		snprintf(filename, sizeof(filename)-1, "%s/%s/themes/%s/teg_theme.xml", g_get_home_dir(), TEG_DIRRC, name);
 		g_theme = parseTheme( filename );
 	}
-	
+
 	/* /usr/local/share/teg/themes/%s/teg_theme.xml */
 	if( g_theme == NULL ) {
-		memset(filename,0,sizeof(filename));
-		snprintf(filename,sizeof(filename)-1,"%s/%s/teg_theme.xml",THEMEDIR,name);
+		memset(filename, 0, sizeof(filename));
+		snprintf(filename, sizeof(filename)-1, "%s/%s/teg_theme.xml", THEMEDIR, name);
 		g_theme = parseTheme( filename );
 	}
 
 	if( g_theme == NULL ) {
-		fprintf(stderr, "Unable to load theme `%s'\n",name);
+		fprintf(stderr, "Unable to load theme `%s'\n", name);
 		return TEG_STATUS_THEMEERROR;
 	}
 
@@ -609,8 +616,9 @@ TEG_STATUS theme_load(char *name)
 
 TEG_STATUS theme_giveme_cards(pTCards pC)
 {
-	if( g_theme == NULL )
+	if( g_theme == NULL ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	pC->jocker= (char*)g_theme->cards->jocker;
 	pC->balloon= (char*)g_theme->cards->balloon;
@@ -623,11 +631,13 @@ TEG_STATUS theme_giveme_cards(pTCards pC)
 
 TEG_STATUS theme_giveme_continent(pTContinent pC, int n)
 {
-	if( g_theme == NULL )
+	if( g_theme == NULL ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( n <0 || n >= g_theme->i_continent )
+	if( n <0 || n >= g_theme->i_continent ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	pC->pos_x = atoi( (char*)g_theme->continents[n]->pos_x );
 	pC->pos_y = atoi( (char*)g_theme->continents[n]->pos_y );
@@ -637,14 +647,17 @@ TEG_STATUS theme_giveme_continent(pTContinent pC, int n)
 
 TEG_STATUS theme_giveme_country(pTCountry pC, int cont, int n)
 {
-	if( g_theme == NULL )
+	if( g_theme == NULL ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( cont <0 || cont >= g_theme->i_continent )
+	if( cont <0 || cont >= g_theme->i_continent ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	if( n <0 || n >= g_theme->continents[cont]->i_country )
+	if( n <0 || n >= g_theme->continents[cont]->i_country ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	pC->name = (char*)g_theme->continents[cont]->countries[n]->name;
 	pC->file = (char*)g_theme->continents[cont]->countries[n]->file;
@@ -660,18 +673,21 @@ TEG_STATUS theme_giveme_theme(pTTheme pT)
 {
 	int i;
 
-	if( g_theme == NULL )
+	if( g_theme == NULL ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	pT->author= (char*)g_theme->author;
 	pT->email = (char*)g_theme->email;
 	pT->version = (char*)g_theme->version;
 	pT->screen_size_x = my_atoi ( (char*)g_theme->screen_size_x );
-	if ( pT->screen_size_x == -1)
-	  pT->screen_size_x = 640;
+	if ( pT->screen_size_x == -1) {
+		pT->screen_size_x = 640;
+	}
 	pT->screen_size_y = my_atoi ( (char*)g_theme->screen_size_y );
-	if ( pT->screen_size_y == -1)
-	  pT->screen_size_y = 480;
+	if ( pT->screen_size_y == -1) {
+		pT->screen_size_y = 480;
+	}
 	pT->board = (char*)g_theme->board;
 	pT->board_x = my_atoi( (char*)g_theme->board_x );
 	pT->board_y = my_atoi( (char*)g_theme->board_y );
@@ -682,15 +698,18 @@ TEG_STATUS theme_giveme_theme(pTTheme pT)
 	pT->armies_y = atoi( (char*)g_theme->armies_y );
 
 	pT->armies_background = 1;	/* default */
-	if( g_theme->armies_background )
+	if( g_theme->armies_background ) {
 		pT->armies_background = ( strcasecmp((char*)g_theme->armies_background, "true" ) == 0 );
+	}
 
 	pT->armies_dragable = 1;	/* default */
-	if( g_theme->armies_background )
+	if( g_theme->armies_background ) {
 		pT->armies_dragable = ( strcasecmp((char*)g_theme->armies_background, "true" ) == 0 );
+	}
 
-	for(i=0;i<DICES_CANT;i++)
+	for(i=0; i<DICES_CANT; i++) {
 		pT->dices_file[i] = (char*)g_theme->dices_file[i];
+	}
 
 	pT->dices_color = (char*)g_theme->dices_color;
 	pT->screenshot = (char*)g_theme->screenshot;
@@ -698,29 +717,29 @@ TEG_STATUS theme_giveme_theme(pTTheme pT)
 	/* optional features */
 
 	/* extended dices support. This is an optional feature. See Draco Theme */
-	for(i=0;i<6;i++)
-	{
+	for(i=0; i<6; i++) {
 		pT->dices_ext_x[i] = my_atoi( (char*)g_theme->dices_ext_x[i] );
 		pT->dices_ext_y[i] = my_atoi( (char*)g_theme->dices_ext_y[i] );
 	}
 
-	for(i=0;i<2;i++)
-	{
+	for(i=0; i<2; i++) {
 		pT->dices_ext_text_x[i] = my_atoi( (char*)g_theme->dices_ext_text_x[i] );
 		pT->dices_ext_text_y[i] = my_atoi( (char*)g_theme->dices_ext_text_y[i] );
 	}
 
 	pT->choose_colors_custom = 0;
 	pT->choose_colors_prefix = NULL;
-	if( g_theme->choose_colors_custom && strcasecmp((char*)g_theme->choose_colors_custom,"true") == 0 )
+	if( g_theme->choose_colors_custom && strcasecmp((char*)g_theme->choose_colors_custom, "true") == 0 ) {
 		pT->choose_colors_custom = 1;
+	}
 	pT->choose_colors_prefix = (char*)g_theme->choose_colors_prefix;
 
 	pT->toolbar_custom = 0;
 	pT->toolbar_name = NULL;
 	pT->toolbar_text_color = NULL;
-	if( g_theme->toolbar_custom && strcasecmp((char*)g_theme->toolbar_custom,"true") == 0 )
+	if( g_theme->toolbar_custom && strcasecmp((char*)g_theme->toolbar_custom, "true") == 0 ) {
 		pT->toolbar_custom = 1;
+	}
 	pT->toolbar_name = (char*)g_theme->toolbar_name;
 	pT->toolbar_text_color = (char*)g_theme->toolbar_text_color;
 	pT->toolbar_offset_left = my_atoi( (char*)g_theme->toolbar_offset_left);
@@ -746,37 +765,39 @@ TEG_STATUS theme_enum_themes( pTInfo pTI )
 	}
 
 
-	memset(lugares,0,sizeof(lugares));
+	memset(lugares, 0, sizeof(lugares));
 
 	/* themes */
-	strncpy(lugares[0],dname,sizeof(lugares[0])-1);
+	strncpy(lugares[0], dname, sizeof(lugares[0])-1);
 
 	/* ~/.teg/themes */
-	snprintf(lugares[1],sizeof(lugares[1])-1,"%s/%s/themes",g_get_home_dir(),TEG_DIRRC);
+	snprintf(lugares[1], sizeof(lugares[1])-1, "%s/%s/themes", g_get_home_dir(), TEG_DIRRC);
 
 	/* /usr/local/share/pixmap/teg_pix/themes */
-	strncpy(lugares[2], THEMEDIR,sizeof(buf)-1);
+	strncpy(lugares[2], THEMEDIR, sizeof(buf)-1);
 
 
-	for(i=0;i<3;i++) {
-		if( (dir = opendir (lugares[i]))==NULL)
+	for(i=0; i<3; i++) {
+		if( (dir = opendir (lugares[i]))==NULL) {
 			continue;
+		}
 
 		/* scan for directories with file teg_theme.xml */
 		while ((e = readdir (dir)) != NULL) {
 			FILE *fp;
-			const int written = snprintf(buf,sizeof(buf),"%s/%s/teg_theme.xml",lugares[i],e->d_name);
+			const int written = snprintf(buf, sizeof(buf), "%s/%s/teg_theme.xml", lugares[i], e->d_name);
 			if(((written < 0)) || ((unsigned)written >= sizeof(buf))) {
 				continue;
 			}
-			if( (fp = fopen(buf,"r")) ) {
-				
+			if( (fp = fopen(buf, "r")) ) {
+
 				fclose(fp);
 				pI = malloc( sizeof(*pI));
-				if( pI == NULL )
+				if( pI == NULL ) {
 					return TEG_STATUS_NOMEM;
+				}
 
-				memset(pI,0,sizeof(*pI));
+				memset(pI, 0, sizeof(*pI));
 				pI->name = strdup(e->d_name);
 
 				/* insert it in the list */
@@ -786,8 +807,8 @@ TEG_STATUS theme_enum_themes( pTInfo pTI )
 				} else {
 					/* dont insert duplicated */
 					int repeated = 0;
-					for(pInext=g_tinfo;pInext;pInext = pInext->next ) {
-						if( strncmp(pInext->name,pI->name,strlen(pI->name)) == 0 ) {
+					for(pInext=g_tinfo; pInext; pInext = pInext->next ) {
+						if( strncmp(pInext->name, pI->name, strlen(pI->name)) == 0 ) {
 							repeated = 1;
 							break;
 						}
@@ -796,8 +817,9 @@ TEG_STATUS theme_enum_themes( pTInfo pTI )
 					if( !repeated ) {
 						pI->next = g_tinfo->next;
 						g_tinfo->next = pI;
-					} else
+					} else {
 						free(pI);
+					}
 				}
 			}
 		}
@@ -805,8 +827,9 @@ TEG_STATUS theme_enum_themes( pTInfo pTI )
 		closedir(dir);
 	}
 
-	if( g_tinfo == NULL )
+	if( g_tinfo == NULL ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	*pTI = *g_tinfo;
 	return TEG_STATUS_SUCCESS;
@@ -816,10 +839,11 @@ void theme_free()
 {
 	pTInfo pI;
 
-	for( pI = g_tinfo; pI != NULL; )  {
+	for( pI = g_tinfo; pI != NULL; ) {
 		pTInfo pI2;
-		if(pI->name)
+		if(pI->name) {
 			free( pI->name );
+		}
 		pI2 = pI;
 		pI = pI->next;
 		free(pI2);
@@ -833,22 +857,23 @@ char * theme_load_file( char *name )
 	FILE *fp;
 	static char buf[512];
 
-	memset(buf,0,sizeof(buf));
+	memset(buf, 0, sizeof(buf));
 
-	snprintf(buf,sizeof(buf)-1,"themes/%s/%s",g_game.theme,name);
-	fp = fopen(buf,"r");
+	snprintf(buf, sizeof(buf)-1, "themes/%s/%s", g_game.theme, name);
+	fp = fopen(buf, "r");
 	if( fp == NULL ) {
-		snprintf(buf,sizeof(buf)-1,"%s/%s/themes/%s/%s",g_get_home_dir(),TEG_DIRRC,g_game.theme,name);
-		fp = fopen(buf,"r");
+		snprintf(buf, sizeof(buf)-1, "%s/%s/themes/%s/%s", g_get_home_dir(), TEG_DIRRC, g_game.theme, name);
+		fp = fopen(buf, "r");
 	}
 
 	if( fp == NULL ) {
-		snprintf(buf,sizeof(buf)-1,"%s/%s/%s",THEMEDIR,g_game.theme,name);
-		fp = fopen(buf,"r");
+		snprintf(buf, sizeof(buf)-1, "%s/%s/%s", THEMEDIR, g_game.theme, name);
+		fp = fopen(buf, "r");
 	}
 
-	if( !fp )
+	if( !fp ) {
 		return NULL;
+	}
 
 	fclose(fp);
 	return buf;
@@ -860,22 +885,23 @@ char * theme_load_fake_file(char *name, char *theme)
 	FILE *fp;
 	static char buf[512];
 
-	memset(buf,0,sizeof(buf));
+	memset(buf, 0, sizeof(buf));
 
-	snprintf(buf,sizeof(buf)-1,"themes/%s/%s",theme,name);
-	fp = fopen(buf,"r");
+	snprintf(buf, sizeof(buf)-1, "themes/%s/%s", theme, name);
+	fp = fopen(buf, "r");
 	if( fp == NULL ) {
-		snprintf(buf,sizeof(buf)-1,"%s/%s/themes/%s/%s",g_get_home_dir(),TEG_DIRRC,theme,name);
-		fp = fopen(buf,"r");
+		snprintf(buf, sizeof(buf)-1, "%s/%s/themes/%s/%s", g_get_home_dir(), TEG_DIRRC, theme, name);
+		fp = fopen(buf, "r");
 	}
 
 	if( fp == NULL ) {
-		snprintf(buf,sizeof(buf)-1,"%s/%s/%s",THEMEDIR,theme,name);
-		fp = fopen(buf,"r");
+		snprintf(buf, sizeof(buf)-1, "%s/%s/%s", THEMEDIR, theme, name);
+		fp = fopen(buf, "r");
 	}
 
-	if( !fp )
+	if( !fp ) {
 		return NULL;
+	}
 
 	fclose(fp);
 	return buf;
@@ -884,7 +910,7 @@ char * theme_load_fake_file(char *name, char *theme)
 int theme_using_extended_dices()
 {
 	if( g_theme == NULL ) {
-		fprintf(stderr,"theme_using_extended() cant be called before loading a theme!\n");
+		fprintf(stderr, "theme_using_extended() cant be called before loading a theme!\n");
 		return 0;
 	}
 

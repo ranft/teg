@@ -46,11 +46,12 @@ TEG_STATUS player_update(PCPLAYER j)
 {
 	PCPLAYER i;
 
-	if( player_whois( j->numjug, &i ) != TEG_STATUS_SUCCESS )
-		goto error; 
+	if( player_whois( j->numjug, &i ) != TEG_STATUS_SUCCESS ) {
+		goto error;
+	}
 
 	memcpy(	&j->next, &i->next, sizeof(LIST_ENTRY));
-	memcpy( i,j,sizeof(CPLAYER));
+	memcpy( i, j, sizeof(CPLAYER));
 	return TEG_STATUS_SUCCESS;
 
 error:
@@ -60,8 +61,9 @@ error:
 void player_ins(PCPLAYER j)
 {
 	PCPLAYER new = (PCPLAYER) malloc( sizeof(CPLAYER) );
-	if( new==NULL)
+	if( new==NULL) {
 		return;
+	}
 
 	memmove( new, j, sizeof(CPLAYER));
 	InitializeListHead( &new->next );

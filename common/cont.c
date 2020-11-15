@@ -51,8 +51,9 @@ int cont_tot( unsigned long conts )
 
 char const* cont_get_name(unsigned i)
 {
-	if(i < NRCONTS )
+	if(i < NRCONTS ) {
 		return _( g_conts[i].name );
-	else
+	} else {
 		return _("Unknown");
+	}
 }

@@ -56,8 +56,8 @@
 static fd_set all_set;
 static int max_fd;
 
-/* 
- * global variables 
+/*
+ * global variables
  */
 SGAME g_game;
 SERVER g_server;
@@ -85,8 +85,9 @@ void game_end( PSPLAYER winner )
 		while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 			pJ = (PSPLAYER) l;
 
-			if( pJ->is_player && pJ->fd != 1)
-				net_printf(pJ->fd,TOKEN_STATUS"=%s\n",strout);
+			if( pJ->is_player && pJ->fd != 1) {
+				net_printf(pJ->fd, TOKEN_STATUS"=%s\n", strout);
+			}
 
 			l = LIST_NEXT(l);
 		}
@@ -96,8 +97,9 @@ void game_end( PSPLAYER winner )
 	player_map( player_delete_discon );
 
 	/* send who is the winner */
-	if( winner )
-		netall_printf( TOKEN_WINNER"=%d,%d\n",winner->numjug,winner->mission );
+	if( winner ) {
+		netall_printf( TOKEN_WINNER"=%d,%d\n", winner->numjug, winner->mission );
+	}
 
 	game_new();
 }
@@ -113,7 +115,7 @@ void game_new()
 	player_map( player_initplayer );
 	player_all_set_status( PLAYER_STATUS_HABILITADO );
 	g_game.playing = 0;
-	
+
 
 	g_game.turno = NULL;
 	g_game.empieza_turno = NULL;
@@ -135,8 +137,9 @@ void game_new()
 
 BOOLEAN game_is_finished( void )
 {
-	if( JUEGO_EMPEZADO && g_game.playing < 2 )
+	if( JUEGO_EMPEZADO && g_game.playing < 2 ) {
 		return TRUE;
+	}
 	return FALSE;
 }
 
@@ -165,7 +168,7 @@ void game_init()
 
 void server_init( void )
 {
-	gethostname(g_server.name,SERVER_NAMELEN);
+	gethostname(g_server.name, SERVER_NAMELEN);
 	g_server.port=TEG_DEFAULT_PORT;
 	g_server.debug=FALSE;
 	g_server.with_console=TRUE;
@@ -176,8 +179,9 @@ void server_exit( int sock )
 {
 	console_quit();
 	close(sock);
-	if( g_server.with_console )
+	if( g_server.with_console ) {
 		close(CONSOLE_FD);
+	}
 	player_flush();
 	printf(_("Goodbye.\n"));
 	exit(1);
@@ -185,21 +189,22 @@ void server_exit( int sock )
 
 void main_loop( void )
 {
-	int listenfd,fd, nready;
+	int listenfd, fd, nready;
 	struct sockaddr client;
 	socklen_t client_len;
 	fd_set read_set;
 	struct timeval timeout, timeofday_old, timeofday_new;
 	struct timezone tz;
 
-	listenfd = net_listen(NULL,g_server.port);
-	if( listenfd < 0 )
+	listenfd = net_listen(NULL, g_server.port);
+	if( listenfd < 0 ) {
 		return;
+	}
 
 	max_fd=listenfd;
 
 	FD_ZERO(&all_set);
-	FD_SET(listenfd,&all_set);
+	FD_SET(listenfd, &all_set);
 
 	if( g_server.with_console ) {
 		FD_SET(CONSOLE_FD, &all_set);
@@ -223,16 +228,18 @@ void main_loop( void )
 
 			int s = timeofday_new.tv_sec - timeofday_old.tv_sec;
 
-			if( TIMEOUT_SEC > s )
+			if( TIMEOUT_SEC > s ) {
 				timeout.tv_sec = TIMEOUT_SEC - s;
-			else
+			} else {
 				timeout.tv_sec = TIMEOUT_SEC;
+			}
 
 			/* it is aprox 3 minutes */
-			if( s == 0 )
+			if( s == 0 ) {
 				timeout.tv_usec = timeofday_new.tv_usec - timeofday_old.tv_usec;
-			else
+			} else {
 				timeout.tv_usec = 0;
+			}
 
 			/* may occur sometimes */
 			if( s > TIMEOUT_SEC ) {
@@ -245,12 +252,12 @@ void main_loop( void )
 		/* error ?*/
 		if( nready == -1 ) {
 			if(errno!=EINTR) {
-				fprintf(stderr,_("tegserver: Abnormal error in select()\n"));
+				fprintf(stderr, _("tegserver: Abnormal error in select()\n"));
 				perror("tegserver:");
 			}
 			continue;
 
-		/* timeout ? */
+			/* timeout ? */
 		} else if( nready == 0 ) {
 			MAIN_DEBUG("timeout\n");
 			timeout.tv_sec = TIMEOUT_SEC;
@@ -261,33 +268,37 @@ void main_loop( void )
 		}
 
 		/* new client */
-		if(FD_ISSET( listenfd, &read_set) ) {	
+		if(FD_ISSET( listenfd, &read_set) ) {
 			MAIN_DEBUG("new client\n");
 			client_len = sizeof( client );
 			fd = accept( listenfd, (struct sockaddr *)&client, &client_len );
 
-			if( fd != -1 )
+			if( fd != -1 ) {
 				fd_add( fd );
+			}
 
-			if(--nready <= 0)
+			if(--nready <= 0) {
 				continue;
+			}
 		}
 
 		/* input from console */
 		if( g_server.with_console && FD_ISSET(CONSOLE_FD, &read_set)) {
 			TEG_STATUS ts = console_handle(CONSOLE_FD);
 
-			if(ts==TEG_STATUS_GAMEOVER || ts==TEG_STATUS_CONNCLOSED)
+			if(ts==TEG_STATUS_GAMEOVER || ts==TEG_STATUS_CONNCLOSED) {
 				server_exit(listenfd);
+			}
 
-			if(--nready <= 0)
+			if(--nready <= 0) {
 				continue;
+			}
 
 		}
 
 		/* input from players */
-    		for(fd=0;fd<=max_fd;fd++) {
-			if( (fd!=listenfd && fd!=CONSOLE_FD) && FD_ISSET(fd,&read_set) ) {
+		for(fd=0; fd<=max_fd; fd++) {
+			if( (fd!=listenfd && fd!=CONSOLE_FD) && FD_ISSET(fd, &read_set) ) {
 				if(play_teg( fd )==TEG_STATUS_CONNCLOSED) {
 					MAIN_DEBUG("closing connection\n");
 
@@ -295,8 +306,9 @@ void main_loop( void )
 					player_kick_unparent_robots();
 				}
 
-				if(--nready <= 0)
+				if(--nready <= 0) {
 					break;
+				}
 			}
 		}
 	}
@@ -305,24 +317,27 @@ void main_loop( void )
 /* Clears a fd from the all_set descriptors */
 void fd_remove( int fd )
 {
-	if( g_server.debug )
-		con_text_out(M_INF,_("Removing fd %d\n"),fd);
+	if( g_server.debug ) {
+		con_text_out(M_INF, _("Removing fd %d\n"), fd);
+	}
 
 	if( fd > 0 ) {
 		net_close(fd);
-		FD_CLR(fd,&all_set);
+		FD_CLR(fd, &all_set);
 	}
 }
 
 /* adds a fd to the all_set descriptors */
 void fd_add( int fd )
 {
-	if( g_server.debug )
-		con_text_out(M_INF,_("Accepting fd %d\n"),fd);
+	if( g_server.debug ) {
+		con_text_out(M_INF, _("Accepting fd %d\n"), fd);
+	}
 
 	FD_SET(fd, &all_set );
-	if( fd > max_fd )
+	if( fd > max_fd ) {
 		max_fd = fd;
+	}
 }
 
 /* parse the arguments */
@@ -344,18 +359,18 @@ void argument_init( int argc, char **argv_var)
 			fprintf(stderr, _("  -m, --metaserver BOOLEAN\tPublish this server with the metaserver (default 0)\n"));
 			fprintf(stderr, _("  -d, --debug\tEnable verbosity in server\n"));
 			exit(0);
-		} else if (is_option("--version",argv[i])) {
+		} else if (is_option("--version", argv[i])) {
 			fprintf(stderr, TEG_NAME" v"VERSION"\n\n");
 			exit(0);
-		} else if ((option = get_option("--port",argv,&i,argc)) != NULL) {
+		} else if ((option = get_option("--port", argv, &i, argc)) != NULL) {
 			g_server.port=atoi(option);
-		} else if ((option = get_option("--seed",argv,&i,argc)) != NULL) {
+		} else if ((option = get_option("--seed", argv, &i, argc)) != NULL) {
 			g_game.seed=atoi(option);
-		} else if ((option = get_option("--console",argv,&i,argc)) != NULL) {
+		} else if ((option = get_option("--console", argv, &i, argc)) != NULL) {
 			g_server.with_console=atoi(option);
-		} else if ((option = get_option("--metaserver",argv,&i,argc)) != NULL) {
+		} else if ((option = get_option("--metaserver", argv, &i, argc)) != NULL) {
 			g_server.metaserver_on=atoi(option);
-		} else if ( is_option("--debug",argv[i])) {
+		} else if ( is_option("--debug", argv[i])) {
 			g_server.debug=1;
 		} else {
 			fprintf(stderr, _("Unrecognized option: \"%s\"\n"), argv[i]);
@@ -377,13 +392,14 @@ int main( int argc, char **argv)
 	game_init();		/* default values for the game */
 
 	argument_init(argc, argv);	/* parse command line */
-	printf( _("Bound to port: %d\n"),g_server.port );
-	printf( _("Using seed: %u\n\n"),g_game.seed );
+	printf( _("Bound to port: %d\n"), g_server.port );
+	printf( _("Using seed: %u\n\n"), g_game.seed );
 
 	if( g_server.with_console ) {
-		if( ! g_server.metaserver_on )
-			printf( _("Type '%s %s' to publish this server in the metaserver\n"),TOKEN_METASERVER, OPTION_META_ON);
-		printf( _("Type '%s' for more help\n"),TOKEN_HELP);
+		if( ! g_server.metaserver_on ) {
+			printf( _("Type '%s %s' to publish this server in the metaserver\n"), TOKEN_METASERVER, OPTION_META_ON);
+		}
+		printf( _("Type '%s' for more help\n"), TOKEN_HELP);
 		console_init();		/* initialize console */
 	} else {
 		printf(_("Standalone server.\n"));
@@ -393,8 +409,9 @@ int main( int argc, char **argv)
 
 	main_loop();
 
-	if( g_server.with_console )
+	if( g_server.with_console ) {
 		console_quit();
+	}
 
 	return 1;
 }

@@ -40,8 +40,7 @@
 
 #include "protocol.h"
 
-static ssize_t
-writen(int fd, const void *vptr, size_t n )
+static ssize_t writen(int fd, const void *vptr, size_t n )
 {
 	size_t nleft;
 	ssize_t nwritten;
@@ -51,10 +50,11 @@ writen(int fd, const void *vptr, size_t n )
 	nleft = n;
 	while( nleft > 0 ) {
 		if( ( nwritten = write(fd, ptr, nleft) ) <= 0 ) {
-			if( errno == EINTR )
+			if( errno == EINTR ) {
 				nwritten = 0;
-			else
+			} else {
 				return (-1 );
+			}
 		}
 		nleft -= nwritten ;
 		ptr += nwritten;
@@ -62,8 +62,7 @@ writen(int fd, const void *vptr, size_t n )
 	return(n);
 }
 
-ssize_t
-net_readline( int fd, void *vptr, size_t maxlen )
+ssize_t net_readline( int fd, void *vptr, size_t maxlen )
 {
 	ssize_t rc;
 	char c, *ptr;
@@ -74,13 +73,15 @@ net_readline( int fd, void *vptr, size_t maxlen )
 again:
 		if( (rc= read(fd, &c, 1 )) ==1 ) {
 			*ptr++ = c;
-			if( c=='\n' )
+			if( c=='\n' ) {
 				break;
+			}
 		} else if( rc== 0 ) {
 			return 0;
 		} else {
-			if( errno == EINTR )
+			if( errno == EINTR ) {
 				goto again;
+			}
 			return(-1);
 		}
 	}
@@ -89,29 +90,27 @@ again:
 	return( n );
 }
 
-ssize_t
-net_read( int fd, void *vptr, size_t maxlen )
+ssize_t net_read( int fd, void *vptr, size_t maxlen )
 {
 	return read( fd, vptr, maxlen );
 }
 
 
-int
-net_connect_tcp( const char *host, int port )
+int net_connect_tcp( const char *host, int port )
 {
 	int sockfd, n;
 	struct addrinfo hints, *res, *ressave;
 	char serv[30];
 
-	snprintf(serv,sizeof(serv)-1,"%d",(unsigned int) port );
+	snprintf(serv, sizeof(serv)-1, "%d", (unsigned int) port );
 	serv[sizeof(serv)-1]=0;
 
 	bzero(&hints, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if ((n = getaddrinfo( host,serv,&hints,&res)) != 0) {
-		fprintf(stderr,"net_connect_tcp error for %s, %s: %s\n", host, serv, gai_strerror(n));
+	if ((n = getaddrinfo( host, serv, &hints, &res)) != 0) {
+		fprintf(stderr, "net_connect_tcp error for %s, %s: %s\n", host, serv, gai_strerror(n));
 		return -1;
 	}
 
@@ -119,10 +118,12 @@ net_connect_tcp( const char *host, int port )
 
 	do {
 		sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-		if( sockfd < 0)
+		if( sockfd < 0) {
 			continue;
-		if (connect(sockfd,res->ai_addr,res->ai_addrlen) == 0)
+		}
+		if (connect(sockfd, res->ai_addr, res->ai_addrlen) == 0) {
 			break;
+		}
 
 		close(sockfd);
 
@@ -139,24 +140,23 @@ net_connect_tcp( const char *host, int port )
 	return(sockfd);
 }
 
-int
-net_listen(const char *host, int port )
+int net_listen(const char *host, int port )
 {
 	int listenfd, n;
 	const int on = 1;
 	struct addrinfo	hints, *res, *ressave;
 	char serv[30];
 
-	snprintf(serv,sizeof(serv)-1,"%d",(unsigned int) port );
+	snprintf(serv, sizeof(serv)-1, "%d", (unsigned int) port );
 	serv[sizeof(serv)-1]=0;
-	
+
 	bzero(&hints, sizeof(struct addrinfo));
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
 	if ( (n = getaddrinfo(host, serv, &hints, &res)) != 0) {
-		fprintf(stderr,"net_listen error for %s, %s: %s", host, serv, gai_strerror(n));
+		fprintf(stderr, "net_listen error for %s, %s: %s", host, serv, gai_strerror(n));
 		return -1;
 	}
 
@@ -164,12 +164,14 @@ net_listen(const char *host, int port )
 
 	do {
 		listenfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
-		if (listenfd < 0)
-			continue;		/* error, try next one */
+		if (listenfd < 0) {
+			continue;    /* error, try next one */
+		}
 
 		setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
-		if (bind(listenfd, res->ai_addr, res->ai_addrlen) == 0)
-			break;			/* success */
+		if (bind(listenfd, res->ai_addr, res->ai_addrlen) == 0) {
+			break;    /* success */
+		}
 
 		close(listenfd);	/* bind error, close and try next one */
 	} while ( (res = res->ai_next) != NULL);
@@ -189,10 +191,9 @@ net_listen(const char *host, int port )
 
 
 
-int
-net_printf(int sock, char *format, ...)
+int net_printf(int sock, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 
 	va_start(args, format);
@@ -202,16 +203,15 @@ net_printf(int sock, char *format, ...)
 	return writen(sock, buf, strlen(buf));
 }
 
-int
-net_print(int sock, char *msg)
+int net_print(int sock, char *msg)
 {
 	return writen(sock, msg, strlen(msg));
 }
 
-int
-net_close( int fd )
+int net_close( int fd )
 {
-	if( fd >= 0 )
+	if( fd >= 0 ) {
 		return close( fd );
+	}
 	return -1;
 }

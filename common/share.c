@@ -1,4 +1,4 @@
-/********************************************************************** 
+/**********************************************************************
  Freeciv - Copyright (C) 1996 - A Kjeldberg, L Gregersen, P Unold
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,13 +36,13 @@ char const * get_option(const char *option_name, char const **argv, int *i, int 
 {
 	int len = strlen(option_name);
 
-	if( !strcmp(option_name,argv[*i])
-	    || (!strncmp(option_name,argv[*i],len) && argv[*i][len]=='=')
-	    || !strncmp(option_name+1,argv[*i],2) ) {
+	if( !strcmp(option_name, argv[*i])
+	        || (!strncmp(option_name, argv[*i], len) && argv[*i][len]=='=')
+	        || !strncmp(option_name+1, argv[*i], 2) ) {
 
 		int offset = argv[*i][1] != '-'
-		                            ? 2 // minus sign + option character
-		                            : len;
+		             ? 2 // minus sign + option character
+		             : len;
 		char const *opt = argv[*i] + offset;
 
 		if (*opt == '=') {
@@ -63,8 +63,9 @@ char const * get_option(const char *option_name, char const **argv, int *i, int 
 
 int is_option(const char *option_name, const char *option)
 {
-	if (!strcmp(option_name,option) || !strncmp(option_name+1,option,2))
+	if (!strcmp(option_name, option) || !strncmp(option_name+1, option, 2)) {
 		return 1;
+	}
 	return 0;
 }
 

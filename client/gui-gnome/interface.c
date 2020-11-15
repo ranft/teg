@@ -132,36 +132,33 @@ struct _SensiData {
 } SensiData;
 
 
-static void
-canvas_map_zoom_1(GtkWidget *widget, gpointer data)
+static void canvas_map_zoom_1(GtkWidget *widget, gpointer data)
 {
 	canvas_map_zoom = 1.0;
 	goo_canvas_set_scale ((GooCanvas*)canvas_map, canvas_map_zoom);
 }
 
-static void
-canvas_map_zoom_in(GtkWidget *widget, gpointer data)
+static void canvas_map_zoom_in(GtkWidget *widget, gpointer data)
 {
 	canvas_map_zoom *= 1.05;
 	goo_canvas_set_scale ((GooCanvas*)canvas_map, canvas_map_zoom);
 }
 
-static void
-canvas_map_zoom_out(GtkWidget *widget, gpointer data)
+static void canvas_map_zoom_out(GtkWidget *widget, gpointer data)
 {
 	canvas_map_zoom *= 0.95;
 	goo_canvas_set_scale ((GooCanvas*)canvas_map, canvas_map_zoom);
 }
 
-static TEG_STATUS
-canvas_create_countries(GooCanvasItem *group)
+static TEG_STATUS canvas_create_countries(GooCanvasItem *group)
 {
 	int i=0;
 
-	for(i=0;i<CONT_CANT;i++)
-		G_cont_create(i,group);
+	for(i=0; i<CONT_CANT; i++) {
+		G_cont_create(i, group);
+	}
 
-	for(i=0;i<COUNTRIES_CANT;i++) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
 		G_country_create(i);
 		G_country_draw(i);
 		G_country_draw_ejer(i);
@@ -184,26 +181,26 @@ static TEG_STATUS canvas_create_map( void )
 
 	im = gdk_pixbuf_new_from_file(filename, NULL);
 
-	if (im){
+	if (im) {
 		goo_canvas_image_new (
-				root,
-				im,
-				0.0,
-				0.0,
-				"width", (double) gdk_pixbuf_get_width(im),
-				"height", (double) gdk_pixbuf_get_height(im),
-				NULL);
+		    root,
+		    im,
+		    0.0,
+		    0.0,
+		    "width", (double) gdk_pixbuf_get_width(im),
+		    "height", (double) gdk_pixbuf_get_height(im),
+		    NULL);
 		canvas_create_countries(root);
 		armies_init(root);
 		dices_init(root);
-		goo_canvas_set_bounds(GOO_CANVAS(canvas_map),0,0,
+		goo_canvas_set_bounds(GOO_CANVAS(canvas_map), 0, 0,
 		                      gdk_pixbuf_get_width(im),
 		                      gdk_pixbuf_get_height(im));
 
 		g_object_unref(im);
 
 	} else {
-		g_warning (_("Could not find the %s file"),gui_theme.board);
+		g_warning (_("Could not find the %s file"), gui_theme.board);
 		return TEG_STATUS_ERROR;
 	}
 
@@ -287,7 +284,7 @@ GtkWidget* create_mainwin (void)
 	dock1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	g_object_ref (dock1);
 	g_object_set_data_full (G_OBJECT (app1), "dock1", dock1,
-		(GDestroyNotify) g_object_unref);
+	                        (GDestroyNotify) g_object_unref);
 	gtk_widget_show (dock1);
 	gtk_container_add (GTK_CONTAINER (app1), dock1);
 
@@ -375,7 +372,7 @@ GtkWidget* create_mainwin (void)
 	update_menu = gtk_menu_item_new_with_mnemonic (_("_Update Map"));
 	gtk_widget_set_tooltip_text (update_menu,
 	                             _("Show the armies that other players "
-	                             "had placed"));
+	                               "had placed"));
 	gtk_menu_shell_append (GTK_MENU_SHELL (actionmenu), update_menu);
 	g_signal_connect (update_menu, "activate",
 	                  G_CALLBACK (on_updatemap_activate), NULL);
@@ -603,10 +600,10 @@ GtkWidget* create_mainwin (void)
 	gtk_widget_realize (app1);
 
 	g_signal_connect ( G_OBJECT(app1), "destroy",
-		G_CALLBACK( on_exit_activate ), NULL );
+	                   G_CALLBACK( on_exit_activate ), NULL );
 
 	g_signal_connect ( G_OBJECT(app1), "delete_event",
-		G_CALLBACK( on_exit_activate ), NULL );
+	                   G_CALLBACK( on_exit_activate ), NULL );
 
 
 	SensiData.connect_button = GTK_WIDGET (button1);
@@ -622,7 +619,7 @@ GtkWidget* create_mainwin (void)
 	eventbox1 = gtk_event_box_new ();
 	g_object_ref (eventbox1);
 	g_object_set_data_full (G_OBJECT (app1), "eventbox1", eventbox1,
-		(GDestroyNotify) g_object_unref);
+	                        (GDestroyNotify) g_object_unref);
 	gtk_widget_show (eventbox1);
 	gtk_box_pack_start (GTK_BOX (dock1), eventbox1, TRUE, TRUE, 0);
 
@@ -635,9 +632,10 @@ GtkWidget* create_mainwin (void)
 	gtk_container_add (GTK_CONTAINER (viewport1), vbox_main);
 
 	/* status map */
-	if( mainstatus_create(&window_mainstatus) != TEG_STATUS_SUCCESS )
+	if( mainstatus_create(&window_mainstatus) != TEG_STATUS_SUCCESS ) {
 		goto error;
-	gtk_box_pack_start( GTK_BOX(vbox_main), window_mainstatus, FALSE,FALSE,0);
+	}
+	gtk_box_pack_start( GTK_BOX(vbox_main), window_mainstatus, FALSE, FALSE, 0);
 
 	/* paned */
 	paned = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
@@ -649,15 +647,16 @@ GtkWidget* create_mainwin (void)
 	/* map */
 	scrolledwindow = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy( GTK_SCROLLED_WINDOW(scrolledwindow),
-			GTK_POLICY_AUTOMATIC,
-			GTK_POLICY_AUTOMATIC);
+	                                GTK_POLICY_AUTOMATIC,
+	                                GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_min_content_width (GTK_SCROLLED_WINDOW
-	                                           (scrolledwindow), 641);
+	        (scrolledwindow), 641);
 	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW
-	                                            (scrolledwindow), 394);
+	        (scrolledwindow), 394);
 
-	if( canvas_create_map() != TEG_STATUS_SUCCESS )
+	if( canvas_create_map() != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	gtk_container_add(GTK_CONTAINER(scrolledwindow), canvas_map);
 	gtk_box_pack_start(GTK_BOX(vbox_paned), scrolledwindow, TRUE, TRUE, 0);
@@ -672,7 +671,7 @@ GtkWidget* create_mainwin (void)
 	sw = gtk_scrolled_window_new(NULL, NULL);
 
 	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC,
-					 GTK_POLICY_ALWAYS);
+	                               GTK_POLICY_ALWAYS);
 	gtk_box_pack_start(GTK_BOX(ahbox), sw, TRUE, TRUE, 0);
 
 	gtk_widget_set_size_request(sw, 620, 60);
@@ -708,21 +707,21 @@ GtkWidget* create_mainwin (void)
 	statusbar = gtk_statusbar_new ();
 	g_object_ref (statusbar);
 	g_object_set_data_full (G_OBJECT (app1), "statusbar", statusbar,
-		(GDestroyNotify) g_object_unref);
+	                        (GDestroyNotify) g_object_unref);
 	gtk_widget_show (statusbar);
 	gtk_container_add (GTK_CONTAINER (dock1), statusbar);
 
 	gtk_box_pack_start(GTK_BOX(statusbar),
-		ministatus_build(), FALSE, TRUE, 0);
+	                   ministatus_build(), FALSE, TRUE, 0);
 
 
 	gtk_statusbar_push (GTK_STATUSBAR (statusbar), 0,
-				_("Welcome to TEG!"));
+	                    _("Welcome to TEG!"));
 
 	/* icono */
 	{
 		GdkPixbuf *icono;
-		#include "../teg_pix/teg_icono.xpm"
+#include "../teg_pix/teg_icono.xpm"
 		gtk_widget_realize (app1);
 		icono = gdk_pixbuf_new_from_xpm_data (teg_icono_xpm);
 		gtk_window_set_icon (GTK_WINDOW (app1), icono);
@@ -877,13 +876,14 @@ TEG_STATUS set_sensitive_tb(void)
 static void tropas_response_cb (GtkDialog *dialog, gint id, gpointer data)
 {
 	if (id == GTK_RESPONSE_OK) {
-	        if (GTK_IS_RANGE( tropas_hscale_cant ))
-	                tropas_cant = (gint) gtk_adjustment_get_value
-	                        (gtk_range_get_adjustment
-	                         (GTK_RANGE( tropas_hscale_cant )));
+		if (GTK_IS_RANGE( tropas_hscale_cant ))
+			tropas_cant = (gint) gtk_adjustment_get_value
+			              (gtk_range_get_adjustment
+			               (GTK_RANGE( tropas_hscale_cant )));
 
-	        if( tropas_cant > 0 )
-	                out_tropas( tropas_src, tropas_dst, tropas_cant );
+		if( tropas_cant > 0 ) {
+			out_tropas( tropas_src, tropas_dst, tropas_cant );
+		}
 	}
 
 	gtk_widget_destroy(GTK_WIDGET(dialog));
@@ -895,9 +895,9 @@ void tropas_window( int src, int dst, int cant )
 	GtkWidget *label;
 	GtkWidget *table;
 	GtkWidget *frame;
-	GtkWidget *vbox_dia,*vbox;
+	GtkWidget *vbox_dia, *vbox;
 	GtkWidget *hbox;
-        GtkAdjustment *adj;
+	GtkAdjustment *adj;
 	char buf[200];
 
 	tropas_src = src;
@@ -905,12 +905,12 @@ void tropas_window( int src, int dst, int cant )
 
 	tropas_cant = 0;
 
-	tropas_dialog = teg_dialog_new(_("A country was conquered"),_("A country was conquered"));
+	tropas_dialog = teg_dialog_new(_("A country was conquered"), _("A country was conquered"));
 	gtk_dialog_add_button( GTK_DIALOG(tropas_dialog), _("_OK"),
 	                       GTK_RESPONSE_OK );
 
 	gtk_window_set_transient_for (GTK_WINDOW (tropas_dialog),
-			GTK_WINDOW (main_window));
+	                              GTK_WINDOW (main_window));
 
 	g_signal_connect (G_OBJECT (tropas_dialog), "destroy",
 	                  G_CALLBACK (gtk_widget_destroyed), &tropas_dialog);
@@ -933,7 +933,7 @@ void tropas_window( int src, int dst, int cant )
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), GNOME_PAD);
 
-	snprintf(buf,sizeof(buf)-1,_("You conquered '%s' in your attack from '%s'!!\n"), countries_get_name(dst), countries_get_name(src) );
+	snprintf(buf, sizeof(buf)-1, _("You conquered '%s' in your attack from '%s'!!\n"), countries_get_name(dst), countries_get_name(src) );
 	buf[ sizeof(buf) -1 ] = 0;
 	label = gtk_label_new(buf);
 	gtk_box_pack_start( GTK_BOX( vbox), label, TRUE, TRUE, 0);
@@ -946,11 +946,11 @@ void tropas_window( int src, int dst, int cant )
 		adj = (GtkAdjustment *) gtk_adjustment_new( 0.0, 0.0, (gfloat) (cant + 1), 1.0, 1.0, 1.0 );
 		// tropas_spinner_cant = gtk_spin_button_new( adj, 0.0, 0);
 		tropas_hscale_cant = gtk_scale_new( GTK_ORIENTATION_HORIZONTAL,
-                                                    adj );
+		                                    adj );
 		gtk_box_pack_start( GTK_BOX( hbox), tropas_hscale_cant, TRUE, TRUE, 0);
 		gtk_scale_set_digits(GTK_SCALE(tropas_hscale_cant), 0);
-		gtk_scale_set_draw_value(GTK_SCALE(tropas_hscale_cant),1);
-/*		gtk_range_draw_trough(GTK_RANGE(tropas_hscale_cant));  */
+		gtk_scale_set_draw_value(GTK_SCALE(tropas_hscale_cant), 1);
+		/*		gtk_range_draw_trough(GTK_RANGE(tropas_hscale_cant));  */
 
 		snprintf(buf, sizeof(buf) -1, _("[Note: The server moved 1 army to '%s' for you.\nChoose how many more armies you want to move]"), countries_get_name(dst) );
 		buf[ sizeof(buf) -1 ] = 0;
@@ -963,26 +963,28 @@ void tropas_window( int src, int dst, int cant )
 	gtk_grid_attach (GTK_GRID (table), frame, 0, 0, 1, 1);
 
 
-	if (!gtk_widget_get_visible (tropas_dialog))
+	if (!gtk_widget_get_visible (tropas_dialog)) {
 		gtk_widget_show_all (tropas_dialog);
-	else
+	} else {
 		gtk_widget_destroy (tropas_dialog);
+	}
 }
 
 /* regroup */
 static void reagrupe_response_cb (GtkDialog *dialog, gint id, gpointer data )
 {
 	if (id == GTK_RESPONSE_OK) {
-	        if (GTK_IS_RANGE (reagrupe_hscale_cant))
-	                reagrupe_cant = (gint) gtk_adjustment_get_value
-	                        (gtk_range_get_adjustment
-	                         (GTK_RANGE(reagrupe_hscale_cant)));
+		if (GTK_IS_RANGE (reagrupe_hscale_cant))
+			reagrupe_cant = (gint) gtk_adjustment_get_value
+			                (gtk_range_get_adjustment
+			                 (GTK_RANGE(reagrupe_hscale_cant)));
 
-	        if( reagrupe_cant > 0) {
-	                reagrupe_out( reagrupe_src, reagrupe_dst,
-	                              reagrupe_cant );
-	        } else
-	                reagrupe_reset();
+		if( reagrupe_cant > 0) {
+			reagrupe_out( reagrupe_src, reagrupe_dst,
+			              reagrupe_cant );
+		} else {
+			reagrupe_reset();
+		}
 	}
 
 	gtk_widget_destroy(GTK_WIDGET(reagrupe_dialog));
@@ -994,9 +996,9 @@ void reagrupe_window( int src, int dst, int cant )
 	GtkWidget *label;
 	GtkWidget *table;
 	GtkWidget *frame;
-	GtkWidget *vbox_dia,*vbox;
+	GtkWidget *vbox_dia, *vbox;
 	GtkWidget *hbox;
-        GtkAdjustment *adj;
+	GtkAdjustment *adj;
 	char buf[200];
 
 	reagrupe_src = src;
@@ -1004,13 +1006,13 @@ void reagrupe_window( int src, int dst, int cant )
 
 	reagrupe_cant = 0;
 
-	reagrupe_dialog = teg_dialog_new(_("Regrouping armies"),_("Regroup your armies"));
+	reagrupe_dialog = teg_dialog_new(_("Regrouping armies"), _("Regroup your armies"));
 
 	gtk_dialog_add_button(GTK_DIALOG(reagrupe_dialog), _("_OK"),
-                              GTK_RESPONSE_OK);
+	                      GTK_RESPONSE_OK);
 
 	gtk_window_set_transient_for (GTK_WINDOW (reagrupe_dialog),
-			GTK_WINDOW (main_window));
+	                              GTK_WINDOW (main_window));
 
 	g_signal_connect (G_OBJECT (reagrupe_dialog), "destroy",
 	                  G_CALLBACK (gtk_widget_destroyed), &reagrupe_dialog);
@@ -1048,9 +1050,9 @@ void reagrupe_window( int src, int dst, int cant )
 
 	gtk_box_pack_start( GTK_BOX( hbox), reagrupe_hscale_cant, TRUE, TRUE, 0);
 	gtk_scale_set_digits(GTK_SCALE(reagrupe_hscale_cant), 0);
-	gtk_scale_set_draw_value(GTK_SCALE(reagrupe_hscale_cant),1);
+	gtk_scale_set_draw_value(GTK_SCALE(reagrupe_hscale_cant), 1);
 
-	snprintf(buf, sizeof(buf) -1,_("[Note: You can regroup as many times as you want,\nas long as you dont regroup an armie that were\nregrouped before in this turn.]"));
+	snprintf(buf, sizeof(buf) -1, _("[Note: You can regroup as many times as you want,\nas long as you dont regroup an armie that were\nregrouped before in this turn.]"));
 	buf[ sizeof(buf) -1 ] = 0;
 	label = gtk_label_new(buf);
 	gtk_box_pack_start( GTK_BOX( vbox), label, TRUE, TRUE, 0);
@@ -1060,8 +1062,9 @@ void reagrupe_window( int src, int dst, int cant )
 	gtk_grid_attach (GTK_GRID (table), frame, 0, 0, 1, 1);
 
 
-	if (!gtk_widget_get_visible (reagrupe_dialog))
+	if (!gtk_widget_get_visible (reagrupe_dialog)) {
 		gtk_widget_show_all (reagrupe_dialog);
-	else
+	} else {
 		gtk_widget_destroy (reagrupe_dialog);
+	}
 }

@@ -109,15 +109,15 @@ STATIC void con_stats_show( PSPLAYER pJ )
 {
 	stats_score( &pJ->player_stats, g_conts );
 	printf(" %i   %-4i  [ %-3u   %-3u ] - [ %-3u  %-3u ]  %-15s %s\n",
-			pJ->numjug,
-			pJ->player_stats.score,
-			pJ->player_stats.countries_won,
-			0,
-			pJ->player_stats.armies_killed,
-			0,
-			pJ->name,
-			pJ->human ? _("yes") : _("no")
-			);
+	       pJ->numjug,
+	       pJ->player_stats.score,
+	       pJ->player_stats.countries_won,
+	       0,
+	       pJ->player_stats.armies_killed,
+	       0,
+	       pJ->name,
+	       pJ->human ? _("yes") : _("no")
+	      );
 }
 STATIC TEG_STATUS con_stats( int unused, char* unused2)
 {
@@ -134,12 +134,12 @@ STATIC void con_scores_show(PSCORES pS, void* unused)
 	int color;
 	color = ( ( pS->color >= TEG_MAX_PLAYERS || pS->color < 0 ) ? TEG_MAX_PLAYERS : pS->color );
 	printf("  %4d   %s   %-15s   %-8s %s\n",
-	             pS->score,
-				 pS->date,
-				 pS->name,
-				 _(g_colores[color]),
-				 pS->human ? _("yes") : _("no")
-				 );
+	       pS->score,
+	       pS->date,
+	       pS->name,
+	       _(g_colores[color]),
+	       pS->human ? _("yes") : _("no")
+	      );
 }
 
 
@@ -156,36 +156,37 @@ STATIC TEG_STATUS con_kick( int fd, char *name)
 		PSPLAYER pJ;
 		if( player_findbyname( name, &pJ ) == TEG_STATUS_SUCCESS ) {
 			player_del_hard( pJ );
-			
-			con_text_out_wop(M_ERR,_("Player %s was kicked from the game\n"),name);
-			netall_printf( TOKEN_KICK"=%s\n",name);
-		} else
-			con_text_out_wop(M_ERR,_("Player %s was not found\n"),name);
+
+			con_text_out_wop(M_ERR, _("Player %s was kicked from the game\n"), name);
+			netall_printf( TOKEN_KICK"=%s\n", name);
+		} else {
+			con_text_out_wop(M_ERR, _("Player %s was not found\n"), name);
+		}
 	}
 	return TEG_STATUS_SUCCESS;
 }
 
 STATIC TEG_STATUS con_save( int fd, char *unused)
 {
-	con_text_out_wop(M_INF,_("Not yet implemented\n"));
+	con_text_out_wop(M_INF, _("Not yet implemented\n"));
 	return TEG_STATUS_SUCCESS;
 }
 
 STATIC TEG_STATUS con_set(int fd, char*str)
 {
-	return option_parse(fd,str);
+	return option_parse(fd, str);
 }
 
 STATIC TEG_STATUS con_view(int fd, char*str)
 {
-	return option_view(fd,str);
+	return option_view(fd, str);
 }
 
 STATIC TEG_STATUS con_message( int fd, char *msg )
 {
 	if( strlen(msg) !=0 ) {
 		strip_invalid_msg(msg);
-		netall_printf(TOKEN_MESSAGE"=(r00t),-1,%s\n",msg);
+		netall_printf(TOKEN_MESSAGE"=(r00t),-1,%s\n", msg);
 	}
 	return TEG_STATUS_SUCCESS;
 }
@@ -195,14 +196,14 @@ STATIC TEG_STATUS con_status(int fd, char*unused)
 	PLIST_ENTRY l = g_list_player.Flink;
 	PSPLAYER pJ;
 
-	net_printf(fd,_("players:%d, connections:%d, game number:%d, round:%d, mission:%s\n"),
-			g_game.players,
-			g_game.connections,
-			g_game.gamenumber,
-			g_game.round_number,
-			(g_game.mission?_("TRUE"):_("FALSE"))
-			);
-	net_printf(fd,_("fd, number, countries, armies, cards, exch, name, human, color, status, address\n"));
+	net_printf(fd, _("players:%d, connections:%d, game number:%d, round:%d, mission:%s\n"),
+	           g_game.players,
+	           g_game.connections,
+	           g_game.gamenumber,
+	           g_game.round_number,
+	           (g_game.mission?_("TRUE"):_("FALSE"))
+	          );
+	net_printf(fd, _("fd, number, countries, armies, cards, exch, name, human, color, status, address\n"));
 
 	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		int color;
@@ -210,33 +211,33 @@ STATIC TEG_STATUS con_status(int fd, char*unused)
 
 		color = (pJ->color==-1) ? TEG_MAX_PLAYERS : pJ->color;
 		if( pJ->is_player ) {
-			net_printf(fd,"%-3d %d  %-3u  %-3u  %d  %d  %-15s  %s  %s  %s  %s\n",
-				pJ->fd,
-				pJ->numjug,
-				pJ->tot_countries,
-				pJ->tot_armies,
-				pJ->tot_cards,
-				pJ->tot_exchanges,
-				pJ->name,
-				pJ->human ? _("yes") : _("no"),
-				_(g_colores[color]),
-				_(g_estados[pJ->estado]),
-				pJ->addr
-			);					
+			net_printf(fd, "%-3d %d  %-3u  %-3u  %d  %d  %-15s  %s  %s  %s  %s\n",
+			           pJ->fd,
+			           pJ->numjug,
+			           pJ->tot_countries,
+			           pJ->tot_armies,
+			           pJ->tot_cards,
+			           pJ->tot_exchanges,
+			           pJ->name,
+			           pJ->human ? _("yes") : _("no"),
+			           _(g_colores[color]),
+			           _(g_estados[pJ->estado]),
+			           pJ->addr
+			          );
 		} else {
-			net_printf(fd,"%-3d %d  %-3d  %-3d  %d  %d  %-15s  %s  %s  %s  %s\n",
-				pJ->fd,
-				-1,
-				-1,
-				-1,
-				-1,
-				-1,
-				pJ->name,
-				pJ->human ? _("yes") : _("no"),
-				_("n/a"),
-				_("observer"),
-				pJ->addr
-			);
+			net_printf(fd, "%-3d %d  %-3d  %-3d  %d  %d  %-15s  %s  %s  %s  %s\n",
+			           pJ->fd,
+			           -1,
+			           -1,
+			           -1,
+			           -1,
+			           -1,
+			           pJ->name,
+			           pJ->human ? _("yes") : _("no"),
+			           _("n/a"),
+			           _("observer"),
+			           pJ->addr
+			          );
 		}
 
 		l = LIST_NEXT(l);
@@ -253,7 +254,7 @@ STATIC TEG_STATUS con_help ( int fd, char*unused )
 {
 	for(unsigned i=0; i<CONSOLE_TOKENS; i++) {
 		if(con_tokens[i].func)
-			net_printf(fd,"'%s' %s\n",
+			net_printf(fd, "'%s' %s\n",
 			           con_tokens[i].label, _(con_tokens[i].help));
 	}
 	return TEG_STATUS_SUCCESS;
@@ -261,8 +262,8 @@ STATIC TEG_STATUS con_help ( int fd, char*unused )
 
 static void player_dump( PSPLAYER pJ )
 {
-	printf("Nombre: %s\n",pJ->name);
-	printf("fd: %d\n",pJ->fd);
+	printf("Nombre: %s\n", pJ->name);
+	printf("fd: %d\n", pJ->fd);
 }
 
 STATIC TEG_STATUS con_test(int fd, char *str)
@@ -278,21 +279,22 @@ STATIC TEG_STATUS con_test(int fd, char *str)
 STATIC TEG_STATUS console_lookup( int fd, PARSER *p )
 {
 	for(unsigned i=0; i<CONSOLE_TOKENS; i++) {
-		if(strcmp( p->token, con_tokens[i].label )==0 ){
-			if (con_tokens[i].func)
-				return( (con_tokens[i].func)(fd ,p->value));
+		if(strcmp( p->token, con_tokens[i].label )==0 ) {
+			if (con_tokens[i].func) {
+				return( (con_tokens[i].func)(fd, p->value));
+			}
 			return TEG_STATUS_TOKENNULL;
 		}
 	}
-	printf(_("Command '%s' not recongnized\n"),p->token);
-	printf(_("Type '%s' for help\n"),TOKEN_HELP);
+	printf(_("Command '%s' not recongnized\n"), p->token);
+	printf(_("Type '%s' for help\n"), TOKEN_HELP);
 	return TEG_STATUS_TOKENNOTFOUND;
 }
 
 void con_show_prompt()
 {
 	if( g_server.with_console ) {
-		fprintf(stdout,"> ");
+		fprintf(stdout, "> ");
 		fflush(stdout);
 	}
 }
@@ -301,8 +303,8 @@ TEG_STATUS console_parse( int fd, char *str )
 {
 	int i;
 	PARSER p;
-	DELIM igualador={ '=', ' ', '=' };
-	DELIM separador={ ';', ';', ';' };
+	DELIM igualador= { '=', ' ', '=' };
+	DELIM separador= { ';', ';', ';' };
 
 	p.equals = &igualador;
 	p.separators = &separador;
@@ -312,8 +314,9 @@ TEG_STATUS console_parse( int fd, char *str )
 	do {
 		if( (i=parser_parse( &p )) ) {
 			TEG_STATUS ts = console_lookup( fd, &p );
-			if( ts != TEG_STATUS_SUCCESS )
+			if( ts != TEG_STATUS_SUCCESS ) {
 				return ts;
+			}
 		}
 	} while( i && p.can_continue);
 	return TEG_STATUS_SUCCESS;
@@ -338,7 +341,7 @@ TEG_STATUS console_handle( int fd )
 	if( j<1 ) {
 		return TEG_STATUS_CONNCLOSED;
 	}
-			
+
 	if( j > 1) {
 		ts = console_parse( fd, str );
 		con_show_prompt();
@@ -351,7 +354,7 @@ TEG_STATUS console_handle( int fd )
 
 void con_text_out( int level, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 
 	if( g_server.with_console ) {
@@ -360,14 +363,14 @@ void con_text_out( int level, char *format, ...)
 		buf[ sizeof(buf) -1 ] = 0;
 		va_end(args);
 
-		fprintf(stdout,"%s",buf);
+		fprintf(stdout, "%s", buf);
 		con_show_prompt();
 	}
 }
 
 TEG_STATUS con_text_out_wop( int level, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 
 	if( g_server.with_console ) {
@@ -376,7 +379,7 @@ TEG_STATUS con_text_out_wop( int level, char *format, ...)
 		buf[ sizeof(buf) -1 ] = 0;
 		va_end(args);
 
-		fprintf(stdout,"%s",buf);
+		fprintf(stdout, "%s", buf);
 	}
 	return TEG_STATUS_SUCCESS;
 }
@@ -387,7 +390,7 @@ void con_readline_input_callback(char *line)
 	if (line) {
 		if (*line) {
 			add_history(line);
-			console_parse( CONSOLE_FD,line );
+			console_parse( CONSOLE_FD, line );
 		}
 		free(line);
 	}
@@ -408,8 +411,9 @@ TEG_STATUS console_init( void )
 TEG_STATUS console_quit( void )
 {
 #ifdef HAVE_LIBREADLINE
-	if( g_server.with_console )
+	if( g_server.with_console ) {
 		rl_callback_handler_remove();
+	}
 #endif /* HAVE_LIBREADLINE */
 	return TEG_STATUS_SUCCESS;
 }

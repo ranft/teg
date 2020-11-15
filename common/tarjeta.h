@@ -51,7 +51,7 @@ typedef struct _tarjeta {
 /// \todo: Remove this dangerous macro
 #define COUNTRY_FROM_TARJETA( pT ) ( ((char*)(pT)) - (( ((char*)&((PCOUNTRY)pT)->tarjeta) - ((char*)pT) )))
 
-/* 
+/*
  * Funciones y varialbes exportadas
  */
 bool card_belongs_to_player(int player, int country);

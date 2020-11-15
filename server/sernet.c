@@ -30,7 +30,7 @@
 
 void netall_printf(char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
 	PLIST_ENTRY l = g_list_player.Flink;
 	PSPLAYER j;

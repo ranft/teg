@@ -40,24 +40,25 @@ TEG_STATUS turno_2nextplayer( PSPLAYER *ppJ )
 	PLIST_ENTRY first_node = (PLIST_ENTRY)*ppJ;
 	PLIST_ENTRY l = LIST_NEXT( (*ppJ));
 
-	TURNO_DEBUG("Old turn: '%s'\n",(*ppJ)->name);
+	TURNO_DEBUG("Old turn: '%s'\n", (*ppJ)->name);
 
 	g_game.old_turn = *ppJ;
 
-	if( IsListEmpty( first_node ) )
+	if( IsListEmpty( first_node ) ) {
 		return TEG_STATUS_ERROR;
+	}
 
-	while( l != first_node )  {
+	while( l != first_node ) {
 		pJ = (PSPLAYER) l;
 		if( (l != &g_list_player) && player_is_playing(pJ) ) {
 			(*ppJ) = pJ;
-			TURNO_DEBUG("New turn: '%s'\n",pJ->name);
+			TURNO_DEBUG("New turn: '%s'\n", pJ->name);
 			return TEG_STATUS_SUCCESS;
 		}
 		l = LIST_NEXT(l);
 	}
 
-	con_text_out_wop(M_ERR,"Abnormal error in turno_2nextplayer\n");
+	con_text_out_wop(M_ERR, "Abnormal error in turno_2nextplayer\n");
 	return TEG_STATUS_PLAYERNOTFOUND;
 }
 
@@ -96,7 +97,7 @@ TEG_STATUS turno_next( void )
 
 		} else {
 			g_game.turno->estado = PLAYER_STATUS_ATAQUE;
-			netall_printf( TOKEN_TURNO"=%d\n",g_game.turno->numjug);
+			netall_printf( TOKEN_TURNO"=%d\n", g_game.turno->numjug);
 		}
 		return TEG_STATUS_SUCCESS;
 	}
@@ -111,11 +112,12 @@ TEG_STATUS turno_init(void)
 	int real_i;
 	PSPLAYER j;
 
-	i = RANDOM_MAX(0,g_game.playing-1);
+	i = RANDOM_MAX(0, g_game.playing-1);
 
-	player_from_indice( i , &real_i );
-	if( player_whois( real_i, &j) != TEG_STATUS_SUCCESS )
+	player_from_indice( i, &real_i );
+	if( player_whois( real_i, &j) != TEG_STATUS_SUCCESS ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	g_game.old_turn = NULL;
 	g_game.turno = j;
@@ -127,20 +129,22 @@ TEG_STATUS turno_init(void)
 /* return true if the round is complete */
 BOOLEAN turno_is_round_complete()
 {
-	/* I want to know if the round is over. It is not enought to know 
+	/* I want to know if the round is over. It is not enought to know
 	 * if newturn == started because if a player with the turn exit the game
-	 * he will never receive the turn again, but the started turn will point 
-	 * to him 
+	 * he will never receive the turn again, but the started turn will point
+	 * to him
 	 */
 	PSPLAYER pJ;
 	PLIST_ENTRY l;
 	PLIST_ENTRY first_node;
 
-	if( g_game.old_turn == NULL )
+	if( g_game.old_turn == NULL ) {
 		return FALSE;
+	}
 
-	if( g_game.empieza_turno == g_game.turno )
+	if( g_game.empieza_turno == g_game.turno ) {
 		return TRUE;
+	}
 
 	/*
 	 * if the previous playing player of 'empieza turn' is 'old turn' then
@@ -150,19 +154,20 @@ BOOLEAN turno_is_round_complete()
 	l = LIST_NEXT( first_node );
 
 
-	while( l != first_node )  {
+	while( l != first_node ) {
 		pJ = (PSPLAYER) l;
 		if( (l != &g_list_player) && pJ->is_player ) {
-			if( pJ == g_game.empieza_turno )
+			if( pJ == g_game.empieza_turno ) {
 				return TRUE;
-			else if( pJ == g_game.turno )
+			} else if( pJ == g_game.turno ) {
 				return FALSE;
+			}
 		}
 		l = LIST_NEXT(l);
 	}
 
 	/* abnormal error */
-	fprintf(stderr,"Abnormal error in turno_is_round_complete()\n");
+	fprintf(stderr, "Abnormal error in turno_is_round_complete()\n");
 	return FALSE;
 }
 
@@ -179,8 +184,7 @@ void turno_initialize_new_round( void )
 	g_game.round_number++;
 
 	/* add the continents that it defend */
-	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) )
-	{
+	while( !IsListEmpty( &g_list_player ) && (l != &g_list_player) ) {
 		pJ = (PSPLAYER) l;
 
 		l = LIST_NEXT(l);
@@ -189,10 +193,10 @@ void turno_initialize_new_round( void )
 			unsigned long conts;
 			player_listar_conts(pJ, &conts);
 			int i;
-			for(i=0;i<CONT_CANT;i++)
-			{
-				if( conts & 1 )
+			for(i=0; i<CONT_CANT; i++) {
+				if( conts & 1 ) {
 					pJ->player_stats.continents_turn[i]++;
+				}
 				conts >>= 1;
 			}
 
@@ -200,7 +204,7 @@ void turno_initialize_new_round( void )
 			stats_score( &pJ->player_stats, g_conts );
 		}
 	}
-	
-	netall_printf( TOKEN_NEW_ROUND"=%d,%d\n",g_game.turno->numjug, g_game.round_number );
+
+	netall_printf( TOKEN_NEW_ROUND"=%d,%d\n", g_game.turno->numjug, g_game.round_number );
 
 }

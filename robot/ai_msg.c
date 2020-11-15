@@ -149,18 +149,19 @@ static char *names[] = {
 
 TEG_STATUS ai_out_mensaje( int r, char *format, ...)
 {
-        va_list args;
+	va_list args;
 	char buf[PROT_MAX_LEN];
-	int i = RANDOM_MAX(0,r-1);
+	int i = RANDOM_MAX(0, r-1);
 
-	if( i > 3 )
+	if( i > 3 ) {
 		return TEG_STATUS_ERROR;
+	}
 
 	va_start(args, format);
 	vsnprintf(buf, sizeof(buf) -1, format, args);
 
 	buf[ sizeof(buf) -1 ] = 0;
-	
+
 	va_end(args);
 
 	return out_mensaje( buf );
@@ -182,19 +183,19 @@ TEG_STATUS ai_msg(int type, char const *name )
 
 	switch( type ) {
 	case AI_MSG_MISC:
-		i = RANDOM_MAX(0,NR_MSGS_MISC-1);
+		i = RANDOM_MAX(0, NR_MSGS_MISC-1);
 		ai_out_mensaje( 500, _(mensajes_misc[i].msg), dst_name );
 		break;
 	case AI_MSG_HI:
-		i = RANDOM_MAX(0,NR_MSGS_HI-1);
+		i = RANDOM_MAX(0, NR_MSGS_HI-1);
 		ai_out_mensaje( 30, _(mensajes_hi[i].msg), dst_name );
 		break;
 	case AI_MSG_BYE:
-		i = RANDOM_MAX(0,NR_MSGS_BYE-1);
+		i = RANDOM_MAX(0, NR_MSGS_BYE-1);
 		ai_out_mensaje( 30, _(mensajes_bye[i].msg), dst_name );
 		break;
 	case AI_MSG_ANSWER:
-		i = RANDOM_MAX(0,NR_MSGS_ANSWER-1);
+		i = RANDOM_MAX(0, NR_MSGS_ANSWER-1);
 		ai_out_mensaje( 4, _(mensajes_answer[i].msg), dst_name );
 		break;
 	}
@@ -203,15 +204,16 @@ TEG_STATUS ai_msg(int type, char const *name )
 
 char * ai_name()
 {
-	int i = RANDOM_MAX(0,NR_NAMES-1);
+	int i = RANDOM_MAX(0, NR_NAMES-1);
 	return _(names[i]);
 }
 
 TEG_STATUS ai_findname(char const *name )
 {
 	for(unsigned i=0; i<NR_NAMES; i++) {
-		if(strstr(_(name), _(names[i])) != NULL)
+		if(strstr(_(name), _(names[i])) != NULL) {
 			return TEG_STATUS_SUCCESS;
+		}
 	}
 
 	return TEG_STATUS_NOTFOUND;

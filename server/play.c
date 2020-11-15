@@ -62,7 +62,7 @@ STATIC TEG_STATUS token_countries(int, char *);
 STATIC TEG_STATUS token_fichas(int, char* );
 STATIC TEG_STATUS token_fichas2(int, char *);
 STATIC TEG_STATUS token_fichasc(int, char *);
-STATIC TEG_STATUS token_attack(int , char *);
+STATIC TEG_STATUS token_attack(int, char *);
 STATIC TEG_STATUS token_qumm(int fd, char *);
 STATIC TEG_STATUS token_rem( int fd, char *);
 STATIC TEG_STATUS token_message(int fd, char *);
@@ -100,7 +100,7 @@ struct {
 	{ TOKEN_HELP,		token_help,	N_("to ask for help") },
 	{ TOKEN_REM,		token_rem,	N_("to comment a command") },
 	{ TOKEN_QUMM,		token_qumm,	N_("It makes you more happy") },
-	{ TOKEN_COUNTRIES,		token_countries,N_("It shows info about the countries") },
+	{ TOKEN_COUNTRIES,		token_countries, N_("It shows info about the countries") },
 	{ TOKEN_FICHAS,		token_fichas,	N_("to place the initials 5 armies") },
 	{ TOKEN_FICHAS2,	token_fichas2,	N_("to place the initials 3 armies") },
 	{ TOKEN_FICHASC,	token_fichasc,	N_("to place the armies after a turn have finished") },
@@ -114,13 +114,13 @@ struct {
 	{ TOKEN_MISSION,	token_mission,	N_("request a mission") },
 	{ TOKEN_COLOR,		token_color,	N_("to select a color") },
 	{ TOKEN_LOQUE,		token_loque,	N_("to remind me what to do") },
-	{ TOKEN_SURRENDER,	token_surrender,N_("to surrender") },
+	{ TOKEN_SURRENDER,	token_surrender, N_("to surrender") },
 	{ TOKEN_SET,		token_set,	N_("to set options") },
 	{ TOKEN_SCORES,		token_scores,	N_("to show the highscores") },
-	{ TOKEN_ENUM_CARDS,	token_enum_cards,N_("to show the cards a player has") },
+	{ TOKEN_ENUM_CARDS,	token_enum_cards, N_("to show the cards a player has") },
 	{ TOKEN_ROBOT,		token_robot,	N_("to play with a robot") },
-	{ TOKEN_NEW_ROUND,	token_new_round,N_("to know who started the round, and the round number") },
-	{ TOKEN_MODALIDAD,	token_typeofgame,N_("to know the type of game it is being played") },
+	{ TOKEN_NEW_ROUND,	token_new_round, N_("to know who started the round, and the round number") },
+	{ TOKEN_MODALIDAD,	token_typeofgame, N_("to know the type of game it is being played") },
 };
 #define	NTOKENS  (sizeof(tokens)/sizeof(tokens[0]))
 
@@ -128,14 +128,16 @@ struct {
 /* Sets a server option */
 STATIC TEG_STATUS token_set( int fd, char *str )
 {
-	if( strlen(str)==0 )
+	if( strlen(str)==0 ) {
 		goto error;
+	}
 
-	if( option_parse(fd, str) == TEG_STATUS_SUCCESS )
+	if( option_parse(fd, str) == TEG_STATUS_SUCCESS ) {
 		return TEG_STATUS_SUCCESS;
+	}
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_SET"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_SET"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -150,10 +152,10 @@ STATIC TEG_STATUS token_loque( int fd, char *unused )
 
 	switch( pJ->estado ) {
 	case PLAYER_STATUS_FICHAS:
-		net_printf( fd, "%s=%d,%d\n", TOKEN_FICHAS, g_game.turno->numjug,g_game.fichas);
+		net_printf( fd, "%s=%d,%d\n", TOKEN_FICHAS, g_game.turno->numjug, g_game.fichas);
 		break;
 	case PLAYER_STATUS_FICHAS2:
-		net_printf( fd, "%s=%d,%d\n", TOKEN_FICHAS2, g_game.turno->numjug,g_game.fichas);
+		net_printf( fd, "%s=%d,%d\n", TOKEN_FICHAS2, g_game.turno->numjug, g_game.fichas);
 		break;
 	case PLAYER_STATUS_FICHASC:
 	case PLAYER_STATUS_CANJE:
@@ -169,7 +171,7 @@ STATIC TEG_STATUS token_loque( int fd, char *unused )
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_LOQUE"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_LOQUE"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -185,31 +187,36 @@ STATIC TEG_STATUS token_color( int fd, char *str )
 		goto error;
 	}
 
-	if(strlen(str)==0)
+	if(strlen(str)==0) {
 		goto error;
+	}
 
-	if( pJ->estado != PLAYER_STATUS_CONNECTED )
+	if( pJ->estado != PLAYER_STATUS_CONNECTED ) {
 		goto error;
+	}
 
-	if( pJ->is_player == FALSE )
+	if( pJ->is_player == FALSE ) {
 		goto error;
+	}
 
 	a = atoi( str );
-	if (a < 0 ||  a >= TEG_MAX_PLAYERS )
+	if (a < 0 ||  a >= TEG_MAX_PLAYERS ) {
 		goto error;
+	}
 
 	color = a;
-	if ( color_libre( &color )  == FALSE )
+	if ( color_libre( &color )  == FALSE ) {
 		goto error;
+	}
 
 	pJ->estado = PLAYER_STATUS_HABILITADO;
 	pJ->color = color;
-	con_text_out(M_INF,_("Player %s(%d) has color %s\n"),pJ->name,pJ->numjug,_(g_colores[color]));
+	con_text_out(M_INF, _("Player %s(%d) has color %s\n"), pJ->name, pJ->numjug, _(g_colores[color]));
 
 	netall_printf( "%s=%s,%d,%d\n", TOKEN_NEWPLAYER, pJ->name, pJ->numjug, pJ->color );
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_COLOR"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_COLOR"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -228,13 +235,14 @@ STATIC TEG_STATUS token_mission( int fd, char *unused )
 		goto error;
 	}
 
-	if( mission_asignar( pJ ) != TEG_STATUS_SUCCESS )
+	if( mission_asignar( pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	net_printf( fd, "%s=%d\n", TOKEN_MISSION, pJ->mission);
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_MISSION"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_MISSION"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -248,26 +256,29 @@ STATIC TEG_STATUS token_turn( int fd, char *unused )
 		goto error;
 	}
 
-	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado > PLAYER_STATUS_TURNOEND )
+	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado > PLAYER_STATUS_TURNOEND ) {
 		goto error;
+	}
 
 	if( pJ != g_game.turno ) {
-		con_text_out(M_ERR,_("BUG: The server believes that player `%s' does not have the turn"),pJ->name);
+		con_text_out(M_ERR, _("BUG: The server believes that player `%s' does not have the turn"), pJ->name);
 		goto error;
 	}
 
 	pJ->estado = PLAYER_STATUS_IDLE;
 
-	if( turno_end( pJ ) != TEG_STATUS_SUCCESS )
+	if( turno_end( pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	/* give turn to the next player */
-	if( turno_next() != TEG_STATUS_SUCCESS )
+	if( turno_next() != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_TURNO"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_TURNO"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -277,18 +288,20 @@ STATIC TEG_STATUS token_message( int fd, char *msg )
 	PSPLAYER j;
 	PLAY_DEBUG("token_message()\n");
 
-	if( player_whoisfd(fd, &j )!=TEG_STATUS_SUCCESS || strlen(msg)==0 )
+	if( player_whoisfd(fd, &j )!=TEG_STATUS_SUCCESS || strlen(msg)==0 ) {
 		goto error;
+	}
 
 	strip_invalid_msg(msg);
 
-	if( j->is_player )
-		netall_printf("%s=%s,%d,\"%s\"\n", TOKEN_MESSAGE, j->name,j->numjug,msg);
-	else
-		netall_printf("%s=observer-%s,%d,\"%s\"\n", TOKEN_MESSAGE, j->name,j->numjug,msg);
+	if( j->is_player ) {
+		netall_printf("%s=%s,%d,\"%s\"\n", TOKEN_MESSAGE, j->name, j->numjug, msg);
+	} else {
+		netall_printf("%s=observer-%s,%d,\"%s\"\n", TOKEN_MESSAGE, j->name, j->numjug, msg);
+	}
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_MESSAGE"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_MESSAGE"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -297,10 +310,11 @@ STATIC TEG_STATUS token_rem( int fd, char *unused )
 {
 	PLAY_DEBUG("token_rem()\n");
 
-	if( !SPLAYER_HABILITADO(fd) )
+	if( !SPLAYER_HABILITADO(fd) ) {
 		goto error;
+	}
 
-	net_printf(fd,"%s=%s\n",TOKEN_REM,_("Para que me envias un rem?"));
+	net_printf(fd, "%s=%s\n", TOKEN_REM, _("Para que me envias un rem?"));
 	return TEG_STATUS_SUCCESS;
 error:
 	return TEG_STATUS_PARSEERROR;
@@ -311,10 +325,11 @@ STATIC TEG_STATUS token_qumm( int fd, char *str )
 {
 	PLAY_DEBUG("token_qumm()\n");
 
-	if( !SPLAYER_HABILITADO(fd) )
+	if( !SPLAYER_HABILITADO(fd) ) {
 		goto error;
+	}
 
-	net_printf(fd,"%s=%s\n",TOKEN_REM,_("Yo tambien quiero un mundo mejor!"));
+	net_printf(fd, "%s=%s\n", TOKEN_REM, _("Yo tambien quiero un mundo mejor!"));
 	return TEG_STATUS_SUCCESS;
 error:
 	return TEG_STATUS_PARSEERROR;
@@ -324,22 +339,24 @@ error:
 STATIC TEG_STATUS token_playerid( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
 	SPLAYER j, *pJ;
 	char c[TEG_MAX_PLAYERS];
 	char colores[100];
 	int i;
 	int reconnect = FALSE;
 
-	PLAY_DEBUG("token_playerid( fd=%d)\n",fd);
+	PLAY_DEBUG("token_playerid( fd=%d)\n", fd);
 
 	/* si existe entonces da error, porque no tiene que existir */
-	if( player_whoisfd(fd, &pJ ) == TEG_STATUS_SUCCESS )
+	if( player_whoisfd(fd, &pJ ) == TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( strlen(str)==0 )
+	if( strlen(str)==0 ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
@@ -349,38 +366,44 @@ STATIC TEG_STATUS token_playerid( int fd, char *str )
 
 	/* averigua el name */
 	if( parser_parse( &p ) && p.can_continue ) {
-			player_fillname( &j, p.token );
-	} else goto error;
+		player_fillname( &j, p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		j.is_player = atoi( p.token );		
-	} else
+		j.is_player = atoi( p.token );
+	} else {
 		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		j.human = atoi( p.token );		
-	} else
+		j.human = atoi( p.token );
+	} else {
 		goto error;
+	}
 
 
 	if( j.is_player ) {
 		if( JUEGO_EMPEZADO ) {
 			if( ! (reconnect = player_is_disconnected(&j)) ) {
-				net_print(fd,TOKEN_GAMEINPROGRESS"\n");
+				net_print(fd, TOKEN_GAMEINPROGRESS"\n");
 				fd_remove(fd);
 				return TEG_STATUS_CONNCLOSED;
 			}
 		}
-		if( reconnect )
+		if( reconnect ) {
 			pJ = player_return_disconnected( &j );
-		else
+		} else {
 			pJ = player_ins_player( &j );
-	} else
+		}
+	} else {
 		pJ = player_ins_ro( &j );
+	}
 
 
 	if( pJ == NULL ) {
-		net_print(fd,TOKEN_SERVERFULL "\n");
+		net_print(fd, TOKEN_SERVERFULL "\n");
 		fd_remove(fd);
 		return TEG_STATUS_CONNCLOSED;
 	}
@@ -393,32 +416,32 @@ STATIC TEG_STATUS token_playerid( int fd, char *str )
 
 		pJ->estado = pJ->status_before_discon;
 
-		net_printf(fd,"%s=%s,%d,%d\n", TOKEN_RECONNECT, pJ->name,pJ->numjug,pJ->color);
-		con_text_out(M_INF,_("Player %s(%d) is re-connected from %s\n"),pJ->name,pJ->numjug,pJ->addr);
+		net_printf(fd, "%s=%s,%d,%d\n", TOKEN_RECONNECT, pJ->name, pJ->numjug, pJ->color);
+		con_text_out(M_INF, _("Player %s(%d) is re-connected from %s\n"), pJ->name, pJ->numjug, pJ->addr);
 
 	} else {
 		colores_libres( c );
-		memset(colores,0,sizeof(colores));
+		memset(colores, 0, sizeof(colores));
 
-		for(i=0;i<TEG_MAX_PLAYERS;i++) {
+		for(i=0; i<TEG_MAX_PLAYERS; i++) {
 			char buf[100];
-			sprintf( buf, ",%d",c[i] );
+			sprintf( buf, ",%d", c[i] );
 			strncat( colores, buf, sizeof(colores)-1 );
 		}
 
-		net_printf(fd,"%s=%s,%d%s\n", TOKEN_PLAYERID, pJ->name,pJ->numjug,colores);
+		net_printf(fd, "%s=%s,%d%s\n", TOKEN_PLAYERID, pJ->name, pJ->numjug, colores);
 
-		con_text_out(M_INF,_("Player %s(%d) is connected from %s\n"),pJ->name,pJ->numjug,pJ->addr);
+		con_text_out(M_INF, _("Player %s(%d) is connected from %s\n"), pJ->name, pJ->numjug, pJ->addr);
 	}
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_PLAYERID"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_PLAYERID"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
 STATIC TEG_STATUS token_cversion( int fd, char *str )
 {
-	con_text_out(M_INF,_("Using client version: %s\n"),str);
+	con_text_out(M_INF, _("Using client version: %s\n"), str);
 	return TEG_STATUS_SUCCESS;
 }
 
@@ -427,8 +450,9 @@ STATIC TEG_STATUS token_fichas( int fd, char *str )
 {
 	PLAY_DEBUG("token_fichas()\n");
 
-	if( !SPLAYER_FICHAS(fd) )
+	if( !SPLAYER_FICHAS(fd) ) {
 		goto error;
+	}
 
 	if( aux_token_fichas( fd, str, g_game.fichas, 0) == TEG_STATUS_SUCCESS ) {
 
@@ -439,7 +463,7 @@ STATIC TEG_STATUS token_fichas( int fd, char *str )
 	}
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_FICHAS"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_FICHAS"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -448,9 +472,10 @@ STATIC TEG_STATUS token_fichas2( int fd, char *str )
 {
 	PLAY_DEBUG("token_fichas2()\n");
 
-	if( !SPLAYER_FICHAS2(fd) )
+	if( !SPLAYER_FICHAS2(fd) ) {
 		goto error;
-	
+	}
+
 	if( aux_token_fichas( fd, str, g_game.fichas2, 0) == TEG_STATUS_SUCCESS ) {
 
 		g_game.turno->estado = PLAYER_STATUS_POSTFICHAS2;
@@ -459,7 +484,7 @@ STATIC TEG_STATUS token_fichas2( int fd, char *str )
 		return TEG_STATUS_SUCCESS;
 	}
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_FICHAS2"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_FICHAS2"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -470,16 +495,19 @@ STATIC TEG_STATUS token_fichasc( int fd, char *str )
 	int total_armies;
 	PLAY_DEBUG("token_fichasc()\n");
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( pJ->estado != PLAYER_STATUS_FICHASC && pJ->estado != PLAYER_STATUS_CANJE )
+	if( pJ->estado != PLAYER_STATUS_FICHASC && pJ->estado != PLAYER_STATUS_CANJE ) {
 		goto error;
+	}
 
 	total_armies = pJ->fichasc_armies + cont_tot(pJ->fichasc_conts);
 
-	if( pJ->hizo_canje )
+	if( pJ->hizo_canje ) {
 		total_armies += cards_for_this_exchange( pJ->tot_exchanges );
+	}
 
 	if( aux_token_fichas( fd, str, total_armies, pJ->fichasc_conts) == TEG_STATUS_SUCCESS ) {
 
@@ -495,7 +523,7 @@ STATIC TEG_STATUS token_fichasc( int fd, char *str )
 	}
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_FICHASC"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_FICHASC"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -507,24 +535,28 @@ STATIC TEG_STATUS token_robot( int fd, char *str )
 
 	PLAY_DEBUG("token_robot()\n");
 
-	if( player_whoisfd(fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd(fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( ! pJ->is_player )
+	if( ! pJ->is_player ) {
 		goto error;
+	}
 
-	if( JUEGO_EMPEZADO )
+	if( JUEGO_EMPEZADO ) {
 		goto error;
+	}
 
-	if( launch_robot(&newfd, "--connected") != TEG_STATUS_SUCCESS )
+	if( launch_robot(&newfd, "--connected") != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	fd_add( newfd );
 
 	return TEG_STATUS_SUCCESS;
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_ROBOT"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_ROBOT"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -533,10 +565,10 @@ error:
 STATIC TEG_STATUS token_attack( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
-	int src,dst,src_lost,dst_lost;
-	char d_src[3],d_dst[3];
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
+	int src, dst, src_lost, dst_lost;
+	char d_src[3], d_dst[3];
 	PSPLAYER pJ_src, pJ_dst;
 	int conq = 0;
 	int tropas = 0;
@@ -544,14 +576,17 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 
 	PLAY_DEBUG("token_attack()\n");
 
-	if( strlen(str)==0)
+	if( strlen(str)==0) {
 		goto error;
+	}
 
-	if( !SPLAYER_ATAQUE_P(fd,&pJ_src)) {
-		if( SPLAYER_TROPAS_P(fd,&pJ_src)) {
+	if( !SPLAYER_ATAQUE_P(fd, &pJ_src)) {
+		if( SPLAYER_TROPAS_P(fd, &pJ_src)) {
 			pJ_src->estado=PLAYER_STATUS_ATAQUE;
 			pJ_src->country_src = pJ_src->country_dst = -1;
-		} else goto error;
+		} else {
+			goto error;
+		}
 	}
 
 	p.equals = &igualador;
@@ -559,18 +594,22 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 	p.data = str;
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		src = atoi( p.token );		
-	} else goto error;
+		src = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		dst = atoi( p.token );		
-	} else goto error;
+		dst = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( src >= COUNTRIES_CANT || src < 0 || dst >= COUNTRIES_CANT || dst < 0) {
 		goto error;
 	}
 
-	if( pJ_src->numjug != g_countries[src].numjug || pJ_src->numjug == g_countries[dst].numjug )  {
+	if( pJ_src->numjug != g_countries[src].numjug || pJ_src->numjug == g_countries[dst].numjug ) {
 		goto error;
 	}
 
@@ -578,15 +617,15 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 		goto error;
 	}
 
-	if( player_whois( g_countries[dst].numjug, &pJ_dst ) != TEG_STATUS_SUCCESS ){
+	if( player_whois( g_countries[dst].numjug, &pJ_dst ) != TEG_STATUS_SUCCESS ) {
 		goto error;
 	}
 
 	/* aviso a todos que hay un attack */
-	if( ! g_game.fog_of_war )
-		netall_printf( "%s=%d,%d\n",TOKEN_ATAQUE,src,dst );
-	else {
-		fow_2_netall_printf( src, dst, "%s=%s,%s\n",TOKEN_ATAQUE,"%d","%d" );
+	if( ! g_game.fog_of_war ) {
+		netall_printf( "%s=%d,%d\n", TOKEN_ATAQUE, src, dst );
+	} else {
+		fow_2_netall_printf( src, dst, "%s=%s,%s\n", TOKEN_ATAQUE, "%d", "%d" );
 	}
 
 	/* so far, attack... */
@@ -610,20 +649,21 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 		pJ_src->turno_conq++;
 		pJ_src->tot_countries++;
 
-		
+
 		g_countries[dst].numjug = pJ_src->numjug;
 
 		g_countries[dst].ejercitos++;		/* se pasa automaticamente */
 		g_countries[src].ejercitos--;		/* un ejercito */
 
 		tropas = g_countries[src].ejercitos - 1;	/* cantidad que se pueden pasar */
-		if( tropas > 2 )			/* En verdad son 3, pero ya se le paso 1 */
+		if( tropas > 2 ) {		/* En verdad son 3, pero ya se le paso 1 */
 			tropas =2;
+		}
 
 		pJ_src->estado = PLAYER_STATUS_TROPAS;
 		pJ_src->country_src = src;
 		pJ_src->country_dst = dst;
-	
+
 		pJ_dst->tot_countries--;
 
 		l= RemoveHeadList( g_countries[dst].next.Blink );
@@ -643,45 +683,45 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 
 	if( ! g_game.fog_of_war ) {
 		netall_printf( "%s=%d,%d,%d,%d,%d,%d,%d,%d\n", TOKEN_DADOS,
-			src,d_src[0],d_src[1],d_src[2], dst,d_dst[0],d_dst[1],d_dst[2] );
+		               src, d_src[0], d_src[1], d_src[2], dst, d_dst[0], d_dst[1], d_dst[2] );
 	} else {
 		fow_2_netall_printf( src, dst, "%s=%s,%d,%d,%d,%s,%d,%d,%d\n"
-			, TOKEN_DADOS
-			, "%d",d_src[0],d_src[1],d_src[2]
-			, "%d",d_dst[0],d_dst[1],d_dst[2] );
+		                     , TOKEN_DADOS
+		                     , "%d", d_src[0], d_src[1], d_src[2]
+		                     , "%d", d_dst[0], d_dst[1], d_dst[2] );
 	}
 
 	if( ! g_game.fog_of_war ) {
 		netall_printf( "%s=%d,%d,%d;%s=%d,%d,%d\n",
-			TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos,
-			TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos
-			);
+		               TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos,
+		               TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos
+		             );
 	} else {
 		fow_netall_printf( src, "%s=%d,%d,%d\n", TOKEN_COUNTRY,
-				src, g_countries[src].numjug, g_countries[src].ejercitos );
+		                   src, g_countries[src].numjug, g_countries[src].ejercitos );
 
 		fow_netall_printf( dst, "%s=%d,%d,%d\n", TOKEN_COUNTRY,
-				dst, g_countries[dst].numjug, g_countries[dst].ejercitos );
+		                   dst, g_countries[dst].numjug, g_countries[dst].ejercitos );
 	}
 
 	if( conq == 1 ) {
 
 		/* Did 'dst' player lose the game ? */
 		if( player_is_lost( pJ_dst ) ) {
-			con_text_out(M_INF,_("Player %s(%d) lost the game\n"),pJ_dst->name,pJ_dst->numjug);
-			netall_printf( "%s=%d\n",TOKEN_LOST, pJ_dst->numjug );
+			con_text_out(M_INF, _("Player %s(%d) lost the game\n"), pJ_dst->name, pJ_dst->numjug);
+			netall_printf( "%s=%d\n", TOKEN_LOST, pJ_dst->numjug );
 			player_poner_perdio(pJ_dst);
 		}
 
 		/* Did 'src' player win the game ? */
 		if( mission_chequear( pJ_src ) == TEG_STATUS_GAMEOVER || game_is_finished() ) {
-			con_text_out(M_INF,_("Player %s(%d) is the winner! Game Over\n"),pJ_src->name,pJ_src->numjug);
+			con_text_out(M_INF, _("Player %s(%d) is the winner! Game Over\n"), pJ_src->name, pJ_src->numjug);
 			pJ_src->estado = PLAYER_STATUS_GAMEOVER;
 			game_end( pJ_src );
 			return TEG_STATUS_SUCCESS;
 		}
 
-		net_printf(fd,"%s=%d,%d,%d\n", TOKEN_TROPAS, src,dst,tropas);
+		net_printf(fd, "%s=%d,%d,%d\n", TOKEN_TROPAS, src, dst, tropas);
 
 
 		/* in FOW show the boundaries countries */
@@ -689,14 +729,15 @@ STATIC TEG_STATUS token_attack( int fd, char *str )
 			char buffer[2048];
 
 			memset( buffer, 0, sizeof(buffer) );
-			if( fow_fill_with_boundaries( dst, buffer, sizeof(buffer) ) == TEG_STATUS_SUCCESS )
+			if( fow_fill_with_boundaries( dst, buffer, sizeof(buffer) ) == TEG_STATUS_SUCCESS ) {
 				net_printf( fd, "%s\n", buffer );
+			}
 		}
 	}
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_ATAQUE"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_ATAQUE"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -704,41 +745,50 @@ error:
 STATIC TEG_STATUS token_tropas( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
-	int src,dst,cant;
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
+	int src, dst, cant;
 	PSPLAYER pJ;
 
 	PLAY_DEBUG("token_tropas()\n");
 
-	if( !SPLAYER_TROPAS_P(fd,&pJ) || strlen(str)==0 )
+	if( !SPLAYER_TROPAS_P(fd, &pJ) || strlen(str)==0 ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
 	p.data = str;
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		src = atoi( p.token );		
-	} else goto error;
+		src = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		dst = atoi( p.token );		
-	} else goto error;
+		dst = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		cant = atoi( p.token );		
-	} else goto error;
+		cant = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( src >= COUNTRIES_CANT || src < 0 || dst >= COUNTRIES_CANT || dst < 0) {
 		goto error;
 	}
 
-	if( src != pJ->country_src || dst != pJ->country_dst )
+	if( src != pJ->country_src || dst != pJ->country_dst ) {
 		goto error;
+	}
 
-	if( cant > g_countries[src].ejercitos-1 || cant > 3)
+	if( cant > g_countries[src].ejercitos-1 || cant > 3) {
 		goto error;
+	}
 
 	if( cant > 0 ) {
 
@@ -750,20 +800,20 @@ STATIC TEG_STATUS token_tropas( int fd, char *str )
 
 		if( ! g_game.fog_of_war )
 			netall_printf( "%s=%d,%d,%d;%s=%d,%d,%d\n",
-					TOKEN_COUNTRY, src,g_countries[src].numjug,g_countries[src].ejercitos,
-					TOKEN_COUNTRY, dst,g_countries[dst].numjug,g_countries[dst].ejercitos
-					);
+			               TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos,
+			               TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos
+			             );
 		else {
 			fow_netall_printf( src, "%s=%d,%d,%d\n",
-					TOKEN_COUNTRY, src,g_countries[src].numjug,g_countries[src].ejercitos );
+			                   TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos );
 			fow_netall_printf( dst, "%s=%d,%d,%d\n",
-					TOKEN_COUNTRY, dst,g_countries[dst].numjug,g_countries[dst].ejercitos );
+			                   TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos );
 		}
 	}
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_TROPAS"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_TROPAS"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -777,20 +827,25 @@ STATIC TEG_STATUS token_card( int fd, char *str )
 
 
 	/* Veo si puede sacar una tarjeta... */
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado >= PLAYER_STATUS_TARJETA)
+	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado >= PLAYER_STATUS_TARJETA) {
 		goto error;
+	}
 
-	if( pJ->tot_cards >= TEG_MAX_TARJETAS )
+	if( pJ->tot_cards >= TEG_MAX_TARJETAS ) {
 		goto error;
+	}
 
-	if( pJ->turno_conq < 1 )
+	if( pJ->turno_conq < 1 ) {
 		goto error;
+	}
 
-	if( pJ->tot_exchanges > 3 && pJ->turno_conq < 2 )
+	if( pJ->tot_exchanges > 3 && pJ->turno_conq < 2 ) {
 		goto error;
+	}
 
 
 	/* Puede sacar tarjeta */
@@ -809,16 +864,17 @@ STATIC TEG_STATUS token_card( int fd, char *str )
 		pP->ejercitos += 2;
 		pJ->tot_armies += 2;
 		tarjeta_usar( &pP->tarjeta );
-		if( ! g_game.fog_of_war )
-			netall_printf( "%s=%d,%d,%d\n", TOKEN_COUNTRY,pP->id,pP->numjug,pP->ejercitos);
-		else
-			fow_netall_printf( pP->id, "%s=%d,%d,%d\n", TOKEN_COUNTRY,pP->id,pP->numjug,pP->ejercitos);
-	} 
-	net_printf(fd,"%s=%d,%d\n", TOKEN_TARJETA, pP->id,pP->tarjeta.usada);
+		if( ! g_game.fog_of_war ) {
+			netall_printf( "%s=%d,%d,%d\n", TOKEN_COUNTRY, pP->id, pP->numjug, pP->ejercitos);
+		} else {
+			fow_netall_printf( pP->id, "%s=%d,%d,%d\n", TOKEN_COUNTRY, pP->id, pP->numjug, pP->ejercitos);
+		}
+	}
+	net_printf(fd, "%s=%d,%d\n", TOKEN_TARJETA, pP->id, pP->tarjeta.usada);
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_TARJETA"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_TARJETA"\n");
 	return TEG_STATUS_ERROR;
 }
 
@@ -826,23 +882,24 @@ error:
 STATIC TEG_STATUS token_enum_cards( int fd, char *str )
 {
 	PSPLAYER pJ;
-	int i,first;
+	int i, first;
 	char buffer[1024];
 
 	PLAY_DEBUG("token_enum_cards()\n");
 
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	memset( buffer, 0, sizeof(buffer) );
 
 	first=1;
-	for(i=0;i<COUNTRIES_CANT;i++) {
+	for(i=0; i<COUNTRIES_CANT; i++) {
 		if( g_countries[i].tarjeta.numjug == pJ->numjug ) {
 			char buffy[512];
 
-			memset(buffy,0,sizeof(buffy));
+			memset(buffy, 0, sizeof(buffy));
 
 			if( first ) {
 				snprintf( buffy, sizeof(buffy)-1, "%d:%d", i, g_countries[i].tarjeta.usada );
@@ -855,11 +912,11 @@ STATIC TEG_STATUS token_enum_cards( int fd, char *str )
 		}
 	}
 
-	net_printf(fd,"%s=%s\n", TOKEN_ENUM_CARDS, buffer);
+	net_printf(fd, "%s=%s\n", TOKEN_ENUM_CARDS, buffer);
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_ENUM_CARDS"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_ENUM_CARDS"\n");
 	return TEG_STATUS_ERROR;
 }
 
@@ -870,20 +927,22 @@ STATIC TEG_STATUS token_new_round( int fd, char *str )
 
 	PLAY_DEBUG("token_new_round()\n");
 
-	if( !JUEGO_EMPEZADO )
+	if( !JUEGO_EMPEZADO ) {
 		goto error;
+	}
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	net_printf(fd,"%s=%d,%d\n", TOKEN_NEW_ROUND
-			,g_game.turno->numjug 	/* who starts the new turn */
-			,g_game.round_number	/* the round number */
-		  );
+	net_printf(fd, "%s=%d,%d\n", TOKEN_NEW_ROUND
+	           , g_game.turno->numjug 	/* who starts the new turn */
+	           , g_game.round_number	/* the round number */
+	          );
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_NEW_ROUND"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_NEW_ROUND"\n");
 	return TEG_STATUS_ERROR;
 }
 
@@ -891,36 +950,42 @@ error:
 STATIC TEG_STATUS token_ejer2( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
 	int country;
 	PSPLAYER j;
 
 	PLAY_DEBUG("token_ejer2()\n");
 
-	if( strlen(str)==0)
+	if( strlen(str)==0) {
 		goto error;
+	}
 
-	if( player_whoisfd( fd, &j ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &j ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( j->estado != PLAYER_STATUS_TARJETA )
+	if( j->estado != PLAYER_STATUS_TARJETA ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
 	p.data = str;
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		country = atoi( p.token );		
-	} else goto error;
+		country = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( country >= COUNTRIES_CANT || country < 0 ) {
 		goto error;
 	}
 
-	if( tarjeta_es_usada( &g_countries[ country ].tarjeta ))
+	if( tarjeta_es_usada( &g_countries[ country ].tarjeta )) {
 		goto error;
+	}
 
 	if( g_countries[ country ].numjug == j->numjug && g_countries[ country ].tarjeta.numjug == j->numjug ) {
 		g_countries[ country ].ejercitos += 2;
@@ -929,15 +994,15 @@ STATIC TEG_STATUS token_ejer2( int fd, char *str )
 
 		if( ! g_game.fog_of_war )
 			netall_printf("%s=%d,%d,%d\n", TOKEN_COUNTRY
-				,country ,g_countries[ country ].numjug ,g_countries[ country ].ejercitos);
+			              , country, g_countries[ country ].numjug, g_countries[ country ].ejercitos);
 		else
 			fow_netall_printf( country, "%s=%d,%d,%d\n", TOKEN_COUNTRY
-				,country ,g_countries[ country ].numjug ,g_countries[ country ].ejercitos);
-	} 
+			                   , country, g_countries[ country ].numjug, g_countries[ country ].ejercitos);
+	}
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_EJER2"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_EJER2"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -946,39 +1011,48 @@ error:
 STATIC TEG_STATUS token_canje( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
 	PSPLAYER pJ;
-	int t1,t2,t3;
+	int t1, t2, t3;
 	int canj_ejer;
 
 	PLAY_DEBUG("token_canje()\n");
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( pJ->estado != PLAYER_STATUS_FICHASC )
+	if( pJ->estado != PLAYER_STATUS_FICHASC ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
 	p.data = str;
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		t1 = atoi( p.token );		
-	} else goto error;
+		t1 = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		t2 = atoi( p.token );		
-	} else goto error;
+		t2 = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		t3 = atoi( p.token );		
-	} else goto error;
+		t3 = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	/* se puede hacer el canje ? */
-	if( !tarjeta_puedocanje( pJ->numjug, t1, t2, t3 ) )
+	if( !tarjeta_puedocanje( pJ->numjug, t1, t2, t3 ) ) {
 		goto error;
+	}
 
 	pJ->estado = PLAYER_STATUS_CANJE;
 
@@ -995,10 +1069,10 @@ STATIC TEG_STATUS token_canje( int fd, char *str )
 
 
 	netall_printf("%s=%d,%d,%d,%d,%d\n", TOKEN_CANJE,
-			pJ->numjug,canj_ejer,t1,t2,t3);
+	              pJ->numjug, canj_ejer, t1, t2, t3);
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_CANJE"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_CANJE"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1007,23 +1081,26 @@ error:
 STATIC TEG_STATUS token_regroup( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
-	int src,dst,cant;
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
+	int src, dst, cant;
 	int ejer_disp;
 	PSPLAYER pJ;
 
 	PLAY_DEBUG("token_regroup()\n");
 
 
-	if( strlen(str)==0)
+	if( strlen(str)==0) {
 		goto error;
+	}
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado > PLAYER_STATUS_REAGRUPE)
+	if( pJ->estado < PLAYER_STATUS_TURNOSTART || pJ->estado > PLAYER_STATUS_REAGRUPE) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
@@ -1032,15 +1109,21 @@ STATIC TEG_STATUS token_regroup( int fd, char *str )
 
 	if( parser_parse( &p ) && p.can_continue ) {
 		src = atoi( p.token );
-	} else goto error;
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && p.can_continue ) {
 		dst = atoi( p.token );
-	} else goto error;
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
 		cant = atoi( p.token );
-	} else goto error;
+	} else {
+		goto error;
+	}
 
 	if( src >= COUNTRIES_CANT || src < 0 || dst >= COUNTRIES_CANT || dst < 0 || cant <= 0) {
 		goto error;
@@ -1050,12 +1133,14 @@ STATIC TEG_STATUS token_regroup( int fd, char *str )
 		goto error;
 	}
 
-	if( !countries_eslimitrofe( src, dst ))
+	if( !countries_eslimitrofe( src, dst )) {
 		goto error;
+	}
 
 	ejer_disp = g_countries[src].ejercitos - g_countries[src].ejer_reagrupe - 1;
-	if( cant > ejer_disp )
+	if( cant > ejer_disp ) {
 		goto error;
+	}
 
 	pJ->estado = PLAYER_STATUS_REAGRUPE;
 
@@ -1063,21 +1148,20 @@ STATIC TEG_STATUS token_regroup( int fd, char *str )
 	g_countries[dst].ejer_reagrupe += cant;
 	g_countries[src].ejercitos -= cant;
 
-	if( ! g_game.fog_of_war )
-	{
+	if( ! g_game.fog_of_war ) {
 		netall_printf("%s=%d,%d,%d;%s=%d,%d,%d\n",
-			TOKEN_COUNTRY, src,g_countries[src].numjug,g_countries[src].ejercitos,
-			TOKEN_COUNTRY, dst,g_countries[dst].numjug,g_countries[dst].ejercitos );
+		              TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos,
+		              TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos );
 	} else {
 		fow_netall_printf( src, "%s=%d,%d,%d\n",
-			TOKEN_COUNTRY, src,g_countries[src].numjug,g_countries[src].ejercitos );
+		                   TOKEN_COUNTRY, src, g_countries[src].numjug, g_countries[src].ejercitos );
 		fow_netall_printf( dst, "%s=%d,%d,%d\n",
-			TOKEN_COUNTRY, dst,g_countries[dst].numjug,g_countries[dst].ejercitos );
+		                   TOKEN_COUNTRY, dst, g_countries[dst].numjug, g_countries[dst].ejercitos );
 	}
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_REAGRUPE"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_REAGRUPE"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1088,18 +1172,20 @@ STATIC TEG_STATUS token_status( int fd, char *unused )
 
 	PLAY_DEBUG("token_status()\n");
 
-	if( !SPLAYER_CONNECTED( fd ))
+	if( !SPLAYER_CONNECTED( fd )) {
 		goto error;
+	}
 
-	if( aux_token_stasta(strout, sizeof(strout) -1 ) != TEG_STATUS_SUCCESS )
+	if( aux_token_stasta(strout, sizeof(strout) -1 ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	net_printf(fd,"%s=%s\n", TOKEN_STATUS, strout);
+	net_printf(fd, "%s=%s\n", TOKEN_STATUS, strout);
 
 	return TEG_STATUS_SUCCESS;
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_STATUS"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_STATUS"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1110,18 +1196,20 @@ STATIC TEG_STATUS token_scores( int fd, char *unused )
 
 	PLAY_DEBUG("token_scores()\n");
 
-	if( !SPLAYER_CONNECTED( fd ))
+	if( !SPLAYER_CONNECTED( fd )) {
 		goto error;
+	}
 
-	if( scores_dump(strout,sizeof(strout) -1 ) != TEG_STATUS_SUCCESS )
+	if( scores_dump(strout, sizeof(strout) -1 ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	net_printf(fd,"%s=%s\n", TOKEN_SCORES, strout);
+	net_printf(fd, "%s=%s\n", TOKEN_SCORES, strout);
 
 	return TEG_STATUS_SUCCESS;
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_SCORES"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_SCORES"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1130,47 +1218,53 @@ error:
 STATIC TEG_STATUS token_countries( int fd, char *str )
 {
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
 	int i;
 	PSPLAYER pJ;
 	char strout[PROT_MAX_LEN];
 
 	PLAY_DEBUG("token_countries()\n");
 
-	if( !JUEGO_EMPEZADO )
+	if( !JUEGO_EMPEZADO ) {
 		goto error;
+	}
 
-	if( strlen(str)==0 )
+	if( strlen(str)==0 ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
 	p.data = str;
 
 	if( parser_parse( &p ) && !p.can_continue ) {
-		i = atoi( p.token );		
-	} else
+		i = atoi( p.token );
+	} else {
 		goto error;
+	}
 
-	if( i != -1 && player_whois( i, &pJ ) != TEG_STATUS_SUCCESS )
+	if( i != -1 && player_whois( i, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
 	if(i!=-1) {
 		/* ask just for 1 player */
-		if( aux_token_countries(pJ,strout,sizeof(strout)-1) !=TEG_STATUS_SUCCESS )
+		if( aux_token_countries(pJ, strout, sizeof(strout)-1) !=TEG_STATUS_SUCCESS ) {
 			goto error;
-		net_printf(fd,"%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug,strout);
-	} else  {
+		}
+		net_printf(fd, "%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug, strout);
+	} else {
 		/* ask for all the players */
 		PLIST_ENTRY pL = g_list_player.Flink;
 
 		while( !IsListEmpty( &g_list_player ) && (pL != &g_list_player) ) {
 			pJ = (PSPLAYER) pL;
 			if( pJ->is_player ) {
-				if( aux_token_countries(pJ,strout,sizeof(strout)-1) !=TEG_STATUS_SUCCESS )
+				if( aux_token_countries(pJ, strout, sizeof(strout)-1) !=TEG_STATUS_SUCCESS ) {
 					goto error;
-				net_printf(fd,"%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug,strout);
+				}
+				net_printf(fd, "%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug, strout);
 			}
 			pL = LIST_NEXT(pL);
 		}
@@ -1180,14 +1274,15 @@ STATIC TEG_STATUS token_countries( int fd, char *str )
 
 			j.numjug = -1;
 
-			if( aux_token_countries(&j,strout,sizeof(strout)-1) == TEG_STATUS_SUCCESS )
-				net_printf(fd,"%s=%d/%s\n",TOKEN_COUNTRIES,j.numjug,strout);
+			if( aux_token_countries(&j, strout, sizeof(strout)-1) == TEG_STATUS_SUCCESS ) {
+				net_printf(fd, "%s=%d/%s\n", TOKEN_COUNTRIES, j.numjug, strout);
+			}
 		}
 	}
 	return TEG_STATUS_SUCCESS;
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_COUNTRIES"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_COUNTRIES"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1198,25 +1293,27 @@ TEG_STATUS token_start( int fd )
 	PSPLAYER pJ;
 	PLAY_DEBUG("token_start()\n");
 
-	if( JUEGO_EMPEZADO || g_game.players < 2 )
+	if( JUEGO_EMPEZADO || g_game.players < 2 ) {
 		goto error;
+	}
 
 	if( g_server.with_console && fd != CONSOLE_FD) {
-		if( !SPLAYER_HABILITADO_P(fd,&pJ) || !pJ->is_player )
+		if( !SPLAYER_HABILITADO_P(fd, &pJ) || !pJ->is_player ) {
 			goto error;
+		}
 	}
 
 	JUEGO_EN_EMPEZAR;
 
 	g_game.playing = g_game.players;
 
-	con_text_out(M_INF,_("Starting game number: %d with seed: %u\n"),g_game.gamenumber,g_game.seed);
+	con_text_out(M_INF, _("Starting game number: %d with seed: %u\n"), g_game.gamenumber, g_game.seed);
 
 	player_all_set_status ( PLAYER_STATUS_START );
 	countries_repartir();
 
 	if(turno_init() != TEG_STATUS_SUCCESS ) {
-		con_text_out(M_ERR,_("Error, cant initilize a new turn\n"));
+		con_text_out(M_ERR, _("Error, cant initilize a new turn\n"));
 		goto error;
 	}
 
@@ -1227,22 +1324,22 @@ TEG_STATUS token_start( int fd )
 	aux_token_stasta(strout, sizeof(strout) -1 );
 
 	netall_printf( "%s=%s;%s=%d,%d;%s=%d,%d,%d,%d;%s=%d,%d\n"
-			,TOKEN_START
-			,strout			/* available players */
-			,TOKEN_NEW_ROUND
-			,g_game.turno->numjug 	/* who starts the new turn */
-			,g_game.round_number	/* the round number */
-			,TOKEN_MODALIDAD
-			,g_game.mission	/* play with missions ? */
-			,g_game.cmission	/* play with common mission */
-			,g_game.fog_of_war	/* play with fog of war */
-			,g_game.reglas		/* which rules ? */
-			,TOKEN_FICHAS
-			,g_game.turno->numjug,	/* who starts ? */
-			g_game.fichas );	/* how many armies to place */
+	               , TOKEN_START
+	               , strout			/* available players */
+	               , TOKEN_NEW_ROUND
+	               , g_game.turno->numjug 	/* who starts the new turn */
+	               , g_game.round_number	/* the round number */
+	               , TOKEN_MODALIDAD
+	               , g_game.mission	/* play with missions ? */
+	               , g_game.cmission	/* play with common mission */
+	               , g_game.fog_of_war	/* play with fog of war */
+	               , g_game.reglas		/* which rules ? */
+	               , TOKEN_FICHAS
+	               , g_game.turno->numjug,	/* who starts ? */
+	               g_game.fichas );	/* how many armies to place */
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_START"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_START"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1252,22 +1349,24 @@ TEG_STATUS token_typeofgame( int fd, char *str )
 	PSPLAYER pJ;
 	PLAY_DEBUG("token_typeofgame()\n");
 
-	if( JUEGO_EMPEZADO )
+	if( JUEGO_EMPEZADO ) {
 		goto error;
+	}
 
-	if( !SPLAYER_HABILITADO_P(fd,&pJ) || !pJ->is_player )
+	if( !SPLAYER_HABILITADO_P(fd, &pJ) || !pJ->is_player ) {
 		goto error;
+	}
 
 	netall_printf( "%s=%d,%d,%d,%d;\n"
-			,TOKEN_MODALIDAD
-			,g_game.mission	/* play with missions ? */
-			,g_game.cmission	/* play with common mission */
-			,g_game.fog_of_war	/* play with fog of war */
-			,g_game.reglas		/* which rules ? */
-		     );
+	               , TOKEN_MODALIDAD
+	               , g_game.mission	/* play with missions ? */
+	               , g_game.cmission	/* play with common mission */
+	               , g_game.fog_of_war	/* play with fog of war */
+	               , g_game.reglas		/* which rules ? */
+	             );
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_MODALIDAD"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_MODALIDAD"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1284,7 +1383,7 @@ STATIC TEG_STATUS token_sversion( int fd, char *unused )
 {
 	PLAY_DEBUG("token_sversion()\n");
 
-	net_printf(fd,"%s=%s %s\n", TOKEN_SVERSION, _("TEG server version "),VERSION);
+	net_printf(fd, "%s=%s %s\n", TOKEN_SVERSION, _("TEG server version "), VERSION);
 	return TEG_STATUS_SUCCESS;
 }
 
@@ -1293,44 +1392,50 @@ STATIC TEG_STATUS token_pversion( int fd, char *str )
 {
 	PSPLAYER pJ;
 	PARSER p;
-	DELIM igualador={ ':', ':', ':' };
-	DELIM separador={ ',', ',', ',' };
+	DELIM igualador= { ':', ':', ':' };
+	DELIM separador= { ',', ',', ',' };
 	int hi;
 
 	PLAY_DEBUG("token_pversion()\n");
 
 
-	if( strlen(str)==0 )
+	if( strlen(str)==0 ) {
 		goto error;
+	}
 
 	p.equals = &igualador;
 	p.separators = &separador;
 	p.data = str;
 
 	if( parser_parse( &p ) && p.can_continue ) {
-		hi = atoi( p.token );		
-	} else goto error;
+		hi = atoi( p.token );
+	} else {
+		goto error;
+	}
 
 	if( parser_parse( &p ) && !p.can_continue ) {
 		// We don't use the this integer value
-	} else goto error;
+	} else {
+		goto error;
+	}
 
-	net_printf(fd,"%s=%i,%i\n", TOKEN_PVERSION, PROTOCOL_HIVER,PROTOCOL_LOVER);
+	net_printf(fd, "%s=%i,%i\n", TOKEN_PVERSION, PROTOCOL_HIVER, PROTOCOL_LOVER);
 
 	if( hi != PROTOCOL_HIVER ) {
-		con_text_out(M_ERR,_("Client with incompatible protocol version (server:%d , client:%d)\n"),PROTOCOL_HIVER,hi);
+		con_text_out(M_ERR, _("Client with incompatible protocol version (server:%d , client:%d)\n"), PROTOCOL_HIVER, hi);
 
-		if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS )
+		if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS ) {
 			player_del_hard( pJ );
-		else
+		} else {
 			fd_remove(fd);
+		}
 		return TEG_STATUS_CONNCLOSED;
 	}
 
 	return TEG_STATUS_SUCCESS;
 
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_PVERSION"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_PVERSION"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1339,10 +1444,11 @@ TEG_STATUS token_exit( int fd )
 	PSPLAYER pJ;
 	PLAY_DEBUG("token_exit\n");
 
-	if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS ) {
 		player_del_hard( pJ );
-	else
+	} else {
 		fd_remove(fd);
+	}
 
 	return TEG_STATUS_CONNCLOSED;
 }
@@ -1353,16 +1459,19 @@ TEG_STATUS token_surrender( int fd, char *unused )
 	PSPLAYER pJ;
 	PLAY_DEBUG("token_surrender\n");
 
-	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS )
+	if( player_whoisfd( fd, &pJ ) != TEG_STATUS_SUCCESS ) {
 		goto error;
+	}
 
-	if( !pJ->is_player )
+	if( !pJ->is_player ) {
 		goto error;
+	}
 
-	if( pJ->estado < PLAYER_STATUS_HABILITADO )
+	if( pJ->estado < PLAYER_STATUS_HABILITADO ) {
 		goto error;
+	}
 
-	con_text_out(M_INF,_("Player %s(%d) abandoned the game\n"),pJ->name,pJ->numjug);
+	con_text_out(M_INF, _("Player %s(%d) abandoned the game\n"), pJ->name, pJ->numjug);
 
 	netall_printf("%s=%d\n", TOKEN_SURRENDER, pJ->numjug );
 
@@ -1370,7 +1479,7 @@ TEG_STATUS token_surrender( int fd, char *unused )
 
 	return TEG_STATUS_SUCCESS;
 error:
-	net_print(fd,TOKEN_ERROR"="TOKEN_SURRENDER"\n");
+	net_print(fd, TOKEN_ERROR"="TOKEN_SURRENDER"\n");
 	return TEG_STATUS_PARSEERROR;
 }
 
@@ -1389,55 +1498,59 @@ STATIC TEG_STATUS token_help ( int fd, char *unused )
 STATIC TEG_STATUS token_lookup( int fd, PARSER *p )
 {
 	for(unsigned i=0; i<NTOKENS; i++) {
-		if(strcasecmp( p->token, tokens[i].label )==0 ){
-			if (tokens[i].func)
-				return( (tokens[i].func)(fd,p->value));
+		if(strcasecmp( p->token, tokens[i].label )==0 ) {
+			if (tokens[i].func) {
+				return( (tokens[i].func)(fd, p->value));
+			}
 			return TEG_STATUS_TOKENNULL;
 		}
 	}
-	PLAY_DEBUG("Token '%s' no encontrado\n",p->token);
+	PLAY_DEBUG("Token '%s' no encontrado\n", p->token);
 	return TEG_STATUS_TOKENNOTFOUND;
 }
 
 /* Read the file descriptor and call the apropiate function */
 TEG_STATUS play_teg( int fd )
 {
-	int i,j;
+	int i, j;
 	PARSER p;
 	char str[PROT_MAX_LEN];
-	DELIM igualador={ '=', '=', '=' };
-	DELIM separador={ ';', ';', ';' };
+	DELIM igualador= { '=', '=', '=' };
+	DELIM separador= { ';', ';', ';' };
 
 	p.equals = &igualador;
 	p.separators = &separador;
 
 	str[0]=0;
 
-	if( g_game.fog_of_war )
+	if( g_game.fog_of_war ) {
 		g_game.player_fow = NULL;
+	}
 
 	j=net_readline( fd, str, PROT_MAX_LEN );
 
 	if( j<1 ) {
 		PSPLAYER pJ;
-		if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS )
+		if( player_whoisfd( fd, &pJ ) == TEG_STATUS_SUCCESS ) {
 			player_del_hard( pJ );
-		else
+		} else {
 			fd_remove(fd);
+		}
 
 		return TEG_STATUS_CONNCLOSED;
 	}
 
 	if( g_game.fog_of_war ) {
-		if( player_whoisfd( fd, &g_game.player_fow ) != TEG_STATUS_SUCCESS )
+		if( player_whoisfd( fd, &g_game.player_fow ) != TEG_STATUS_SUCCESS ) {
 			g_game.player_fow = NULL;
+		}
 	}
 
 	p.data = str;
 
 	do {
 		if( (i=parser_parse( &p )) ) {
-			if( token_lookup( fd,&p ) == TEG_STATUS_CONNCLOSED ) {
+			if( token_lookup( fd, &p ) == TEG_STATUS_CONNCLOSED ) {
 				return TEG_STATUS_CONNCLOSED;
 			}
 		}
