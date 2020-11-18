@@ -21,6 +21,8 @@
  * initialization functions
  */
 
+#include "main.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
@@ -135,12 +137,9 @@ void game_new()
 	player_kick_unparent_robots();
 }
 
-BOOLEAN game_is_finished(void)
+bool game_is_finished(void)
 {
-	if(JUEGO_EMPEZADO && g_game.playing < 2) {
-		return TRUE;
-	}
-	return FALSE;
+	return (JUEGO_EMPEZADO && g_game.playing < 2);
 }
 
 /* Initialize the server for the first game */
@@ -360,7 +359,7 @@ void argument_init(int argc, char **argv_var)
 			fprintf(stderr, _("  -d, --debug\tEnable verbosity in server\n"));
 			exit(0);
 		} else if(is_option("--version", argv[i])) {
-			fprintf(stderr, TEG_NAME" v"VERSION"\n\n");
+			fprintf(stderr, TEG_NAME " v" VERSION "\n\n");
 			exit(0);
 		} else if((option = get_option("--port", argv, &i, argc)) != NULL) {
 			g_server.port=atoi(option);
