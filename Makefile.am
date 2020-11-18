@@ -100,7 +100,7 @@ libguiclient_a_SOURCES = \
 	client/gui-gnome/support.c client/gui-gnome/support.h	\
 	client/gui-gnome/g_cont.cpp client/gui-gnome/g_cont.h	\
 	client/gui-gnome/g_country.cpp client/gui-gnome/g_country.h	\
-	client/gui-gnome/stock.c client/gui-gnome/stock.h		\
+	client/gui-gnome/stock.cpp client/gui-gnome/stock.h		\
 	client/gui-gnome/cards.cpp client/gui-gnome/cards.h		\
 	client/gui-gnome/dices.c client/gui-gnome/dices.h		\
 	client/gui-gnome/mission.c client/gui-gnome/mission.h	\
