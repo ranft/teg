@@ -29,7 +29,6 @@
 #include <goocanvas.h>
 #include <glib/gi18n.h>
 
-#include "gui.h"
 #include "client.h"
 #include "support.h"
 #include "interface.h"

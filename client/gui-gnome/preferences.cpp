@@ -28,7 +28,6 @@
 
 #include "fcintl.h"
 #include "client.h"
-#include "gui.h"
 #include "priv.h"
 #include "interface.h"
 #include "support.h"
