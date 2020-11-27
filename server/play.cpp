@@ -195,7 +195,7 @@ STATIC TEG_STATUS token_color(int fd, char *str)
 		goto error;
 	}
 
-	if(pJ->is_player == FALSE) {
+	if(pJ->is_player == false) {
 		goto error;
 	}
 
@@ -205,7 +205,7 @@ STATIC TEG_STATUS token_color(int fd, char *str)
 	}
 
 	color = a;
-	if(color_libre(&color)  == FALSE) {
+	if(color_libre(&color)  == false) {
 		goto error;
 	}
 
@@ -345,7 +345,7 @@ STATIC TEG_STATUS token_playerid(int fd, char *str)
 	char c[TEG_MAX_PLAYERS];
 	char colores[100];
 	int i;
-	int reconnect = FALSE;
+	int reconnect = false;
 
 	PLAY_DEBUG("token_playerid( fd=%d)\n", fd);
 
@@ -515,7 +515,7 @@ STATIC TEG_STATUS token_fichasc(int fd, char *str)
 
 		fichasc_next();
 
-		pJ->hizo_canje = FALSE;
+		pJ->hizo_canje = false;
 		pJ->fichasc_armies = 0;
 		pJ->fichasc_conts = 0;
 
@@ -1056,7 +1056,7 @@ STATIC TEG_STATUS token_canje(int fd, char *str)
 
 	pJ->estado = PLAYER_STATUS_CANJE;
 
-	pJ->hizo_canje = TRUE;
+	pJ->hizo_canje = true;
 	pJ->tot_exchanges++;
 	pJ->tot_cards -= 3;
 

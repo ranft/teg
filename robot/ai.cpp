@@ -113,7 +113,7 @@ int ai_many_country_enemigo(int p)
  * @fn BOOLEAN ai_is_country_border( int p )
  * Tells if a country border of its continent
  */
-BOOLEAN ai_is_country_border(int p)
+bool ai_is_country_border(int p)
 {
 	int i;
 	for(i=0; i<COUNTRIES_CANT; i++) {
@@ -125,7 +125,7 @@ BOOLEAN ai_is_country_border(int p)
 	return FALSE;
 }
 
-BOOLEAN ai_own_continent(CONTINENTE c)
+bool ai_own_continent(CONTINENTE c)
 {
 	int i;
 	int t=0;
@@ -151,7 +151,7 @@ TEG_STATUS ai_init()
  * Dice si un country el peligroso, dependiendo si este lo puede
  * atacar antes de que se acabe el turno
  */
-BOOLEAN ai_is_country_peligroso(int src, int dst)
+bool ai_is_country_peligroso(int src, int dst)
 {
 	int aparecio_empezo = FALSE;
 	int dst_jugo = FALSE;
