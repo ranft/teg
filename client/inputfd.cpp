@@ -32,6 +32,9 @@
 #include "protocol.h"
 #include "client.h"
 
+namespace teg::client
+{
+
 TEG_STATUS clitok_rem(char *str);
 TEG_STATUS clitok_status(char *str);
 TEG_STATUS clitok_start(char *str);
@@ -170,12 +173,12 @@ TEG_STATUS clitok_surrender(char *str)
 
 	if(pJ->numjug == WHOAMI()) {
 		ESTADO_SET(PLAYER_STATUS_GAMEOVER);
-		gui_sensi();
+		callbacks::gui_sensi();
 	}
 
 	out_countries();
 
-	gui_surrender(numjug);
+	callbacks::gui_surrender(numjug);
 
 	return TEG_STATUS_SUCCESS;
 }
@@ -257,10 +260,10 @@ TEG_STATUS clitok_winner(char *str)
 	        _(g_colores[pJ->color])
 	       );
 
-	gui_winner(pJ->numjug, mission);
+	callbacks::gui_winner(pJ->numjug, mission);
 
 	ESTADO_SET(PLAYER_STATUS_HABILITADO);
-	gui_sensi();
+	callbacks::gui_sensi();
 
 	game_finalize();
 	return TEG_STATUS_SUCCESS;
@@ -289,7 +292,7 @@ TEG_STATUS clitok_lost(char *str)
 		ESTADO_SET(PLAYER_STATUS_GAMEOVER);
 	}
 
-	gui_lost(pJ->numjug);
+	callbacks::gui_lost(pJ->numjug);
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -333,7 +336,7 @@ TEG_STATUS clitok_tropas(char *str)
 
 	ESTADO_SET(PLAYER_STATUS_TROPAS);
 
-	gui_tropas(src, dst, cant);
+	callbacks::gui_tropas(src, dst, cant);
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -417,7 +420,7 @@ TEG_STATUS clitok_country(char *str)
 	g_countries[country].numjug = jug;
 	g_countries[country].ejercitos = ejer;
 
-	gui_country(country);
+	callbacks::gui_country(country);
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -494,7 +497,7 @@ TEG_STATUS clitok_dados(char *str)
 	        , g_game.dados_dst[1]
 	        , g_game.dados_dst[2]);
 
-	gui_dados();
+	callbacks::gui_dados();
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -610,7 +613,7 @@ TEG_STATUS clitok_turno(char *str)
 		        _(g_colores[pJ->color]));
 		ESTADO_SET(PLAYER_STATUS_IDLE);
 	}
-	gui_turn(pJ);
+	callbacks::gui_turn(pJ);
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -656,12 +659,12 @@ TEG_STATUS clitok_fichas(char *str)
 
 	g_game.whos_turn = numjug;
 
-	gui_sensi();
+	callbacks::gui_sensi();
 
 	if(numjug == g_game.numjug) {
 		ESTADO_SET(PLAYER_STATUS_FICHAS);
 		fichas_init(cant, 0);
-		gui_fichas(cant, 0);
+		callbacks::gui_fichas(cant, 0);
 	} else {
 		textmsg(M_INF, _("Player %s(%s) is placing %d armies for 1st time"),
 		        j->name,
@@ -712,12 +715,12 @@ TEG_STATUS clitok_fichas2(char *str)
 	out_countries();
 
 	g_game.whos_turn = numjug;
-	gui_sensi();
+	callbacks::gui_sensi();
 
 	if(numjug == g_game.numjug) {
 		ESTADO_SET(PLAYER_STATUS_FICHAS2);
 		fichas_init(cant, 0);
-		gui_fichas(cant, 0);
+		callbacks::gui_fichas(cant, 0);
 	} else {
 		textmsg(M_INF, _("Player %s(%s) is placing %d armies for 2nd time"),
 		        j->name,
@@ -775,7 +778,7 @@ TEG_STATUS clitok_fichasc(char *str)
 	attack_unshow();
 
 	g_game.whos_turn = numjug;
-	gui_sensi();
+	callbacks::gui_sensi();
 
 	tot_cant = cont_tot(conts) + cant;
 
@@ -784,7 +787,7 @@ TEG_STATUS clitok_fichasc(char *str)
 	if(numjug == g_game.numjug) {
 		ESTADO_SET(PLAYER_STATUS_FICHASC);
 		fichas_init(tot_cant, conts);
-		gui_fichas(cant, conts);
+		callbacks::gui_fichas(cant, conts);
 	} else {
 		textmsg(M_INF, _("Player %s(%s) is placing %d armies"),
 		        j->name,
@@ -885,7 +888,7 @@ TEG_STATUS clitok_playerid(char *str)
 		out_countries();
 	}
 
-	gui_connected(c);
+	callbacks::gui_connected(c);
 
 	textmsg(M_IMP, _("I'm player number:%d"), g_game.numjug);
 	return TEG_STATUS_SUCCESS;
@@ -955,7 +958,7 @@ TEG_STATUS clitok_reconnect(char *str)
 	out_get_typeofgame();
 	out_new_round();
 
-	gui_reconnected();
+	callbacks::gui_reconnected();
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -1019,7 +1022,7 @@ TEG_STATUS clitok_newplayer(char *str)
 	} else {
 		textmsg(M_IMP, _("Player[%d] '%s' is connected with color %s"), numjug, name, _(g_colores[color]));
 	}
-	gui_habilitado(numjug);
+	callbacks::gui_habilitado(numjug);
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -1060,7 +1063,7 @@ TEG_STATUS clitok_message(char *str)
 	/* I dont care if there is one more or not */
 
 	if(g_game.msg_show & M_MSG) {
-		gui_textplayermsg(name, numjug, p.data);
+		callbacks::gui_textplayermsg(name, numjug, p.data);
 	}
 	return TEG_STATUS_SUCCESS;
 error:
@@ -1112,7 +1115,7 @@ TEG_STATUS clitok_status(char *str)
 		}
 	} while(i && p.can_continue);
 ok:
-	gui_status();
+	callbacks::gui_status();
 	return TEG_STATUS_SUCCESS;
 error:
 	textmsg(M_ERR, "Error in clitok_status()");
@@ -1148,7 +1151,7 @@ TEG_STATUS clitok_scores(char *str)
 	} while(i && p.can_continue);
 
 ok:
-	gui_scores();
+	callbacks::gui_scores();
 	return TEG_STATUS_SUCCESS;
 error:
 	textmsg(M_ERR, "Error in clitok_scores()");
@@ -1187,7 +1190,7 @@ TEG_STATUS clitok_start(char *str)
 	ESTADO_SET(PLAYER_STATUS_START);
 
 	out_countries();
-	gui_start();
+	callbacks::gui_start();
 	return TEG_STATUS_SUCCESS;
 
 error:
@@ -1317,7 +1320,7 @@ TEG_STATUS clitok_exchange(char *str)
 
 		fichas_add_wanted(cant);
 		textmsg(M_IMP, _("Exchanged approved. Now you can place %d more armies!"), cant);
-		gui_canje(cant, p1, p2, p3);
+		callbacks::gui_canje(cant, p1, p2, p3);
 	} else {
 		textmsg(M_IMP, _("Player %s(%s) exchanged 3 cards for %d armies"),
 		        pJ->name,
@@ -1412,7 +1415,7 @@ TEG_STATUS clitok_mission(char *str)
 	}
 
 	g_game.secret_mission = mission;
-	gui_mission();
+	callbacks::gui_mission();
 	return TEG_STATUS_SUCCESS;
 error:
 	textmsg(M_ERR, "Error in clitok_mission()");
@@ -1468,7 +1471,7 @@ TEG_STATUS clitok_tarjeta(char *str)
 		textmsg(M_IMP, _("You received card: '%s'"), countries_get_name(country));
 	}
 
-	gui_tarjeta(country);
+	callbacks::gui_tarjeta(country);
 	return TEG_STATUS_SUCCESS;
 
 error:
@@ -1577,7 +1580,7 @@ TEG_STATUS clitok_new_round(char *str)
 		       );
 	}
 
-	gui_sensi();
+	callbacks::gui_sensi();
 
 	return TEG_STATUS_SUCCESS;
 error:
@@ -1633,4 +1636,6 @@ TEG_STATUS client_recv(int fd)
 	} while(i && p.can_continue);
 
 	return TEG_STATUS_SUCCESS;
+}
+
 }
