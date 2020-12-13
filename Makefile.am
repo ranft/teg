@@ -35,7 +35,8 @@ libtegcommon_a_SOURCES = 	\
 	common/stats.cpp common/stats.h		\
         common/scores.cpp common/scores.h 	\
 	common/xml_support.cpp common/xml_support.h \
-	common/execute.cpp common/execute.hpp
+	common/execute.cpp common/execute.hpp \
+	common/container.hpp
 
 libtegserver_a_CPPFLAGS = @XML_CFLAGS@ @SERVER_CFLAGS@ -I$(top_srcdir)/common -DBINDIR=\"$(bindir)\"
 libtegserver_a_SOURCES = \
@@ -155,7 +156,7 @@ tegtest_CPPFLAGS = @XML_CFLAGS@
 tegtest_SOURCES = common/xml_support_check.cpp common/tarjeta_check.cpp \
     common/stats_check.cpp common/share_check.cpp common/scores_check.cpp \
     common/parser_check.cpp common/common_check.cpp \
-    client/helper_check.cpp client/gui-null/null.cpp
+    client/helper_check.cpp client/gui-null/null.cpp common/container_check.cpp
 tegtest_LDADD = -lgmock_main -lgtest -lgmock libclient.a libtegcommon.a @CLIENT_LIBS@ @XML_LIBS@ -lpthread
 tegtest_LDFLAGS = -Wl,--as-needed
 
