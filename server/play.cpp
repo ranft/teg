@@ -1259,17 +1259,28 @@ STATIC TEG_STATUS token_countries(int fd, char *str)
 		net_printf(fd, "%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug, strout);
 	} else  {
 		/* ask for all the players */
-		PLIST_ENTRY pL = g_list_player.Flink;
 
-		while(!IsListEmpty(&g_list_player) && (pL != &g_list_player)) {
-			pJ = (PSPLAYER) pL;
-			if(pJ->is_player) {
-				if(aux_token_countries(pJ, strout, sizeof(strout)-1) !=TEG_STATUS_SUCCESS) {
-					goto error;
-				}
-				net_printf(fd, "%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug, strout);
+		struct TransmitDescriptor {
+			bool ok;
+			int const fd;
+			char* const tx;
+		} desc{.ok=true, .fd=fd, .tx=strout};
+
+		player_map(&desc, [](void* user, SPLAYER* pJ) {
+			TransmitDescriptor& d = *reinterpret_cast<TransmitDescriptor*>(user);
+			if(!d.ok) {
+				return;
 			}
-			pL = LIST_NEXT(pL);
+
+			if(pJ->is_player) {
+				if(aux_token_countries(pJ, d.tx, sizeof(strout)-1) !=TEG_STATUS_SUCCESS) {
+					d.ok = false;
+				}
+				net_printf(d.fd, "%s=%d/%s\n", TOKEN_COUNTRIES, pJ->numjug, d.tx);
+			}
+		});
+		if(!desc.ok) {
+			goto error;
 		}
 
 		if(g_game.fog_of_war) {

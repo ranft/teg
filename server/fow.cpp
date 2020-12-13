@@ -105,33 +105,35 @@ TEG_STATUS fow_fill_with_boundaries(int country, char *buffer, int buf_len)
 
 int fow_netall_printf(int country, char const *format, ...)
 {
-	va_list args;
-	char buf[PROT_MAX_LEN];
-	PLIST_ENTRY pLplayer = g_list_player.Flink;
-	PLIST_ENTRY pLcountry;
-	PSPLAYER pJ;
-	PCOUNTRY pP;
-
 	if(country < 0 || country >= COUNTRIES_CANT) {
 		return -1;
 	}
 
+	struct Transmitter {
+		char buf[PROT_MAX_LEN];
+		int const country;
+	} tx{.country = country};
+
+	va_list args;
 	va_start(args, format);
-	vsnprintf(buf, sizeof(buf) -1, format, args);
+	vsnprintf(tx.buf, sizeof(tx.buf) -1, format, args);
 	va_end(args);
 
-	buf[ sizeof(buf) -1 ] = 0;
+	tx.buf[sizeof(tx.buf)-1] = 0;
 
-	while(!IsListEmpty(&g_list_player) && (pLplayer != &g_list_player)) {
-		pJ = (PSPLAYER) pLplayer;
+
+	player_map(&country, [](void* user, SPLAYER* pJ) {
+		auto &tx = *static_cast<Transmitter*>(user);
 		if(pJ->fd > 0 && pJ->is_player) {
-			pLcountry = pJ->countries.Flink;
+			PLIST_ENTRY	pLcountry = pJ->countries.Flink;
+
 			/* check if he has a boundry country wih 'country' */
 			while(!IsListEmpty(&pJ->countries) && (pLcountry != &pJ->countries)) {
-				pP = (PCOUNTRY) pLcountry;
+				PCOUNTRY pP = (PCOUNTRY) pLcountry;
 
-				if(countries_eslimitrofe(pP->id, country) || pP->id == country) {
-					net_print(pJ->fd, buf);
+				if(countries_eslimitrofe(pP->id, tx.country)
+				        || (pP->id == tx.country)) {
+					net_print(pJ->fd, tx.buf);
 					break;
 				}
 
@@ -139,9 +141,7 @@ int fow_netall_printf(int country, char const *format, ...)
 			}
 
 		}
-
-		pLplayer = LIST_NEXT(pLplayer);
-	}
+	});
 	return 0;
 }
 
@@ -154,42 +154,39 @@ int fow_netall_printf(int country, char const *format, ...)
  */
 int fow_2_netall_printf(int src, int dst, char const *format, ...)
 {
-	va_list args;
-	char buf[PROT_MAX_LEN];
-	PLIST_ENTRY pLplayer = g_list_player.Flink;
-	PLIST_ENTRY pLcountry;
-	PSPLAYER pJ;
-	PCOUNTRY pP;
-	int src_country;
-	int dst_country;
-
 	if(src<0 || src>=COUNTRIES_CANT || dst<0 || dst>=COUNTRIES_CANT) {
 		return -1;
 	}
 
+	char buf[PROT_MAX_LEN];
+	va_list args;
 	va_start(args, format);
 	vsnprintf(buf, sizeof(buf) -1, format, args);
 	va_end(args);
+	buf[sizeof(buf)-1] = 0;
 
-	buf[ sizeof(buf) -1 ] = 0;
+	struct Transmitter {
+		int src, dst;
+		char const*const buf;
+	} tx{.src=src, .dst=dst, .buf=buf};
 
-	while(!IsListEmpty(&g_list_player) && (pLplayer != &g_list_player)) {
-		pJ = (PSPLAYER) pLplayer;
+	player_map(&tx, [](void* user, SPLAYER *pJ) {
+		auto &tx = *static_cast<Transmitter*>(user);
 		if(pJ->fd > 0 && pJ->is_player) {
-			pLcountry = pJ->countries.Flink;
+			PLIST_ENTRY pLcountry = pJ->countries.Flink;
 			/* check if he has a boundry country wih src && dst */
 
-			src_country = -1;
-			dst_country = -1;
+			int src_country = -1;
+			int dst_country = -1;
 			while(!IsListEmpty(&pJ->countries) && (pLcountry != &pJ->countries)) {
-				pP = (PCOUNTRY) pLcountry;
+				PCOUNTRY pP = (PCOUNTRY) pLcountry;
 
-				if(countries_eslimitrofe(pP->id, src) || pP->id == src) {
-					src_country = src;
+				if(countries_eslimitrofe(pP->id, tx.src) || pP->id == tx.src) {
+					src_country = tx.src;
 				}
 
-				if(countries_eslimitrofe(pP->id, dst) || pP->id == dst) {
-					dst_country = dst;
+				if(countries_eslimitrofe(pP->id, tx.dst) || pP->id == tx.dst) {
+					dst_country = tx.dst;
 				}
 
 				if(dst_country >= 0 && src_country >=0) {
@@ -199,11 +196,9 @@ int fow_2_netall_printf(int src, int dst, char const *format, ...)
 				pLcountry = LIST_NEXT(pLcountry);
 			}
 
-			net_printf(pJ->fd, buf, src_country, dst_country);
+			net_printf(pJ->fd, tx.buf, src_country, dst_country);
 		}
-
-		pLplayer = LIST_NEXT(pLplayer);
-	}
+	});
 	return 0;
 }
 

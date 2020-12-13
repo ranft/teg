@@ -108,7 +108,7 @@ STATIC TEG_STATUS con_exit(int unused, char* unused2)
 }
 
 /*shows player's statistics */
-STATIC void con_stats_show(PSPLAYER pJ)
+STATIC void con_stats_show(void*, PSPLAYER pJ)
 {
 	stats_score(&pJ->player_stats, g_conts);
 	printf(" %i   %-4i  [ %-3u   %-3u ] - [ %-3u  %-3u ]  %-15s %s\n",
@@ -125,7 +125,7 @@ STATIC void con_stats_show(PSPLAYER pJ)
 STATIC TEG_STATUS con_stats(int unused, char* unused2)
 {
 	printf(_("Number Score - [Countries: Won  Lost] - [Armies: Won  Lost]  Name Human\n"));
-	player_map(con_stats_show);
+	player_map(nullptr, con_stats_show);
 	return TEG_STATUS_SUCCESS;
 }
 
@@ -196,9 +196,6 @@ STATIC TEG_STATUS con_message(int fd, char *msg)
 
 STATIC TEG_STATUS con_status(int fd, char*unused)
 {
-	PLIST_ENTRY l = g_list_player.Flink;
-	PSPLAYER pJ;
-
 	net_printf(fd, _("players:%d, connections:%d, game number:%d, round:%d, mission:%s\n"),
 	           g_game.players,
 	           g_game.connections,
@@ -208,9 +205,9 @@ STATIC TEG_STATUS con_status(int fd, char*unused)
 	          );
 	net_printf(fd, _("fd, number, countries, armies, cards, exch, name, human, color, status, address\n"));
 
-	while(!IsListEmpty(&g_list_player) && (l != &g_list_player)) {
+	player_map(&fd, [](void*user, SPLAYER* pJ) {
 		int color;
-		pJ = (PSPLAYER) l;
+		int const &fd=*static_cast<int const*>(user);
 
 		color = (pJ->color==-1) ? maximum_player_count : pJ->color;
 		if(pJ->is_player) {
@@ -242,9 +239,7 @@ STATIC TEG_STATUS con_status(int fd, char*unused)
 			           pJ->addr
 			          );
 		}
-
-		l = LIST_NEXT(l);
-	}
+	});
 	return TEG_STATUS_SUCCESS;
 }
 
@@ -264,7 +259,7 @@ STATIC TEG_STATUS con_help(int fd, char*unused)
 	return TEG_STATUS_SUCCESS;
 }
 
-static void player_dump(PSPLAYER pJ)
+static void player_dump(void*, PSPLAYER pJ)
 {
 	printf("Nombre: %s\n", pJ->name);
 	printf("fd: %d\n", pJ->fd);
@@ -272,7 +267,7 @@ static void player_dump(PSPLAYER pJ)
 
 STATIC TEG_STATUS con_test(int fd, char *str)
 {
-	player_map(player_dump);
+	player_map(nullptr, player_dump);
 	return TEG_STATUS_SUCCESS;
 }
 

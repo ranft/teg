@@ -44,4 +44,11 @@ bool turno_is_round_complete(void);
 /*! called when a round is complete */
 void turno_initialize_new_round(void);
 
+struct FindNextPlayer {
+	FindNextPlayer(unsigned current): current{current} {}
+	SPLAYER* next = nullptr;
+	unsigned const current;
+	static void search(void* self, SPLAYER* player);
+};
+
 }

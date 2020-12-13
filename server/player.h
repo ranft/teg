@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <stdbool.h>
+#include <vector>
 
 #include "../common/stats.h"
 #include "../common/country.h"
@@ -29,8 +29,7 @@ namespace teg::server
 {
 
 /// server player data structure
-typedef struct _player {
-	LIST_ENTRY next;
+struct SPLAYER {
 	int numjug;				/**< player number */
 	char name[max_playername_length];		/**< name */
 	char addr[inet_addr_len];		/**< internet address */
@@ -58,20 +57,20 @@ typedef struct _player {
 
 	PLAYER_STATS player_stats;		/**< player statistics */
 
-} SPLAYER, *PSPLAYER;
+};
+
+using PSPLAYER = SPLAYER*;
+
 
 /// \brief Mapping function type to traverse all players
-typedef void (*jug_map_func)(PSPLAYER pJ);
-
-/// \brief List of all connected players
-extern LIST_ENTRY g_list_player;
+typedef void (*jug_map_func)(void* user, PSPLAYER pJ);
 
 /** \brief Initialize a single player datastructure for a new game
  *
  * Only the fields needed to be reset for a new game are touched, all other
  * fields are kept unchanged
  */
-void player_initplayer(PSPLAYER j);
+void player_initplayer(void *, PSPLAYER j);
 
 /// \brief Initialize the entire player list
 void player_init(void);
@@ -146,13 +145,13 @@ bool player_is_lost(PSPLAYER pJ);
 void player_poner_perdio(PSPLAYER pJ);
 
 /// \brief returns a free number for the player
-TEG_STATUS player_numjug_libre(int *libre);
+TEG_STATUS player_numjug_libre(unsigned &libre);
 
 /// \brief  given an index of player [0..MAX_PLAYERS] return the numjug of it
 TEG_STATUS player_from_indice(int j, int *real_j);
 
 /// \brief perform \p func on every player
-void player_map(jug_map_func func);
+void player_map(void *user, jug_map_func func);
 
 /// \brief finds a player given its name
 TEG_STATUS player_findbyname(char *name, PSPLAYER *pJ);
@@ -170,10 +169,10 @@ PSPLAYER player_return_disconnected(PSPLAYER pJ);
 bool player_is_disconnected(PSPLAYER pJ);
 
 /*! deletes the player if it disconnected */
-void player_delete_discon(PSPLAYER pJ);
+void player_delete_discon(void *, PSPLAYER pJ);
 
 /*! insert all players in scores but the ones in GAMEOVER */
-void player_insert_scores(PSPLAYER pJ);
+void player_insert_scores(void *, PSPLAYER pJ);
 
 /*! kick robots when there are no humans */
 TEG_STATUS player_kick_unparent_robots(void);

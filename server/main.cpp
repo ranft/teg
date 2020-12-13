@@ -71,8 +71,6 @@ SERVER g_server;
 void game_end(PSPLAYER winner)
 {
 	char strout[PROT_MAX_LEN + max_playername_length * maximum_player_count + 200];
-	PLIST_ENTRY l = g_list_player.Flink;
-	PSPLAYER pJ;
 
 	/* add points to the winner */
 	if(winner && g_game.round_number > 0) {
@@ -82,24 +80,21 @@ void game_end(PSPLAYER winner)
 	}
 
 	/* update scores */
-	player_map(player_insert_scores);
+	player_map(nullptr, player_insert_scores);
 
 	if(aux_token_stasta(strout, sizeof(strout) -1) == TEG_STATUS_SUCCESS) {
 
 		/* send the last status to all the players */
-		while(!IsListEmpty(&g_list_player) && (l != &g_list_player)) {
-			pJ = (PSPLAYER) l;
-
+		player_map(strout, [](void* user, PSPLAYER pJ) {
+			char const* tx = static_cast<char const*>(user);
 			if(pJ->is_player && pJ->fd != 1) {
-				net_printf(pJ->fd, TOKEN_STATUS"=%s\n", strout);
+				net_printf(pJ->fd, TOKEN_STATUS"=%s\n", tx);
 			}
-
-			l = LIST_NEXT(l);
-		}
+		});
 	}
 
 	/* delete disconn players */
-	player_map(player_delete_discon);
+	player_map(nullptr, player_delete_discon);
 
 	/* send who is the winner */
 	if(winner) {
@@ -117,7 +112,7 @@ void game_new()
 	countries_init();
 	mission_init();
 
-	player_map(player_initplayer);
+	player_map(nullptr, player_initplayer);
 	player_all_set_status(PLAYER_STATUS_HABILITADO);
 	g_game.playing = 0;
 

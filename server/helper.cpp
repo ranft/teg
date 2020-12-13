@@ -256,21 +256,21 @@ TEG_STATUS aux_token_attack(int src, int dst, int *src_lost, int *dst_lost, char
 /* generates the status in a given array */
 TEG_STATUS aux_token_stasta(char *strout, size_t len)
 {
-	int n;
-	char strtmp[ max_playername_length + 200];
-
-	PLIST_ENTRY l = g_list_player.Flink;
-	PSPLAYER j;
+	struct StatusWriter {
+		bool first;
+		char* const strout;
+		std::size_t const len;
+	} writer{.first=true, .strout=strout, .len=len};
 
 	strout[0]=0;
 
-	n=0;
-	while(!IsListEmpty(&g_list_player) && (l != &g_list_player)) {
-		j = (PSPLAYER) l;
+	player_map(&writer, [](void* user, SPLAYER* j) {
+		auto &writer = *static_cast<StatusWriter*>(user);
+		char strtmp[ max_playername_length + 200];
 
 		if(j->is_player) {
 			int color = (j->color==-1) ? maximum_player_count : j->color;
-			if(n==0) {
+			if(writer.first) {
 				snprintf(strtmp, sizeof(strtmp)-1, "%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s"
 				         , j->name
 				         , color
@@ -283,7 +283,7 @@ TEG_STATUS aux_token_stasta(char *strout, size_t len)
 				         , (g_game.empieza_turno && (g_game.empieza_turno->numjug==j->numjug))
 				         , j->human
 				         , j->addr);
-				n=1;
+				writer.first = false;
 			} else
 				snprintf(strtmp, sizeof(strtmp)-1, "/%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%s"
 				         , j->name
@@ -300,11 +300,9 @@ TEG_STATUS aux_token_stasta(char *strout, size_t len)
 
 			strtmp[ sizeof(strtmp) -1 ] = 0;
 
-			strncat(strout, strtmp, len - strlen(strout));
+			strncat(writer.strout, strtmp, writer.len - strlen(writer.strout));
 		}
-
-		l = l->Flink;
-	}
+	});
 	return TEG_STATUS_SUCCESS;
 }
 
